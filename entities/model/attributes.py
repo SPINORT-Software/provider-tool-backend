@@ -26,6 +26,14 @@ class AttributeSetModel:
                 attribute_set_created.attribute_set_name = attribute_set_data.get("name")
                 attribute_set_created.attribute_set_code = attribute_set_data.get("code")
                 attribute_set_created.save()
+
+                attribute_group_data = {'name': "default__" + attribute_set_data.get("code"),
+                                        'code': "default__" + attribute_set_data.get("code"), 'is_default_group': True,
+                                        'set_id': attribute_set_created.attribute_set_id}
+
+                attribute_group_model = AttributeGroupModel()
+                attribute_group_model.create_attribute_group(attribute_group_data=attribute_group_data)
+
                 return HttpResponse(result=True, message="Attribute set creation success.", status=status.HTTP_200_OK,
                                     id="Attribute Set ID",
                                     id_value=attribute_set_created.attribute_set_id)
@@ -129,12 +137,15 @@ class AttributeGroupModel:
             attribute_group_created = AttributeGroup()
 
             if all(key in attribute_group_data for key in ("name", "code", "set_id")):
-                set_id = attribute_group_data.get("set_id").strip()
-
+                set_id = attribute_group_data.get("set_id")
                 attribute_group_created.attribute_group_name = attribute_group_data.get("name")
                 attribute_group_created.attribute_group_code = attribute_group_data.get("code")
                 attribute_group_created.attribute_set_id = AttributeSet.objects.get(
                     attribute_set_id=set_id)
+
+                if "is_default_group" in attribute_group_data and attribute_group_data.get("is_default_group"):
+                    attribute_group_created.is_default_group = True
+
                 attribute_group_created.save()
                 return HttpResponse(result=True, message="Attribute group creation success.", status=status.HTTP_200_OK,
                                     id="Attribute Group ID",

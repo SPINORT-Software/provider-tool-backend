@@ -26,6 +26,7 @@ class AttributeGroup(models.Model):
         verbose_name="Attribute Set",
         db_column="attribute_set_id"
     )
+    is_default_group = models.BooleanField(default=False)
     attribute_group_code = models.CharField(max_length=55, unique=True)
     attribute_group_name = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
@@ -46,12 +47,6 @@ class UserEntity(models.Model):
     Primary record of a user in the application (irrespective of the type of user)
     """
     user_entity_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
-    attribute_set_id = models.ForeignKey(
-        AttributeSet,
-        on_delete=models.PROTECT,
-        verbose_name="Attribute Set",
-        db_column="attribute_set_id"
-    )
     email = models.CharField(max_length=45, unique=True)
     password = models.TextField()
     first_name = models.TextField()
