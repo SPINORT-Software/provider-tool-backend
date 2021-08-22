@@ -36,7 +36,6 @@ urlpatterns = [
 
     # GET/UPDATE/DELETE for attribute group detail
     path('attribute-group/<str:attribute_group_id>/', AttributeGroupDetail.as_view()),
-
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

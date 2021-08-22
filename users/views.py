@@ -4,7 +4,7 @@ from entities.models import UserEntity, UserRoleEntityData, \
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .model import accounts
+from .model import accounts, roles
 
 
 class Roles:
@@ -13,13 +13,23 @@ class Roles:
         List all roles or create a role.
         """
 
+        def __init__(self):
+            self.roles_model = roles.RolesModel()
+
         def post(self, request):
             """
             Add a new role record.
             :param request:
             :return:
             """
-            pass
+            try:
+                response = self.roles_model.create_role(request.data)
+                return response.get_response()
+            except Exception as e:
+                return Response({
+                    'result': False,
+                    'message': 'Missing required request fields.'
+                }, status=status.HTTP_400_BAD_REQUEST)
 
         def get(self, request):
             """
@@ -27,12 +37,32 @@ class Roles:
             :param request:
             :return:
             """
-            pass
+            try:
+                response = self.roles_model.list_roles()
+                return response.get_response()
+            except Exception as e:
+                return Response({
+                    'result': False,
+                    'message': 'Missing required request fields.'
+                }, status=status.HTTP_400_BAD_REQUEST)
 
     class RolesDetail(APIView):
         """
         API Class for Role Detail
         """
+
+        def __init__(self):
+            self.roles_model = roles.RolesModel()
+
+        def get(self, request, role_id):
+            try:
+                response = self.roles_model.get_role_detail(role_id)
+                return response.get_response()
+            except Exception as e:
+                return Response({
+                    'result': False,
+                    'message': "Could not fetch role details."
+                }, status=status.HTTP_400_BAD_REQUEST)
 
         def put(self, request, role_id):
             """
@@ -40,7 +70,14 @@ class Roles:
             :param request:
             :return:
             """
-            pass
+            try:
+                response = self.roles_model.update_role_detail(role_id, request.data)
+                return response.get_response()
+            except Exception as e:
+                return Response({
+                    'result': False,
+                    'message': "Could not update role details."
+                }, status=status.HTTP_400_BAD_REQUEST)
 
         def delete(self, request, role_id):
             """
@@ -50,10 +87,13 @@ class Roles:
             """
             pass
 
-    class RolePermission(APIView):
+    class RolePermissionList(APIView):
         """
         List all role permissions or create a role permission.
         """
+
+        def __init__(self):
+            self.role_permission_model = roles.RolesPermissionModel()
 
         def post(self, request):
             """
@@ -61,7 +101,14 @@ class Roles:
             :param request:
             :return:
             """
-            pass
+            try:
+                response = self.role_permission_model.add_role_permission(request.data)
+                return response.get_response()
+            except Exception as e:
+                return Response({
+                    'result': False,
+                    'message': 'Missing required request fields.'
+                }, status=status.HTTP_400_BAD_REQUEST)
 
         def get(self, request):
             """
@@ -69,21 +116,38 @@ class Roles:
             :param request:
             :return:
             """
-            pass
+            try:
+                response = self.role_permission_model.list_role_permission()
+                return response.get_response()
+            except Exception as e:
+                return Response({
+                    'result': False,
+                    'message': 'Missing required request fields.'
+                }, status=status.HTTP_400_BAD_REQUEST)
 
     class RolePermissionDetail(APIView):
         """
         API Class for Role Permission Detail
         """
 
-        def put(self, request, role_permission_id):
+        def __init__(self):
+            self.role_permission_model = roles.RolesPermissionModel()
+
+        def get(self, request, role_permission_id):
             """
-            Update a role permission entity record.
+            Get role permission entity record detail.
             :param role_permission_id:
             :param request:
             :return:
             """
-            pass
+            try:
+                response = self.role_permission_model.get_detail(role_permission_id)
+                return response.get_response()
+            except Exception as e:
+                return Response({
+                    'result': False,
+                    'message': 'Missing required request fields.'
+                }, status=status.HTTP_400_BAD_REQUEST)
 
         def delete(self, request, role_permission_id):
             """
@@ -92,7 +156,33 @@ class Roles:
             :param request:
             :return:
             """
-            pass
+            try:
+                response = self.role_permission_model.delete(role_permission_id)
+                return response.get_response()
+            except Exception as e:
+                return Response({
+                    'result': False,
+                    'message': 'Failed to delete role permissions.'
+                }, status=status.HTTP_400_BAD_REQUEST)
+
+    class RolePermissionListByRole(APIView):
+        def __init__(self):
+            self.role_permission_model = roles.RolesPermissionModel()
+
+        def get(self, request, role_id):
+            """
+            List all the role permissions by role.
+            :param request:
+            :return:
+            """
+            try:
+                response = self.role_permission_model.list_role_permission_by_role(role_id)
+                return response.get_response()
+            except Exception as e:
+                return Response({
+                    'result': False,
+                    'message': 'Missing required request fields.'
+                }, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UsersList(APIView):
@@ -170,7 +260,6 @@ class UsersDetail(APIView):
             response = UsersDetail.accounts_model.update_user_detail(user_entity_id, request.data)
             return response.get_response()
         except Exception as e:
-            print(e)
             return Response({
                 'result': False,
                 'message': 'Failure to update user detail.'

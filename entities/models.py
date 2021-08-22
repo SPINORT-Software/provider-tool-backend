@@ -82,7 +82,7 @@ class EntityUpdates(models.Model):
 
 class Roles(models.Model):
     role_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
-    role_code = models.TextField()
+    role_code = models.CharField(max_length=55, unique=True)
     role_label = models.TextField()
 
 
@@ -118,16 +118,21 @@ class RolePermissions(models.Model):
         verbose_name="Role ID",
         db_column="role_id"
     )
-    operation_id = models.CharField(choices=RolePermissionOpTypes.choices, max_length=10,
-                                    default=RolePermissionOpTypes.CREATE)
-    entity_type_id = models.ForeignKey(
-        EntityType,
-        on_delete=models.PROTECT,
-        verbose_name="Entity Type",
-        db_column="entity_type_id"
+    operation_type = models.CharField(choices=RolePermissionOpTypes.choices, max_length=10,
+                                      default=RolePermissionOpTypes.CREATE)
+    resource_type = models.CharField(
+        max_length=55,
+        db_column="resource_type",
+        null=False
     )
-    resource_entity_id = models.CharField(
+    resource_id = models.CharField(
         max_length=32)  # resource ID - entity ID of the record for all possible user types
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['role_id', 'operation_type', 'resource_id'],
+                                    name='Unique Permission Group - Role,Operation type,resource entity id')
+        ]
 
 
 """

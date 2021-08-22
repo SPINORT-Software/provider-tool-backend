@@ -189,6 +189,11 @@ class AttributeGroupModel:
         try:
             update_attribute_group = AttributeGroup.objects.get(attribute_group_id=attribute_group_id)
 
+            if int(update_attribute_group.is_default_group) == 1:
+                return HttpResponse(result=False,
+                                    message="Failed to update attribute group. Default group cannot be updated.",
+                                    status=status.HTTP_200_OK)
+
             if "name" in attribute_group_data:
                 update_attribute_group.attribute_group_name = attribute_group_data.get('name')
             if "set_id" in attribute_group_data:
