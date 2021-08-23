@@ -20,9 +20,13 @@ class Accounts:
         """
         try:
             response_json = UserEntity.objects.values()
-            return HttpResponse(result=True, message="Users list generated successfully.",
-                                status=status.HTTP_200_OK,
-                                value=response_json)
+
+            if len(response_json) > 0:
+                return HttpResponse(result=True, message="Users list generated successfully.",
+                                    status=status.HTTP_200_OK,
+                                    value=response_json)
+            return HttpResponse(result=True, message="Could not find user records.",
+                                status=status.HTTP_200_OK)
         except Error as e:
             return HttpResponse(result=False, message="Failure to list Users.",
                                 status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -120,7 +124,10 @@ class Accounts:
         except ValidationError:
             return HttpResponse(result=False, message="Invalid user query parameter provided.",
                                 status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        except (Error, UserEntity.DoesNotExist) as e:
+        except UserEntity.DoesNotExist as e:
+            return HttpResponse(result=False, message="Could not find User detail.",
+                                status=status.HTTP_200_OK)
+        except Error as e:
             return HttpResponse(result=False, message="Failure to fetch User detail.",
                                 status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 

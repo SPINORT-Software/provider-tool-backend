@@ -148,8 +148,11 @@ class UserRoleEntityDataTypes(models.Model):
     Data types for the All role type records. Primary key records
     """
     entity_data_type_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
-    data_type_code = models.TextField()
+    data_type_code = models.CharField(max_length=55, unique=True)
     data_type_label = models.TextField()
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(null=True, blank=True)
 
 
 class UserRoleEntityData(models.Model):
