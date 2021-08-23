@@ -172,9 +172,15 @@ class AttributeGroupModel:
         """
         try:
             response_json = AttributeGroup.objects.values()
-            return HttpResponse(result=True, message="Attribute Group list generated successfully.",
-                                status=status.HTTP_200_OK,
-                                value=response_json)
+
+            if len(response_json) > 0:
+                return HttpResponse(result=True, message="Attribute Group list generated successfully.",
+                                    status=status.HTTP_200_OK,
+                                    value=response_json)
+
+            return HttpResponse(result=False, message="No Attribute Group values found.",
+                                status=status.HTTP_200_OK)
+
         except Error as e:
             return HttpResponse(result=False, message="Could not list Attribute Group values.",
                                 status=status.HTTP_500_INTERNAL_SERVER_ERROR)

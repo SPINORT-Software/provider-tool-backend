@@ -6,8 +6,11 @@ urlpatterns = [
     path('data-types', UserEntityDataTypesList.as_view()),
     path('data-types/<str:type_id>', UserEntityDataTypesDetail.as_view()),
 
-    path('userentity-attributes', UserEntityAttributes.as_view()),
-    path('userentity-values', UserEntityAttributeValues.as_view()),
+    path('attributes', UserEntityAttributesList.as_view()),
+    path('attributes/<str:attribute_id>', UserEntityAttributesDetail.as_view()),
+    path('attributes/attribute-group/<str:attr_group_id>', UserEntityAttributesListAttrGroup.as_view()),
+
+    path('attribute-values', UserEntityAttributeValues.as_view()),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

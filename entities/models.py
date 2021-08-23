@@ -183,13 +183,21 @@ class UserRoleAttribute(models.Model):
     Attributes for any user's entity data.
     """
     attribute_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
-    attribute_code = models.TextField()
+    attribute_code = models.CharField(max_length=55, unique=True)
     frontend_label = models.TextField()
     frontend_input = models.TextField()
     attribute_type = models.TextField()
     is_required = models.BooleanField()
     note = models.TextField()
-    attribute_group_id = None
+    attribute_group = models.ForeignKey(
+        AttributeGroup,
+        on_delete=models.CASCADE,
+        verbose_name="Attribute Group",
+        db_column="attribute_group"
+    )
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(null=True, blank=True)
 
 
 class UserRoleAttributeValues(models.Model):
