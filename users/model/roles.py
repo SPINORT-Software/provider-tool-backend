@@ -49,7 +49,10 @@ class RolesModel:
             role_created.save()
 
             return HttpResponse(result=True, message="Role record created.",
-                                status=status.HTTP_200_OK)
+                                status=status.HTTP_200_OK,
+                                id_value=role_created.role_id,
+                                id="role_id")
+
         except IntegrityError as ie:
             ie_message = ie.args[1]
             if "Duplicate entry" in ie_message:

@@ -98,7 +98,6 @@ class AttributeSetModel:
             AttributeSet.objects.get(attribute_set_id=attribute_set_id).delete()
             return HttpResponse(result=True, message="Attribute Set delete success.", status=status.HTTP_200_OK)
         except (Error, AttributeSet.DoesNotExist) as e:
-            print(e)
             return HttpResponse(result=True, message="Could not delete Attribute Set.",
                                 status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 

@@ -9,6 +9,10 @@ urlpatterns = [
     path('attributes', UserEntityAttributesList.as_view()),
     path('attributes/<str:attribute_id>', UserEntityAttributesDetail.as_view()),
     path('attributes/attribute-group/<str:attr_group_id>', UserEntityAttributesListAttrGroup.as_view()),
+    path('attributes/data-type/<str:type_id>', UserEntityAttributesListDataType.as_view()),
+
+    path('data', UserEntityDataList.as_view()),
+    path('data/<str:user_id>', UserEntityDataListByUser.as_view()),
 
     path('attribute-values', UserEntityAttributeValues.as_view()),
 ]

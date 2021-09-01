@@ -148,6 +148,12 @@ class UserRoleEntityDataTypes(models.Model):
     Data types for the All role type records. Primary key records
     """
     entity_data_type_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
+    attribute_set_id = models.ForeignKey(
+        AttributeSet,
+        on_delete=models.PROTECT,
+        verbose_name="Attribute Set",
+        db_column="attribute_set_id"
+    )
     data_type_code = models.CharField(max_length=55, unique=True)
     data_type_label = models.TextField()
     is_active = models.BooleanField(default=True)
@@ -160,22 +166,17 @@ class UserRoleEntityData(models.Model):
     User type = Generic.
     Each record - can be of personal info/visitor log/comm log/medical info/research questionnaire
     """
-    entity_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
+    entity_data_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
     entity_data_type_id = models.ForeignKey(
         UserRoleEntityDataTypes,
         on_delete=models.CASCADE,
-        verbose_name="role entity data record type.",
+        verbose_name="role entity data type.",
         db_column="entity_data_type_id"
     )
-    user_entity_id = models.ForeignKey(UserEntity, on_delete=models.CASCADE,
-                                       verbose_name="User entity id", db_column="user_entity_id")
-    attribute_set_id = models.ForeignKey(
-        AttributeSet,
-        on_delete=models.PROTECT,
-        verbose_name="Attribute Set",
-        db_column="attribute_set_id"
-    )
+    user_entity_id = models.ForeignKey(UserEntity, on_delete=models.CASCADE, verbose_name="User entity id",
+                                       db_column="user_entity_id")
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(null=True, blank=True)
 
 
 class UserRoleAttribute(models.Model):
@@ -199,28 +200,25 @@ class UserRoleAttribute(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(null=True, blank=True)
 
+    def __str__(self):
+        return self.frontend_label + " - " + self.attribute_code
+
 
 class UserRoleAttributeValues(models.Model):
     """
     Values for Attributes
     """
     value_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
-    attribute_id = models.ForeignKey(
+    attribute = models.ForeignKey(
         UserRoleAttribute,
         on_delete=models.PROTECT,
         verbose_name="role entity attribute",
-        db_column="attribute_id"
+        db_column="attribute"
     )
-    entity_type_id = models.ForeignKey(
-        EntityType,
-        on_delete=models.PROTECT,
-        verbose_name="role entity type",
-        db_column="entity_type_id"
-    )
-    entity_id = models.ForeignKey(
+    entity_data = models.ForeignKey(
         UserRoleEntityData,
         on_delete=models.PROTECT,
-        verbose_name="role entity data ID",
-        db_column="entity_id"
+        verbose_name="role entity data",
+        db_column="entity_data"
     )
     value = models.TextField()

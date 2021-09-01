@@ -1,13 +1,15 @@
 from rest_framework.response import Response
 from entities.helper import HttpResponse
 from rest_framework import status
-from entities.models import UserRoleEntityDataTypes, UserRoleEntityData, UserRoleAttribute, AttributeGroup
+from entities.models import UserRoleEntityDataTypes, UserRoleEntityData, UserRoleAttribute, AttributeGroup, \
+    AttributeSet, UserEntity
 from django.db.utils import IntegrityError, DatabaseError, Error
 from django.contrib.auth.hashers import make_password
 from django.core.exceptions import ValidationError
 from providertool.constants import *
 from datetime import datetime
-
+import json
+from django.forms.models import model_to_dict
 
 class UserEntityDataTypesModel:
     def add_type(self, type_data):
@@ -24,11 +26,23 @@ class UserEntityDataTypesModel:
             data_type_created = UserRoleEntityDataTypes()
             data_type_created.data_type_code = type_data.get("data_type_code")
             data_type_created.data_type_label = type_data.get("data_type_label")
+            data_type_created.attribute_set_id = AttributeSet.objects.get(
+                attribute_set_id=type_data.get('attribute_set'))
             data_type_created.save()
 
             return HttpResponse(result=True, message="Created User Entity Data type",
                                 status=status.HTTP_200_OK, id_value=data_type_created.entity_data_type_id,
                                 id="data_type_id")
+
+        except ValidationError as ve:
+            return HttpResponse(result=False,
+                                message="Please provide a valid attribute set value.",
+                                status=status.HTTP_400_BAD_REQUEST)
+
+        except AttributeSet.DoesNotExist:
+            return HttpResponse(result=False,
+                                message="Invalid Attribute set value. Please provide a valid attribute set value to create data type.",
+                                status=status.HTTP_400_BAD_REQUEST)
 
         except IntegrityError as ie:
             ie_message = ie.args[1]
@@ -237,4 +251,116 @@ class UserEntityDataAttributesModel:
 
         except Error as e:
             return HttpResponse(result=False, message="Failure to update entity data attribute detail.",
+                                status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    def list_attributes_by_data_type(self, data_type_id):
+        """
+        List all attributes by User Role Entity Data type.
+        :param data_type_id: UserRoleEntityDataTypes
+        :return:
+        """
+        try:
+            # 1 - Get UserRoleEntityDataTypes object by data_type_id
+            data_type = UserRoleEntityDataTypes.objects.get(entity_data_type_id=data_type_id)
+            request_attribute_set = data_type.attribute_set_id
+
+            # 2 - Get all attribute Groups by Attribute Set
+            request_attribute_groups = AttributeGroup.objects.filter(attribute_set_id=request_attribute_set)
+
+            request_attributes = UserRoleAttribute.objects.values().filter(attribute_group__in=request_attribute_groups,
+                                                                           is_active=True)
+
+            if len(request_attributes) > 0:
+                return HttpResponse(result=True,
+                                    message="Attributes list generated successfully.",
+                                    status=status.HTTP_200_OK,
+                                    value={
+                                        "attributes": request_attributes,
+                                        "attribute_groups": request_attribute_groups.values()
+                                    })
+
+            return HttpResponse(result=False,
+                                message="No attributes found.",
+                                status=status.HTTP_200_OK)
+
+        except ValidationError as ve:
+            return HttpResponse(result=False,
+                                message="Failure to list of attributes. Please provide a valid data type value.",
+                                status=status.HTTP_400_BAD_REQUEST)
+
+        except UserRoleEntityDataTypes.DoesNotExist:
+            # Handle data type get - matching query does not exist result.
+            return HttpResponse(result=False,
+                                message="Invalid data type query parameter value provided.",
+                                status=status.HTTP_400_BAD_REQUEST)
+
+        except Error as e:
+            return HttpResponse(result=False, message="Failure to list attributes.",
+                                status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class UserEntityDataModel:
+    def add_data(self, entity_data):
+        """
+        Add a User Entity Data.
+        :param entity_data:
+        :return:
+        """
+
+        try:
+            if all(key not in entity_data for key in API_ENTITY_DATA_CREATE_REQUEST_BODY):
+                return HttpResponse(result=False, message="Missing required request field values for entity data.",
+                                    status=status.HTTP_400_BAD_REQUEST)
+
+            entity_data_created = UserRoleEntityData()
+            entity_data_created.entity_data_type_id = UserRoleEntityDataTypes.objects.get(
+                entity_data_type_id=entity_data.get("data_type"))
+            entity_data_created.user_entity_id = UserEntity.objects.get(user_entity_id=entity_data.get('user_id'))
+
+            entity_data_created.save()
+
+            return HttpResponse(result=True, message="Created User Entity Data.",
+                                status=status.HTTP_200_OK, id_value=entity_data_created.entity_data_id,
+                                id="entity_data_id")
+
+        except UserEntity.DoesNotExist:
+            return HttpResponse(result=False, message="Invalid user data provided.",
+                                status=status.HTTP_400_BAD_REQUEST)
+
+        except UserRoleEntityDataTypes.DoesNotExist:
+            return HttpResponse(result=False, message="Invalid data type provided.",
+                                status=status.HTTP_400_BAD_REQUEST)
+
+        except Error as e:
+            return HttpResponse(result=False, message="Failed to created entity data.",
+                                status=status.HTTP_400_BAD_REQUEST)
+
+    def list_data_by_user_id(self, user_id):
+        try:
+            user_role_entity_data = UserRoleEntityData.objects.filter(user_entity_id=user_id)
+
+            if len(user_role_entity_data) > 0:
+                refined_result = []
+                for entity_data_item in user_role_entity_data:
+                    user_id = entity_data_item.user_entity_id.user_entity_id
+                    user_entity = UserEntity.objects.values().filter(user_entity_id=user_id)
+                    user_role_entity_data_type = UserRoleEntityDataTypes.objects.values().filter(
+                        entity_data_type_id=entity_data_item.entity_data_type_id.entity_data_type_id)
+
+                    refined_result.append({
+                        'entity_data': model_to_dict(entity_data_item),
+                        'user': user_entity,
+                        'data_type': user_role_entity_data_type
+                    })
+
+            if len(refined_result) > 0:
+                return HttpResponse(result=True, message="User Entity Data generated successfully.",
+                                    status=status.HTTP_200_OK,
+                                    value=refined_result)
+
+            return HttpResponse(result=False, message="No user entity data found.",
+                                status=status.HTTP_200_OK)
+
+        except Error as e:
+            return HttpResponse(result=False, message="Failure to list user entity data.",
                                 status=status.HTTP_500_INTERNAL_SERVER_ERROR)

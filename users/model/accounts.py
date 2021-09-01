@@ -13,23 +13,11 @@ class Accounts:
     CRUD on users / types of user records.
     """
 
-    def list_users(self):
-        """
-        List all UserEntity records.
-        :return:
-        """
+    def __check_if_role_valid(self, role_data):
         try:
-            response_json = UserEntity.objects.values()
-
-            if len(response_json) > 0:
-                return HttpResponse(result=True, message="Users list generated successfully.",
-                                    status=status.HTTP_200_OK,
-                                    value=response_json)
-            return HttpResponse(result=True, message="Could not find user records.",
-                                status=status.HTTP_200_OK)
-        except Error as e:
-            return HttpResponse(result=False, message="Failure to list Users.",
-                                status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Roles.objects.get(role_id=role_data.get("type"))
+        except (Roles.DoesNotExist, ValidationError):
+            return False
 
     def create_account(self, user_data):
         """
@@ -42,12 +30,18 @@ class Accounts:
             return HttpResponse(result=False, message="Missing required request field values.",
                                 status=status.HTTP_400_BAD_REQUEST)
 
+        role_data = user_data.get('role')
+        if not self.__check_if_role_valid(role_data):
+            return HttpResponse(result=False,
+                                message="Failure to create user role record. Invalid role value provided.",
+                                status=status.HTTP_400_BAD_REQUEST)
+
         user_entity_result, user_entity_message, user_entity_id = self.__create_user_entity(user_data)
         if not user_entity_result:
             return HttpResponse(result=user_entity_result, message=user_entity_message,
                                 status=status.HTTP_400_BAD_REQUEST)
         else:
-            role_data = user_data.get('role')
+
             user_role_result, user_role_message, user_role_id = self.__create_user_role_entity(user_entity_id,
                                                                                                role_data)
             if not user_role_result:
@@ -92,24 +86,40 @@ class Accounts:
         :return:
         """
         try:
-            if "entity_type" not in role_data:
+            if "type" not in role_data:
                 return False, "Missing required request field values in the key - 'role'", None
 
             user_role_entity_created = UserRoles()
-            user_role_entity_created.role_id = Roles.objects.get(
-                role_id=role_data.get("entity_type"))
-            user_role_entity_created.user_entity_id = UserEntity.objects.get(
-                user_entity_id=user_entity_id)
+            user_role_entity_created.role_id = Roles.objects.get(role_id=role_data.get("type"))
+            user_role_entity_created.user_entity_id = UserEntity.objects.get(user_entity_id=user_entity_id)
             user_role_entity_created.save()
             return True, "User role record creation success.", user_role_entity_created.user_role_id
         except Roles.DoesNotExist:
-            return False, "Could not map Role. Please provide a valid role entity type value.", None
+            return False, "Could not map Role. Please provide a valid role type value.", None
         except UserEntity.DoesNotExist:
             return False, "Failure to map the user to role provided. Please try creating the user account again.", None
         except ValidationError:
             return False, "Failure to create user role record. Invalid role value provided.", None
         except Error as e:
             return False, "Failed to create a role record for the user entity. ", None
+
+    def list_users(self):
+        """
+        List all UserEntity records.
+        :return:
+        """
+        try:
+            response_json = UserEntity.objects.values()
+
+            if len(response_json) > 0:
+                return HttpResponse(result=True, message="Users list generated successfully.",
+                                    status=status.HTTP_200_OK,
+                                    value=response_json)
+            return HttpResponse(result=True, message="Could not find user records.",
+                                status=status.HTTP_200_OK)
+        except Error as e:
+            return HttpResponse(result=False, message="Failure to list Users.",
+                                status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def get_user_detail(self, user_entity_id):
         """
