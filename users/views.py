@@ -2,10 +2,30 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .model import accounts, roles
+from entities.models import UserEntity, Roles
+from .serializers import UserSerailzier
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.exceptions import APIException
+
+from datetime import datetime
+from rest_framework import serializers
 
 
-class Roles:
-    class RolesList(APIView):
+class Comment:
+    def __init__(self, email, content, created=None):
+        self.email = email
+        self.content = content
+        self.created = created or datetime.now()
+
+
+class CommentSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    content = serializers.CharField(max_length=200)
+    created = serializers.DateTimeField()
+
+
+class RolesViews:
+    class RolesList(APIView, PageNumberPagination):
         """
         List all roles or create a role.
         """
@@ -35,12 +55,29 @@ class Roles:
             :return:
             """
             try:
-                response = self.roles_model.list_roles()
-                return response.get_response()
-            except Exception as e:
+                # response = self.roles_model.list_roles()
+                # return response.get_response()
+                users = [Comment(email='leila@example.com1', content='foo bar'),
+                         Comment(email='leila@example.com2', content='foo bar'),
+                         Comment(email='leila@example.com3', content='foo bar'),
+                         Comment(email='leila@example.com4', content='foo bar'),
+                         Comment(email='leila@example.com5', content='foo bar'),
+                         Comment(email='leila@example.com6', content='foo bar'),
+                         Comment(email='leila@example.com7', content='foo bar'),
+                         Comment(email='leila@example.com8', content='foo bar')]
+
+                # users = Roles.objects.all()
+                results = self.paginate_queryset(users, request, view=self)
+                serializer = CommentSerializer(results, many=True)
+                # serializer = UserSerailzier.UserSerializer(results, many=True)
+                return self.get_paginated_response({
+                    'result': True,
+                    'value': serializer.data
+                })
+            except APIException as e:
                 return Response({
                     'result': False,
-                    'message': 'Missing required request fields.'
+                    'message': 'Failed to fetch roles list.'
                 }, status=status.HTTP_400_BAD_REQUEST)
 
     class RolesDetail(APIView):

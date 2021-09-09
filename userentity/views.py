@@ -138,6 +138,7 @@ class UserEntityAttributesListDataType(UserEntity):
             response = self.user_entity_attributes.list_attributes_by_data_type(type_id)
             return response.get_response()
         except Exception as e:
+            print(str(e))
             return Response({
                 'result': False,
                 'message': 'Failed to fetch list of user entity data attributes'
@@ -210,7 +211,6 @@ class UserEntityDataListByUser(UserEntity):
             response = self.user_entity_data.list_data_by_user_id(user_id)
             return response.get_response()
         except Exception as e:
-            print(e)
             return Response({
                 'result': False,
                 'message': 'Failed to fetch list of user entity data for the given user.'

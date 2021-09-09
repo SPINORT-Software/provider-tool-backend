@@ -1,15 +1,18 @@
+from uuid import UUID
 from rest_framework.response import Response
 from entities.helper import HttpResponse
 from rest_framework import status
 from entities.models import UserRoleEntityDataTypes, UserRoleEntityData, UserRoleAttribute, AttributeGroup, \
     AttributeSet, UserEntity
 from django.db.utils import IntegrityError, DatabaseError, Error
-from django.contrib.auth.hashers import make_password
 from django.core.exceptions import ValidationError
 from providertool.constants import *
 from datetime import datetime
-import json
 from django.forms.models import model_to_dict
+from userentity.serializers import *
+from django.core import serializers
+import json
+
 
 class UserEntityDataTypesModel:
     def add_type(self, type_data):
@@ -253,6 +256,10 @@ class UserEntityDataAttributesModel:
             return HttpResponse(result=False, message="Failure to update entity data attribute detail.",
                                 status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+    def uuid_convert(self, o):
+        if isinstance(o, UUID):
+            return o.hex
+
     def list_attributes_by_data_type(self, data_type_id):
         """
         List all attributes by User Role Entity Data type.
@@ -267,18 +274,32 @@ class UserEntityDataAttributesModel:
             # 2 - Get all attribute Groups by Attribute Set
             request_attribute_groups = AttributeGroup.objects.filter(attribute_set_id=request_attribute_set)
 
-            request_attributes = UserRoleAttribute.objects.values().filter(attribute_group__in=request_attribute_groups,
-                                                                           is_active=True)
+            request_attributes = UserRoleAttribute.objects.filter(attribute_group__in=request_attribute_groups,
+                                                                  is_active=True).values()
 
             if len(request_attributes) > 0:
+                group_by_attribute_group = {}
+
+                for attribute_group_item in request_attribute_groups:
+                    group_by_attribute_group[attribute_group_item.attribute_group_code] = {
+                        "attribute_group": json.dumps(attribute_group_item),
+                        "attributes": []
+                    }
+
+                    # group_by_attribute_group[attribute_group_item.attribute_group_code]
+                    for attribute_item in list(request_attributes):
+                        if attribute_item.get('attribute_group_id') == attribute_group_item.attribute_group_id:
+                            group_by_attribute_group[attribute_group_item.attribute_group_code].get(
+                                'attributes').append(
+                                attribute_item
+                            )
+
                 return HttpResponse(result=True,
                                     message="Attributes list generated successfully.",
                                     status=status.HTTP_200_OK,
-                                    value={
-                                        "attributes": request_attributes,
-                                        "attribute_groups": request_attribute_groups.values()
-                                    })
+                                    value=group_by_attribute_group)
 
+            # If there are no Request attributes in the attribute group
             return HttpResponse(result=False,
                                 message="No attributes found.",
                                 status=status.HTTP_200_OK)
@@ -293,10 +314,6 @@ class UserEntityDataAttributesModel:
             return HttpResponse(result=False,
                                 message="Invalid data type query parameter value provided.",
                                 status=status.HTTP_400_BAD_REQUEST)
-
-        except Error as e:
-            return HttpResponse(result=False, message="Failure to list attributes.",
-                                status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class UserEntityDataModel:
