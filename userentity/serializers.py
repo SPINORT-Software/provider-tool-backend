@@ -8,7 +8,7 @@ class UserRoleAttributeSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class UserRoleAttributeGroupSerializer(serializers.ModelSerializer):
+class AttributeGroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = AttributeGroup
         fields = '__all__'

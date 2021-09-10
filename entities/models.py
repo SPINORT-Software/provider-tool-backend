@@ -30,6 +30,7 @@ class AttributeGroup(models.Model):
     attribute_group_code = models.CharField(max_length=55, unique=True)
     attribute_group_name = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+    parent_attribute_group = models.ForeignKey('AttributeGroup', on_delete=models.CASCADE, null=True, blank=True)
 
 
 class EntityType(models.Model):

@@ -256,9 +256,64 @@ class UserEntityDataAttributesModel:
             return HttpResponse(result=False, message="Failure to update entity data attribute detail.",
                                 status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    def uuid_convert(self, o):
-        if isinstance(o, UUID):
-            return o.hex
+    # def list_attributes_by_data_type(self, data_type_id):
+    #     """
+    #     List all attributes by User Role Entity Data type.
+    #     :param data_type_id: UserRoleEntityDataTypes
+    #     :return:
+    #     """
+    #     try:
+    #         # 1 - Get UserRoleEntityDataTypes object by data_type_id
+    #         data_type = UserRoleEntityDataTypes.objects.get(entity_data_type_id=data_type_id)
+    #         request_attribute_set = data_type.attribute_set_id
+    #
+    #         """
+    #         - Get all attribute Groups by Attribute Set
+    #         - Get All attributes by attribute groups
+    #         - Get Attribute set of attribute group
+    #         """
+    #         request_attribute_groups = AttributeGroup.objects.filter(attribute_set_id=request_attribute_set)
+    #         request_attributes = UserRoleAttribute.objects.filter(attribute_group__in=request_attribute_groups,
+    #                                                               is_active=True).values()
+    #         attribute_set = AttributeSet.objects.get(attribute_set_id=request_attribute_set.attribute_set_id)
+    #
+    #         if len(request_attributes) > 0:
+    #             group_by_attribute_group = {}
+    #
+    #             # Iterate the attribute group.
+    #             for attribute_group_item in request_attribute_groups:
+    #                 group_by_attribute_group[attribute_group_item.attribute_group_code] = {
+    #                     "attribute_group": UserRoleAttributeGroupSerializer(attribute_group_item).data,
+    #                     "attributes": [],
+    #                     "attribute_set": AttributeSetSerializer(attribute_set).data
+    #                 }
+    #
+    #                 for attribute_item in list(request_attributes):
+    #                     if attribute_item.get('attribute_group_id') == attribute_group_item.attribute_group_id:
+    #                         group_by_attribute_group[attribute_group_item.attribute_group_code].get(
+    #                             'attributes').append(attribute_item)
+    #
+    #             return HttpResponse(result=True,
+    #                                 message="Attributes list generated successfully.",
+    #                                 status=status.HTTP_200_OK,
+    #                                 value=group_by_attribute_group)
+    #
+    #         # If there are no Request attributes in the attribute group.
+    #         return HttpResponse(result=False,
+    #                             message="No attributes found.",
+    #                             status=status.HTTP_200_OK)
+    #
+    #     except ValidationError as ve:
+    #         print(ve)
+    #         return HttpResponse(result=False,
+    #                             message="Failure to fetch list of attributes. Please provide a valid data type value.",
+    #                             status=status.HTTP_400_BAD_REQUEST)
+    #
+    #     except UserRoleEntityDataTypes.DoesNotExist:
+    #         # Handle data type get - matching query does not exist result.
+    #         return HttpResponse(result=False,
+    #                             message="Invalid data type query parameter value provided.",
+    #                             status=status.HTTP_400_BAD_REQUEST)
 
     def list_attributes_by_data_type(self, data_type_id):
         """
@@ -271,42 +326,58 @@ class UserEntityDataAttributesModel:
             data_type = UserRoleEntityDataTypes.objects.get(entity_data_type_id=data_type_id)
             request_attribute_set = data_type.attribute_set_id
 
-            # 2 - Get all attribute Groups by Attribute Set
-            request_attribute_groups = AttributeGroup.objects.filter(attribute_set_id=request_attribute_set)
-
-            request_attributes = UserRoleAttribute.objects.filter(attribute_group__in=request_attribute_groups,
-                                                                  is_active=True).values()
+            """
+            - Get All AttributeGroup objects that have parent attribute group empty ie. get only parent attr groups.
+            """
+            request_attribute_groups = AttributeGroup.objects.filter(attribute_set_id=request_attribute_set,
+                                                                     parent_attribute_group__isnull=True)
 
             attribute_set = AttributeSet.objects.get(attribute_set_id=request_attribute_set.attribute_set_id)
 
-            if len(request_attributes) > 0:
-                group_by_attribute_group = {}
+            group_by_attribute_group = {}
+            # Iterate the attribute group.
+            for attribute_group_item in request_attribute_groups:
+                group_by_attribute_group[attribute_group_item.attribute_group_code] = {
+                    "default_attributes": UserRoleAttributeSerializer(
+                        UserRoleAttribute.objects.filter(attribute_group=attribute_group_item,
+                                                         is_active=True), many=True).data,
+                    "attribute_sub_groups": {},
+                    "detail": AttributeGroupSerializer(attribute_group_item).data
+                }
 
-                # Iterate the attribute group.
-                for attribute_group_item in request_attribute_groups:
-                    group_by_attribute_group[attribute_group_item.attribute_group_code] = {
-                        "attribute_group": UserRoleAttributeGroupSerializer(attribute_group_item).data,
-                        "attributes": [],
-                        "attribute_set": AttributeSetSerializer(attribute_set).data
+                group_dict = group_by_attribute_group[attribute_group_item.attribute_group_code]
+
+                # each attribute group loop and filter other attribute groups by parent attr group
+                children_attribute_groups = AttributeGroup.objects.filter(parent_attribute_group=attribute_group_item)
+
+                children_attributes = UserRoleAttribute.objects.filter(attribute_group__in=children_attribute_groups,
+                                                                       is_active=True)
+
+                # add children attribute groups to the parent attribute group detail
+                for child_group in children_attribute_groups:
+                    group_dict["attribute_sub_groups"][child_group.attribute_group_code] = {
+                        'attributes': [],
+                        'detail': AttributeGroupSerializer(child_group).data
                     }
 
-                    for attribute_item in list(request_attributes):
-                        if attribute_item.get('attribute_group_id') == attribute_group_item.attribute_group_id:
-                            group_by_attribute_group[attribute_group_item.attribute_group_code].get(
-                                'attributes').append(attribute_item)
+                # loop all the attributes and put them into respective attribute group.
+                for attribute_item in children_attributes:
+                    item_attr_group_code = attribute_item.attribute_group.attribute_group_code
+                    if item_attr_group_code in group_dict["attribute_sub_groups"]:
+                        group_dict.get('attribute_sub_groups')[item_attr_group_code]['attributes'].append(
+                            UserRoleAttributeSerializer(attribute_item).data)
+                    else:
+                        group_dict.get('attribute_sub_groups')[item_attr_group_code]['attributes'] = []
 
-                return HttpResponse(result=True,
-                                    message="Attributes list generated successfully.",
-                                    status=status.HTTP_200_OK,
-                                    value=group_by_attribute_group)
-
-            # If there are no Request attributes in the attribute group.
-            return HttpResponse(result=False,
-                                message="No attributes found.",
-                                status=status.HTTP_200_OK)
+            return HttpResponse(result=True,
+                                message="Attributes list generated successfully.",
+                                status=status.HTTP_200_OK,
+                                value={
+                                    "attribute_groups": group_by_attribute_group,
+                                    "attribute_set": AttributeSetSerializer(attribute_set).data
+                                })
 
         except ValidationError as ve:
-            print(ve)
             return HttpResponse(result=False,
                                 message="Failure to fetch list of attributes. Please provide a valid data type value.",
                                 status=status.HTTP_400_BAD_REQUEST)

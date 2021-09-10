@@ -145,6 +145,11 @@ class AttributeGroupModel:
                 if "is_default_group" in attribute_group_data and attribute_group_data.get("is_default_group"):
                     attribute_group_created.is_default_group = True
 
+                if "parent_attribute_group" in attribute_group_data and attribute_group_data.get(
+                        "parent_attribute_group"):
+                    attribute_group_created.parent_attribute_group = AttributeGroup.objects.get(
+                        attribute_group_id=attribute_group_data.get("parent_attribute_group"))
+
                 attribute_group_created.save()
                 return HttpResponse(result=True, message="Attribute group creation success.", status=status.HTTP_200_OK,
                                     id="Attribute Group ID",
@@ -155,6 +160,10 @@ class AttributeGroupModel:
         except AttributeSet.DoesNotExist:
             return HttpResponse(result=False,
                                 message="Could not map Attribute Set value. Please provide a valid attribute set value.",
+                                status=status.HTTP_400_BAD_REQUEST)
+        except AttributeGroup.DoesNotExist:
+            return HttpResponse(result=False,
+                                message="Could not map Parent Attribute Group. Please provide a valid attribute group value.",
                                 status=status.HTTP_400_BAD_REQUEST)
         except ValidationError as ve:
             return HttpResponse(result=False,
