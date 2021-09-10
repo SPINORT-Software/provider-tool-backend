@@ -277,36 +277,38 @@ class UserEntityDataAttributesModel:
             request_attributes = UserRoleAttribute.objects.filter(attribute_group__in=request_attribute_groups,
                                                                   is_active=True).values()
 
+            attribute_set = AttributeSet.objects.get(attribute_set_id=request_attribute_set.attribute_set_id)
+
             if len(request_attributes) > 0:
                 group_by_attribute_group = {}
 
+                # Iterate the attribute group.
                 for attribute_group_item in request_attribute_groups:
                     group_by_attribute_group[attribute_group_item.attribute_group_code] = {
-                        "attribute_group": json.dumps(attribute_group_item),
-                        "attributes": []
+                        "attribute_group": UserRoleAttributeGroupSerializer(attribute_group_item).data,
+                        "attributes": [],
+                        "attribute_set": AttributeSetSerializer(attribute_set).data
                     }
 
-                    # group_by_attribute_group[attribute_group_item.attribute_group_code]
                     for attribute_item in list(request_attributes):
                         if attribute_item.get('attribute_group_id') == attribute_group_item.attribute_group_id:
                             group_by_attribute_group[attribute_group_item.attribute_group_code].get(
-                                'attributes').append(
-                                attribute_item
-                            )
+                                'attributes').append(attribute_item)
 
                 return HttpResponse(result=True,
                                     message="Attributes list generated successfully.",
                                     status=status.HTTP_200_OK,
                                     value=group_by_attribute_group)
 
-            # If there are no Request attributes in the attribute group
+            # If there are no Request attributes in the attribute group.
             return HttpResponse(result=False,
                                 message="No attributes found.",
                                 status=status.HTTP_200_OK)
 
         except ValidationError as ve:
+            print(ve)
             return HttpResponse(result=False,
-                                message="Failure to list of attributes. Please provide a valid data type value.",
+                                message="Failure to fetch list of attributes. Please provide a valid data type value.",
                                 status=status.HTTP_400_BAD_REQUEST)
 
         except UserRoleEntityDataTypes.DoesNotExist:
