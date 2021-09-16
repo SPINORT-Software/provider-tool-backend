@@ -22,5 +22,19 @@ API_ENTITY_ATTRIBUTE_UPDATE_REQUEST_BODY = [
     "is_active"
 ]
 
-API_ENTITY_DATA_CREATE_REQUEST_BODY = ['data_type', 'user_id']
+API_ENTITY_DATA_CREATE_REQUEST_BODY = ['data_type', 'user_id', 'attributes']
 API_ENTITY_DATA_UPDATE_REQUEST_BODY = []
+
+# Attributes
+ATTRIBUTE_TYPE_DICT = {
+    'number': 'value_int',
+    'input_number': 'value_int',
+    'decimal': 'value_decimal',
+    'input_decimal': 'value_decimal',
+    'time': 'value_time',
+    'input_time': 'value_time',
+    'date': 'value_date',
+    'input_date': 'value_date',
+    'text': 'value_text',
+    'input_text': 'value_text'
+}

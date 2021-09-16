@@ -17,6 +17,13 @@ class AttributeSet(models.Model):
     attribute_set_code = models.CharField(max_length=55, unique=True, null=False, db_index=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return self.attribute_set_name
+
+    class Meta:
+        verbose_name = 'Field Set'
+        verbose_name_plural = 'Field Sets'
+
 
 class AttributeGroup(models.Model):
     attribute_group_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
@@ -31,6 +38,13 @@ class AttributeGroup(models.Model):
     attribute_group_name = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     parent_attribute_group = models.ForeignKey('AttributeGroup', on_delete=models.CASCADE, null=True, blank=True)
+
+    def __str__(self):
+        return self.attribute_group_name + f" [{self.attribute_group_code}]"
+
+    class Meta:
+        verbose_name = 'Field Group'
+        verbose_name_plural = 'Field Groups'
 
 
 class EntityType(models.Model):
@@ -55,6 +69,12 @@ class UserEntity(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(null=True, blank=True)
 
+    class Meta:
+        verbose_name = "User"
+        verbose_name_plural = "Users"
+
+    def __str__(self):
+        return f"{self.first_name} {self.last_name} [{self.email}]"
 
 class EntityUpdates(models.Model):
     """
@@ -86,6 +106,13 @@ class Roles(models.Model):
     role_code = models.CharField(max_length=55, unique=True)
     role_label = models.TextField()
 
+    class Meta:
+        verbose_name = "Role"
+        verbose_name_plural = "Roles"
+
+    def __str__(self):
+        return self.role_label + f" [{self.role_code}]"
+
 
 class UserRoles(models.Model):
     user_role_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
@@ -102,38 +129,9 @@ class UserRoles(models.Model):
         db_column="role_id"
     )
 
-
-class RolePermissions(models.Model):
-    class RolePermissionOpTypes(models.TextChoices):
-        """
-        ENUM choices for role permission operation types
-        """
-        CREATE = 'CREATE', ('Create')
-        EDIT = 'EDIT', ('Edit')
-        DELETE = 'DELETE', ('Delete')
-
-    permission_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
-    role_id = models.ForeignKey(
-        Roles,
-        on_delete=models.PROTECT,
-        verbose_name="Role ID",
-        db_column="role_id"
-    )
-    operation_type = models.CharField(choices=RolePermissionOpTypes.choices, max_length=10,
-                                      default=RolePermissionOpTypes.CREATE)
-    resource_type = models.CharField(
-        max_length=55,
-        db_column="resource_type",
-        null=False
-    )
-    resource_id = models.CharField(
-        max_length=32)  # resource ID - entity ID of the record for all possible user types
-
     class Meta:
-        constraints = [
-            models.UniqueConstraint(fields=['role_id', 'operation_type', 'resource_id'],
-                                    name='Unique Permission Group - Role,Operation type,resource entity id')
-        ]
+        verbose_name = 'User - Role'
+        verbose_name_plural = 'User - Roles'
 
 
 """
@@ -161,6 +159,13 @@ class UserRoleEntityDataTypes(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(null=True, blank=True)
 
+    def __str__(self):
+        return self.data_type_label
+
+    class Meta:
+        verbose_name = 'User Section'
+        verbose_name_plural = 'User Sections'
+
 
 class UserRoleEntityData(models.Model):
     """
@@ -178,6 +183,52 @@ class UserRoleEntityData(models.Model):
                                        db_column="user_entity_id")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        verbose_name = "User Section Data"
+        verbose_name_plural = "User Section Data"
+
+    def __str__(self):
+        return f"{self.user_entity_id.first_name} {self.user_entity_id.last_name} - {self.entity_data_type_id.data_type_label}"
+
+
+class RolePermissions(models.Model):
+    class RolePermissionOpTypes(models.TextChoices):
+        """
+        ENUM choices for role permission operation types
+        """
+        CREATE = 'CREATE', 'Create'
+        EDIT = 'EDIT', 'Edit'
+        DELETE = 'DELETE', 'Delete'
+        VIEW = 'VIEW', 'View'
+
+    permission_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
+    role_id = models.ForeignKey(
+        Roles,
+        on_delete=models.PROTECT,
+        verbose_name="Role",
+        db_column="role_id"
+    )
+    operation_type = models.CharField(choices=RolePermissionOpTypes.choices, max_length=10,
+                                      default=RolePermissionOpTypes.CREATE, verbose_name="Operation")
+
+    resource = models.ForeignKey(
+        UserRoleEntityDataTypes,
+        on_delete=models.PROTECT,
+        verbose_name="Section",
+        db_column="resource"
+    )
+
+    def __str__(self):
+        return f"{self.role_id.role_label} - {self.operation_type.capitalize()} - {self.resource.data_type_label}"
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['role_id', 'operation_type', 'resource'],
+                                    name='Unique Permission Group for: Role,Operation type and Resource')
+        ]
+        verbose_name = 'Role - Permission'
+        verbose_name_plural = 'Role - Permissions'
 
 
 class UserRoleAttribute(models.Model):
@@ -202,13 +253,14 @@ class UserRoleAttribute(models.Model):
     updated_at = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
-        return self.frontend_label + " - " + self.attribute_code
+        return f"{self.frontend_label} - [{self.attribute_code}] - [{self.attribute_type}]"
+
+    class Meta:
+        verbose_name = 'Field'
+        verbose_name_plural = 'Fields'
 
 
-class UserRoleAttributeValues(models.Model):
-    """
-    Values for Attributes
-    """
+class AttributeValues(models.Model):
     value_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
     attribute = models.ForeignKey(
         UserRoleAttribute,
@@ -216,10 +268,21 @@ class UserRoleAttributeValues(models.Model):
         verbose_name="role entity attribute",
         db_column="attribute"
     )
-    entity_data = models.ForeignKey(
+    entity_data_id = models.ForeignKey(
         UserRoleEntityData,
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         verbose_name="role entity data",
-        db_column="entity_data"
+        db_column="entity_data_id"
     )
-    value = models.TextField()
+    value_int = models.IntegerField(null=True)
+    value_decimal = models.DecimalField(null=True, max_digits=9, decimal_places=4)
+    value_time = models.TimeField(null=True)
+    value_date = models.DateField(null=True)
+    value_text = models.TextField(null=True)
+
+    def __str__(self):
+        return F"{self.entity_data_id.entity_data_type_id.data_type_label}  [{self.attribute.attribute_code}]"
+
+    class Meta:
+        verbose_name = "Field Value"
+        verbose_name_plural = "Field Values"

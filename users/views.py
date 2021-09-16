@@ -11,27 +11,16 @@ from datetime import datetime
 from rest_framework import serializers
 
 
-class Comment:
-    def __init__(self, email, content, created=None):
-        self.email = email
-        self.content = content
-        self.created = created or datetime.now()
-
-
-class CommentSerializer(serializers.Serializer):
-    email = serializers.EmailField()
-    content = serializers.CharField(max_length=200)
-    created = serializers.DateTimeField()
-
-
-class RolesViews:
+class RolesViews:    
+    roles_model = roles.RolesModel()
+    
     class RolesList(APIView, PageNumberPagination):
         """
         List all roles or create a role.
         """
 
         def __init__(self):
-            self.roles_model = roles.RolesModel()
+            RolesViews.roles_model = roles.RolesModel()
 
         def post(self, request):
             """
@@ -40,7 +29,7 @@ class RolesViews:
             :return:
             """
             try:
-                response = self.roles_model.create_role(request.data)
+                response = RolesViews.roles_model.create_role(request.data)
                 return response.get_response()
             except Exception as e:
                 return Response({
@@ -55,25 +44,8 @@ class RolesViews:
             :return:
             """
             try:
-                # response = self.roles_model.list_roles()
-                # return response.get_response()
-                users = [Comment(email='leila@example.com1', content='foo bar'),
-                         Comment(email='leila@example.com2', content='foo bar'),
-                         Comment(email='leila@example.com3', content='foo bar'),
-                         Comment(email='leila@example.com4', content='foo bar'),
-                         Comment(email='leila@example.com5', content='foo bar'),
-                         Comment(email='leila@example.com6', content='foo bar'),
-                         Comment(email='leila@example.com7', content='foo bar'),
-                         Comment(email='leila@example.com8', content='foo bar')]
-
-                # users = Roles.objects.all()
-                results = self.paginate_queryset(users, request, view=self)
-                serializer = CommentSerializer(results, many=True)
-                # serializer = UserSerailzier.UserSerializer(results, many=True)
-                return self.get_paginated_response({
-                    'result': True,
-                    'value': serializer.data
-                })
+                response = RolesViews.roles_model.list_roles()
+                return response.get_response()
             except APIException as e:
                 return Response({
                     'result': False,
@@ -86,11 +58,11 @@ class RolesViews:
         """
 
         def __init__(self):
-            self.roles_model = roles.RolesModel()
+            RolesViews.roles_model = roles.RolesModel()
 
         def get(self, request, role_id):
             try:
-                response = self.roles_model.get_role_detail(role_id)
+                response = RolesViews.roles_model.get_role_detail(role_id)
                 return response.get_response()
             except Exception as e:
                 return Response({
@@ -105,7 +77,7 @@ class RolesViews:
             :return:
             """
             try:
-                response = self.roles_model.update_role_detail(role_id, request.data)
+                response = RolesViews.roles_model.update_role_detail(role_id, request.data)
                 return response.get_response()
             except Exception as e:
                 return Response({
@@ -216,6 +188,22 @@ class RolesViews:
                 return Response({
                     'result': False,
                     'message': 'Missing required request fields.'
+                }, status=status.HTTP_400_BAD_REQUEST)
+
+    class RolesEntityDataTypeList(APIView):
+        def get(self, request, role_id):
+            """
+            Get entity data type list for a role.
+            :param request:
+            :return:
+            """
+            try:
+                response = RolesViews.roles_model.list_role_data_types(role_id)
+                return response.get_response()
+            except Exception as e:
+                return Response({
+                    'result': False,
+                    'message': 'Failed to fetch entity data types for the provided role.'
                 }, status=status.HTTP_400_BAD_REQUEST)
 
 

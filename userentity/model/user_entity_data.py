@@ -1,17 +1,14 @@
-from uuid import UUID
-from rest_framework.response import Response
 from entities.helper import HttpResponse
 from rest_framework import status
 from entities.models import UserRoleEntityDataTypes, UserRoleEntityData, UserRoleAttribute, AttributeGroup, \
     AttributeSet, UserEntity
-from django.db.utils import IntegrityError, DatabaseError, Error
+from django.db.utils import IntegrityError, Error
 from django.core.exceptions import ValidationError
 from providertool.constants import *
 from datetime import datetime
 from django.forms.models import model_to_dict
 from userentity.serializers import *
-from django.core import serializers
-import json
+from entities.helper import InputParser
 
 
 class UserEntityDataTypesModel:
@@ -341,8 +338,8 @@ class UserEntityDataAttributesModel:
                     "default_attributes": UserRoleAttributeSerializer(
                         UserRoleAttribute.objects.filter(attribute_group=attribute_group_item,
                                                          is_active=True), many=True).data,
-                    "attribute_sub_groups": {},
-                    "detail": AttributeGroupSerializer(attribute_group_item).data
+                    "child_attribute_groups": {},
+                    "group_detail": AttributeGroupSerializer(attribute_group_item).data
                 }
 
                 group_dict = group_by_attribute_group[attribute_group_item.attribute_group_code]
@@ -355,19 +352,19 @@ class UserEntityDataAttributesModel:
 
                 # add children attribute groups to the parent attribute group detail
                 for child_group in children_attribute_groups:
-                    group_dict["attribute_sub_groups"][child_group.attribute_group_code] = {
+                    group_dict["child_attribute_groups"][child_group.attribute_group_code] = {
                         'attributes': [],
-                        'detail': AttributeGroupSerializer(child_group).data
+                        'group_detail': AttributeGroupSerializer(child_group).data
                     }
 
                 # loop all the attributes and put them into respective attribute group.
                 for attribute_item in children_attributes:
                     item_attr_group_code = attribute_item.attribute_group.attribute_group_code
-                    if item_attr_group_code in group_dict["attribute_sub_groups"]:
-                        group_dict.get('attribute_sub_groups')[item_attr_group_code]['attributes'].append(
+                    if item_attr_group_code in group_dict["child_attribute_groups"]:
+                        group_dict.get('child_attribute_groups')[item_attr_group_code]['attributes'].append(
                             UserRoleAttributeSerializer(attribute_item).data)
                     else:
-                        group_dict.get('attribute_sub_groups')[item_attr_group_code]['attributes'] = []
+                        group_dict.get('child_attribute_groups')[item_attr_group_code]['attributes'] = []
 
             return HttpResponse(result=True,
                                 message="Attributes list generated successfully.",
@@ -390,31 +387,72 @@ class UserEntityDataAttributesModel:
 
 
 class UserEntityDataModel:
-    def add_data(self, entity_data):
+    def create_data_attribute_values(self, entity_request_data, entity_data_record):
+        try:
+            if "attributes" in entity_request_data:
+                attribute_keys_dict = entity_request_data.get('attributes').keys()
+                attribute_query_set = UserRoleAttribute.objects.filter(attribute_id__in=attribute_keys_dict)
+
+                attribute_request_data = entity_request_data.get('attributes')
+                for attribute_item_id in attribute_request_data:
+                    attribute_item_object = attribute_query_set.get(attribute_id=attribute_item_id)
+                    attribute_model_type_column = ATTRIBUTE_TYPE_DICT.get(attribute_item_object.attribute_type,
+                                                                          None)
+
+                    """
+                    Model Type OK - add attribute value record
+                    """
+                    if attribute_model_type_column:
+                        attribute_request_value = attribute_request_data.get(attribute_item_id).get('value', None)
+                        if attribute_request_value:
+                            parsed_attribute_value = InputParser.parse_input(attribute_model_type_column, attribute_request_value)
+                            attribute_value_record = AttributeValues()
+                            attribute_value_record.attribute = attribute_item_object
+                            attribute_value_record.entity_data_id = entity_data_record
+                            setattr(attribute_value_record, attribute_model_type_column, parsed_attribute_value)
+                            attribute_value_record.save()
+                return True
+        except ValidationError as ve:
+            """
+            Validation error if invalid attribute ID values are used in filter. 
+            """
+            print(ve)
+            return False
+        except Error as e:
+            print(e)
+            return False
+
+    def add_data(self, entity_request_data):
         """
-        Add a User Entity Data.
-        :param entity_data:
+        Add a User Entity Data and create Value records for all the attributes.
+        :param entity_request_data:
         :return:
         """
-
         try:
-            if all(key not in entity_data for key in API_ENTITY_DATA_CREATE_REQUEST_BODY):
+            if all(key not in entity_request_data for key in API_ENTITY_DATA_CREATE_REQUEST_BODY):
                 return HttpResponse(result=False, message="Missing required request field values for entity data.",
                                     status=status.HTTP_400_BAD_REQUEST)
 
+            # create Entity data record.
             entity_data_created = UserRoleEntityData()
             entity_data_created.entity_data_type_id = UserRoleEntityDataTypes.objects.get(
-                entity_data_type_id=entity_data.get("data_type"))
-            entity_data_created.user_entity_id = UserEntity.objects.get(user_entity_id=entity_data.get('user_id'))
-
+                entity_data_type_id=entity_request_data.get("data_type"))
+            entity_data_created.user_entity_id = UserEntity.objects.get(
+                user_entity_id=entity_request_data.get('user_id'))
             entity_data_created.save()
 
-            return HttpResponse(result=True, message="Created User Entity Data.",
-                                status=status.HTTP_200_OK, id_value=entity_data_created.entity_data_id,
-                                id="entity_data_id")
+            # create attribute values tied to the entity data record.
+            if self.create_data_attribute_values(entity_request_data, entity_data_created):
+                return HttpResponse(result=True, message="Created Section data.",
+                                    status=status.HTTP_200_OK, id_value=entity_data_created.entity_data_id,
+                                    id="entity_data_id")
+            else:
+                entity_data_created.delete()
+                return HttpResponse(result=True, message="Failed to create section data.",
+                                    status=status.HTTP_200_OK)
 
         except UserEntity.DoesNotExist:
-            return HttpResponse(result=False, message="Invalid user data provided.",
+            return HttpResponse(result=False, message="Invalid user value provided.",
                                 status=status.HTTP_400_BAD_REQUEST)
 
         except UserRoleEntityDataTypes.DoesNotExist:

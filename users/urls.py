@@ -5,8 +5,12 @@ from .views import *
 urlpatterns = [
     # GET/POST for roles
     path('roles/', RolesViews.RolesList.as_view()),
+
     # UPDATE/DELETE for roles
     path('roles/<str:role_id>', RolesViews.RolesDetail.as_view()),
+
+    # List entity data types for role.
+    path('roles/<str:role_id>/entity-data-types', RolesViews.RolesEntityDataTypeList.as_view()),
 
     # GET/POST for role permissions
     path('role-permissions/', RolesViews.RolePermissionList.as_view()),

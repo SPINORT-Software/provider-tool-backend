@@ -1,9 +1,8 @@
 from rest_framework.response import Response
 from entities.helper import HttpResponse
 from rest_framework import status
-from entities.models import Roles, RolePermissions
+from entities.models import Roles, RolePermissions, UserRoleEntityDataTypes
 from django.db.utils import IntegrityError, DatabaseError, Error
-from django.contrib.auth.hashers import make_password
 from django.core.exceptions import ValidationError
 from providertool.constants import *
 
@@ -94,6 +93,29 @@ class RolesModel:
             return HttpResponse(result=False, message="Failed to update role detail.",
                                 status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+    def list_role_data_types(self, role_id):
+        """
+        List all entity data types (sections) filtered by role.
+        :param role_id:
+        :return:
+        """
+        try:
+            permission_resources = RolePermissions.objects.select_related('role_id', 'resource').filter(
+                role_id=role_id).order_by('resource').values_list('resource').distinct()
+
+            data_types = UserRoleEntityDataTypes.objects.values().filter(entity_data_type_id__in=permission_resources)
+
+            if len(data_types) > 0:
+                return HttpResponse(result=True, message="Data types list generated successfully.",
+                                    status=status.HTTP_200_OK, value=data_types)
+
+            return HttpResponse(result=False, message="No Data types found.",
+                                status=status.HTTP_200_OK)
+
+        except Error as e:
+            return HttpResponse(result=False, message="Failure to list data types.",
+                                status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 class RolesPermissionModel:
     def add_role_permission(self, role_data):
@@ -125,7 +147,8 @@ class RolesPermissionModel:
             role_permission_created.save()
 
             return HttpResponse(result=True, message="Role permission record created.",
-                                status=status.HTTP_200_OK, id_value=role_permission_created.permission_id, id="permission_id")
+                                status=status.HTTP_200_OK, id_value=role_permission_created.permission_id,
+                                id="permission_id")
 
         except Roles.DoesNotExist:
             return HttpResponse(result=False, message="Invalid role value provided.",
