@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from .model import accounts, roles
 from entities.models import UserEntity, Roles
+from userentity.model import user_entity_data
 from .serializers import UserSerailzier
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.exceptions import APIException
@@ -13,6 +14,7 @@ from rest_framework import serializers
 
 class RolesViews:    
     roles_model = roles.RolesModel()
+    user_entity_data = user_entity_data.UserEntityDataAttributesModel()
     
     class RolesList(APIView, PageNumberPagination):
         """
@@ -206,6 +208,22 @@ class RolesViews:
                     'message': 'Failed to fetch entity data types for the provided role.'
                 }, status=status.HTTP_400_BAD_REQUEST)
 
+    class RolesEntityDataTypeListAttributes(APIView):
+        def get(self, request, role_id):
+            """
+            Get entity data type list for a role.
+            :param request:
+            :return:
+            """
+            try:
+                response = RolesViews.user_entity_data.list_attributes_data_type_by_role(role_id)
+                return response.get_response()
+            except Exception as e:
+                print(str(e))
+                return Response({
+                    'result': False,
+                    'message': 'Failed to fetch entity data types for the provided role.'
+                }, status=status.HTTP_400_BAD_REQUEST)
 
 class UsersList(APIView):
     """

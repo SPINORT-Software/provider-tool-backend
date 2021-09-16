@@ -11,6 +11,7 @@ urlpatterns = [
 
     # List entity data types for role.
     path('roles/<str:role_id>/entity-data-types', RolesViews.RolesEntityDataTypeList.as_view()),
+    path('roles/<str:role_id>/entity-data-types/attributes', RolesViews.RolesEntityDataTypeListAttributes.as_view()),
 
     # GET/POST for role permissions
     path('role-permissions/', RolesViews.RolePermissionList.as_view()),
