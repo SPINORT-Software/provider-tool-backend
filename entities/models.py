@@ -76,6 +76,7 @@ class UserEntity(models.Model):
     def __str__(self):
         return f"{self.first_name} {self.last_name} [{self.email}]"
 
+
 class EntityUpdates(models.Model):
     """
     Update Log to any entity across the system
@@ -236,7 +237,7 @@ class UserRoleAttribute(models.Model):
     Attributes for any user's entity data.
     """
     attribute_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
-    attribute_code = models.CharField(max_length=55, unique=True)
+    attribute_code = models.CharField(max_length=255, unique=True)
     frontend_label = models.TextField()
     frontend_input = models.TextField()
     attribute_type = models.TextField()
@@ -260,6 +261,27 @@ class UserRoleAttribute(models.Model):
         verbose_name_plural = 'Fields'
 
 
+class UserRoleAttributeOptions(models.Model):
+    """
+    Options for Radio buttons or Select list.
+    """
+    attribute = models.ForeignKey(
+        UserRoleAttribute,
+        on_delete=models.CASCADE,
+        verbose_name="Attribute",
+        db_column="attribute"
+    )
+    option_label = models.TextField()
+    option_code = models.TextField()
+
+    def __str__(self):
+        return f"{self.option_label} - [{self.option_code}]"
+
+    class Meta:
+        verbose_name = "Field Option"
+        verbose_name_plural = "Field Options"
+
+
 class AttributeValues(models.Model):
     value_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
     attribute = models.ForeignKey(
@@ -279,6 +301,13 @@ class AttributeValues(models.Model):
     value_time = models.TimeField(null=True)
     value_date = models.DateField(null=True)
     value_text = models.TextField(null=True)
+    value_option = models.ForeignKey(
+        UserRoleAttributeOptions,
+        on_delete=models.CASCADE,
+        verbose_name="option value",
+        db_column="value_option",
+        null=True
+    )
 
     def __str__(self):
         return F"{self.entity_data_id.entity_data_type_id.data_type_label}  [{self.attribute.attribute_code}]"
