@@ -329,8 +329,8 @@ class UserEntityDataAttributesModel:
 
     def list_attributes_data_type_by_role(self, role_id):
         """
-        List all attributes by User Role Entity Data type.
-        :param data_type_id: UserRoleEntityDataTypes
+        List Attribute Groups and Attributes by Role
+        :param role_id: role
         :return:
         """
         role_permission_resources = RolePermissions.objects.select_related('role_id', 'resource').filter(

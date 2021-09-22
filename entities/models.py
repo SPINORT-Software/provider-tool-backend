@@ -144,6 +144,7 @@ class UserRoles(models.Model):
 
 class UserRoleEntityDataTypes(models.Model):
     """
+    Labeled as Section on the frontend
     User type = Generic
     Data types for the All role type records. Primary key records
     """
@@ -156,6 +157,7 @@ class UserRoleEntityDataTypes(models.Model):
     )
     data_type_code = models.CharField(max_length=55, unique=True)
     data_type_label = models.TextField()
+    
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(null=True, blank=True)
@@ -237,7 +239,7 @@ class UserRoleAttribute(models.Model):
     Attributes for any user's entity data.
     """
     attribute_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
-    attribute_code = models.CharField(max_length=255, unique=True)
+    attribute_code = models.TextField()
     frontend_label = models.TextField()
     frontend_input = models.TextField()
     attribute_type = models.TextField()
@@ -315,3 +317,6 @@ class AttributeValues(models.Model):
     class Meta:
         verbose_name = "Field Value"
         verbose_name_plural = "Field Values"
+
+
+
