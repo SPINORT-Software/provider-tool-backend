@@ -38,6 +38,8 @@ class AttributeGroup(models.Model):
     attribute_group_name = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     parent_attribute_group = models.ForeignKey('AttributeGroup', on_delete=models.CASCADE, null=True, blank=True)
+    conditional_display = models.BooleanField(default=False)
+    sort_order = models.IntegerField(null=True)
 
     def __str__(self):
         return self.attribute_group_name + f" [{self.attribute_group_code}]"
@@ -157,7 +159,7 @@ class UserRoleEntityDataTypes(models.Model):
     )
     data_type_code = models.CharField(max_length=55, unique=True)
     data_type_label = models.TextField()
-    
+
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(null=True, blank=True)
@@ -254,6 +256,7 @@ class UserRoleAttribute(models.Model):
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(null=True, blank=True)
+    sort_order = models.IntegerField(null=True)
 
     def __str__(self):
         return f"{self.frontend_label} - [{self.attribute_code}] - [{self.attribute_type}]"
@@ -263,25 +266,54 @@ class UserRoleAttribute(models.Model):
         verbose_name_plural = 'Fields'
 
 
+class UserRoleAttributeOptionGroup(models.Model):
+    """
+    Option Group for Radio buttons or Select list.
+    """
+    group_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False, db_column="option_group_id")
+    attribute = models.ForeignKey(
+        UserRoleAttribute,
+        on_delete=models.CASCADE,
+        verbose_name="Field",
+        db_column="attribute"
+    )
+    group_label = models.TextField()
+
+    def __str__(self):
+        return f"{self.group_label}"
+
+    class Meta:
+        verbose_name = "Field Option Group"
+        verbose_name_plural = "Field Option Groups"
+
+
 class UserRoleAttributeOptions(models.Model):
     """
     Options for Radio buttons or Select list.
     """
-    attribute = models.ForeignKey(
-        UserRoleAttribute,
-        on_delete=models.CASCADE,
-        verbose_name="Attribute",
-        db_column="attribute"
-    )
     option_label = models.TextField()
     option_code = models.TextField()
+    option_group = models.ForeignKey(
+        UserRoleAttributeOptionGroup,
+        on_delete=models.CASCADE,
+        verbose_name="Option Group",
+        db_column="option_group",
+        null=True
+    )
+    conditional_display = models.ForeignKey(
+        AttributeGroup,
+        on_delete=models.CASCADE,
+        verbose_name="Conditional Attribute group",
+        db_column="conditional_display",
+        null=True
+    )
 
     def __str__(self):
         return f"{self.option_label} - [{self.option_code}]"
 
     class Meta:
-        verbose_name = "Field Option"
-        verbose_name_plural = "Field Options"
+        verbose_name = "Field Option Value"
+        verbose_name_plural = "Field Option Values"
 
 
 class AttributeValues(models.Model):
@@ -317,6 +349,3 @@ class AttributeValues(models.Model):
     class Meta:
         verbose_name = "Field Value"
         verbose_name_plural = "Field Values"
-
-
-

@@ -286,12 +286,19 @@ class UserEntityDataAttributesModel:
         data_type = UserRoleEntityDataTypes.objects.get(entity_data_type_id=data_type_id)
         request_attribute_set = data_type.attribute_set_id
         """
-                    - Get All AttributeGroup objects that have parent attribute group empty ie. get only parent attr groups.
-                    """
+        - Get All AttributeGroup objects that have parent attribute group empty ie. get only parent attr groups.
+        - Get only AttributeGroup objects which are not selected for Conditional Display 
+        """
         request_attribute_groups = AttributeGroup.objects.filter(attribute_set_id=request_attribute_set,
-                                                                 parent_attribute_group__isnull=True)
+                                                                 parent_attribute_group__isnull=True,
+                                                                 conditional_display=False)
         attribute_set = AttributeSet.objects.get(attribute_set_id=request_attribute_set.attribute_set_id)
         group_by_attribute_group = {}
+
+        self.iterate_attr_group_and_children(group_by_attribute_group, request_attribute_groups)
+        return attribute_set, group_by_attribute_group
+
+    def iterate_attr_group_and_children(self, group_by_attribute_group, request_attribute_groups):
         # Iterate the attribute group.
         for attribute_group_item in request_attribute_groups:
             group_by_attribute_group[attribute_group_item.attribute_group_code] = {
@@ -325,7 +332,6 @@ class UserEntityDataAttributesModel:
                         UserRoleAttributeSerializer(attribute_item).data)
                 else:
                     group_dict.get('child_attribute_groups')[item_attr_group_code]['attributes'] = []
-        return attribute_set, group_by_attribute_group
 
     def list_attributes_data_type_by_role(self, role_id):
         """
@@ -344,7 +350,8 @@ class UserEntityDataAttributesModel:
                 data_type_id = data_type['entity_data_type_id']
                 attribute_set, group_by_attribute_group = self.get_role_attribute_groups(data_type_id)
                 result_role_data_type_attributes[str(data_type_id)] = {
-                    "attribute_groups": group_by_attribute_group
+                    "attribute_groups": group_by_attribute_group,
+                    "data_type_detail": data_type
                 }
 
             return HttpResponse(result=True,
