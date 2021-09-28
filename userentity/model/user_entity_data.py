@@ -298,10 +298,13 @@ class UserEntityDataAttributesModel:
                                                                      conditional_display=True)
         attribute_set = AttributeSet.objects.get(attribute_set_id=role_attribute_set.attribute_set_id)
 
-        AttributeHelper.create_attribute_groups(viewable_attribute_groups, root=True,
-                                                section_data=section_data, section_id=data_type_id)
+        attribute_group_creator = AttributeHelper()
+        attribute_group_creator.create_attribute_groups(viewable_attribute_groups, root=True)
 
-        return AttributeHelper.attribute_groups
+        condition_group_creator = AttributeHelper()
+        condition_group_creator.create_attribute_groups(conditional_attribute_groups, root=True)
+
+        return attribute_group_creator.get_result_groups(), condition_group_creator.get_result_groups()
 
     def list_attributes_data_type_by_role(self, role_id):
         """
@@ -317,13 +320,18 @@ class UserEntityDataAttributesModel:
         role_data_types = UserRoleEntityDataTypes.objects.values().filter(
             entity_data_type_id__in=role_permission_resources)
 
+        section_response_data = {}
         if len(role_data_types) > 0:
             for data_type in role_data_types:
-                data_type_id = data_type['entity_data_type_id']
-                result_role_attributes = self.get_role_attribute_groups(str(data_type_id), data_type)
+                data_type_id = str(data_type['entity_data_type_id'])
+                attribute_group_data, conditional_group_data = self.get_role_attribute_groups(data_type_id, data_type)
+                section_response_data[data_type_id] = {
+                    'groups': attribute_group_data,
+                    'conditional_groups': conditional_group_data
+                }
 
             return HttpResponse(result=True, message="Attributes list generated successfully.",
-                                status=status.HTTP_200_OK, value=result_role_attributes)
+                                status=status.HTTP_200_OK, value=section_response_data)
 
 
 class UserEntityDataModel:
@@ -436,11 +444,13 @@ class UserEntityDataModel:
 
 
 class AttributeHelper:
-    child_count = 0
-    attribute_groups = {}
+    def __init__(self):
+        self.attribute_groups = {}
 
-    @staticmethod
-    def create_attribute_groups(attribute_groups, parent=None, **kwargs):
+    def get_result_groups(self):
+        return self.attribute_groups
+
+    def create_attribute_groups(self, attribute_groups_data, parent=None, **kwargs):
         """
         Iterate all attribute groups and prepare a dict of each attr group and it's children.
         Children = child attribute groups and attributes.
@@ -448,29 +458,15 @@ class AttributeHelper:
         :return:
         """
         root = False
-        if 'root' in kwargs and 'section_data' in kwargs:
+
+        if 'root' in kwargs:
             root = True
-            section_id = kwargs.get('section_id')
-            AttributeHelper.attribute_groups[section_id] = {
-                'section_data': kwargs.get('section_data'),
-                'attribute_groups': {},
-                'conditional_groups': {},
 
-            }
-
-        if 'section_id' not in kwargs:
-            return False
-
-        # Section ID is important
-        section_id = kwargs.get('section_id')
-        section_content = AttributeHelper.attribute_groups[str(section_id)]
-
-        for attribute_group_item in attribute_groups:
+        for attribute_group_item in attribute_groups_data:
             group_code = attribute_group_item.attribute_group_code
             group_default_attributes = UserRoleAttribute.objects.filter(attribute_group=attribute_group_item,
                                                                         is_active=True)
-            group_default_attributes_data = AttributeHelper.create_attribute_items(group_default_attributes)
-            # group_default_attributes_data = UserRoleAttributeSerializer(group_default_attributes, many=True).data
+            group_default_attributes_data = self.create_attribute_items(group_default_attributes)
             group_detail = AttributeGroupSerializer(attribute_group_item).data
             group_dict = {
                 "group_detail": group_detail,
@@ -480,7 +476,7 @@ class AttributeHelper:
 
             if parent is None:
                 if root:
-                    section_content["attribute_groups"][group_code] = group_dict
+                    self.attribute_groups[group_code] = group_dict
             else:
                 if not isinstance(parent['attribute_groups'], dict):
                     parent['child_attribute_groups'][group_code] = {}
@@ -488,13 +484,10 @@ class AttributeHelper:
 
             # each attribute group and filter other attribute groups by parent attr group
             children_attribute_groups = AttributeGroup.objects.filter(parent_attribute_group=attribute_group_item)
-
             if len(children_attribute_groups) > 0:
-                AttributeHelper.create_attribute_groups(children_attribute_groups, parent=group_dict,
-                                                        section_id=section_id)
+                self.create_attribute_groups(children_attribute_groups, parent=group_dict)
 
-    @staticmethod
-    def create_attribute_items(children_attributes):
+    def create_attribute_items(self, children_attributes):
         children_attributes_data = []
 
         # loop all the attributes and put them into respective attribute group.
