@@ -215,15 +215,15 @@ class RolesViews:
             :param request:
             :return:
             """
-            try:
-                response = RolesViews.user_entity_data.list_attributes_data_type_by_role(role_id)
-                return response.get_response()
-            except Exception as e:
-                print(str(e))
-                return Response({
-                    'result': False,
-                    'message': 'Failed to fetch entity data types for the provided role.'
-                }, status=status.HTTP_400_BAD_REQUEST)
+            # try:
+            response = RolesViews.user_entity_data.list_attributes_data_type_by_role(role_id)
+            return response.get_response()
+            # except Exception as e:
+            #     print(e)
+            #     return Response({
+            #         'result': False,
+            #         'message': 'Failed to fetch entity data types for the provided role.'
+            #     }, status=status.HTTP_400_BAD_REQUEST)
 
 class UsersList(APIView):
     """

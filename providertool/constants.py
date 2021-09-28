@@ -36,5 +36,11 @@ ATTRIBUTE_TYPE_DICT = {
     'date': 'value_date',
     'input_date': 'value_date',
     'text': 'value_text',
-    'input_text': 'value_text'
+    'input_text': 'value_text',
+    'input_radio': 'value_radio',
+    'radio': 'value_radio',
+    'select': 'value_select',
+    'input_select': 'value_select'
 }
+
+MULTISELECT_ATTRIBUTE_TYPES = ['value_radio', 'value_select']

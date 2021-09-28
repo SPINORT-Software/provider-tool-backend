@@ -291,6 +291,7 @@ class UserRoleAttributeOptions(models.Model):
     """
     Options for Radio buttons or Select list.
     """
+    option_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
     option_label = models.TextField()
     option_code = models.TextField()
     option_group = models.ForeignKey(
@@ -300,11 +301,11 @@ class UserRoleAttributeOptions(models.Model):
         db_column="option_group",
         null=True
     )
-    conditional_display = models.ForeignKey(
+    conditional_display_attribute_group = models.ForeignKey(
         AttributeGroup,
         on_delete=models.CASCADE,
         verbose_name="Conditional Attribute group",
-        db_column="conditional_display",
+        db_column="conditional_display_attribute_group",
         null=True
     )
 

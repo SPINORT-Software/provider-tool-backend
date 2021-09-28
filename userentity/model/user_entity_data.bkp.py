@@ -281,7 +281,7 @@ class UserEntityDataAttributesModel:
                                 message="Invalid data type query parameter value provided.",
                                 status=status.HTTP_400_BAD_REQUEST)
 
-    def get_role_attribute_groups(self, data_type_id, section_data):
+    def get_role_attribute_groups(self, data_type_id):
         # 1 - Get UserRoleEntityDataTypes object by data_type_id
         data_type = UserRoleEntityDataTypes.objects.get(entity_data_type_id=data_type_id)
         role_attribute_set = data_type.attribute_set_id
@@ -298,10 +298,105 @@ class UserEntityDataAttributesModel:
                                                                      conditional_display=True)
         attribute_set = AttributeSet.objects.get(attribute_set_id=role_attribute_set.attribute_set_id)
 
-        AttributeHelper.create_attribute_groups(viewable_attribute_groups, root=True,
-                                                section_data=section_data, section_id=data_type_id)
+        viewable_attribute_group_data = self.iterate_attr_group_and_children(viewable_attribute_groups)
+        conditional_attribute_group_data = self.iterate_attr_group_and_children(conditional_attribute_groups)
+        return attribute_set, viewable_attribute_group_data, conditional_attribute_group_data
 
-        return AttributeHelper.attribute_groups
+    def iterate_attr_group_and_children(self, role_attribute_groups):
+        """
+        Iterate all attribute groups and prepare a dict of each attr group and it's children.
+        Children = child attribute groups and attributes.
+        This is a recursive process.
+        :param group_by_attribute_group:
+        :param role_attribute_groups:
+        :return:
+        """
+        group_by_attribute_group = {}
+        for attribute_group_item in role_attribute_groups:
+            group_by_attribute_group[attribute_group_item.attribute_group_code] = {
+                "group_detail": AttributeGroupSerializer(attribute_group_item).data,
+                "default_attributes": UserRoleAttributeSerializer(
+                    UserRoleAttribute.objects.filter(attribute_group=attribute_group_item,
+                                                     is_active=True), many=True).data,
+                "child_attribute_groups": {}
+            }
+
+            group_dict = group_by_attribute_group[attribute_group_item.attribute_group_code]
+
+            # each attribute group and filter other attribute groups by parent attr group
+            children_attribute_groups = AttributeGroup.objects.filter(parent_attribute_group=attribute_group_item)
+            children_attributes = UserRoleAttribute.objects.filter(attribute_group__in=children_attribute_groups,
+                                                                   is_active=True)
+
+            self.__fetch_and_iterate_child_attribute_groups(children_attribute_groups, group_dict)
+            self.__fetch_and_iterate_attribute_items(children_attributes, group_dict)
+
+        return group_by_attribute_group
+
+    def __fetch_and_iterate_child_attribute_groups(self, children_attribute_groups, group_dict):
+        # add children attribute groups to the parent attribute group detail
+        for child_group in children_attribute_groups:
+            group_dict["child_attribute_groups"][child_group.attribute_group_code] = {
+                "group_detail": AttributeGroupSerializer(child_group).data,
+                "default_attributes": [],
+                "child_attribute_groups": {}
+            }
+
+            # each attribute group and filter other attribute groups by parent attr group
+            grand_children_attribute_groups = AttributeGroup.objects.filter(parent_attribute_group=child_group)
+            grand_children_attributes = UserRoleAttribute.objects.filter(
+                attribute_group__in=grand_children_attribute_groups,
+                is_active=True)
+
+            for grand_child_group in grand_children_attribute_groups:
+                group_dict["child_attribute_groups"][child_group.attribute_group_code]["child_attribute_groups"][
+                    grand_child_group.attribute_group_code] = {
+                    "group_detail": AttributeGroupSerializer(grand_child_group).data,
+                    "default_attributes": [],
+                }
+
+            child_group_dict = group_dict["child_attribute_groups"][child_group.attribute_group_code]["child_attribute_groups"]
+
+            for attribute_item in grand_children_attributes:
+                item_attr_group_code = attribute_item.attribute_group.attribute_group_code
+                attribute_item_dict = model_to_dict(attribute_item)
+
+                """
+                If attribute type is a list or radio - get the Attribute Options and append to attribute dict
+                """
+                attribute_type = ATTRIBUTE_TYPE_DICT.get(attribute_item.attribute_type, None)
+                if attribute_type:
+                    if attribute_type in MULTISELECT_ATTRIBUTE_TYPES:
+                        attribute_option_group = UserRoleAttributeOptionGroup.objects.get(attribute=attribute_item)
+                        attribute_options = UserRoleAttributeOptions.objects.values().filter(
+                            option_group=attribute_option_group)
+                        attribute_item_dict['select_values'] = attribute_options
+
+                # Add attribute item to attribute group list.
+                if item_attr_group_code in child_group_dict:
+                    child_group_dict[item_attr_group_code]["default_attributes"].append(attribute_item_dict)
+
+    def __fetch_and_iterate_attribute_items(self, children_attributes, group_dict):
+        # loop all the attributes and put them into respective attribute group.
+        for attribute_item in children_attributes:
+            item_attr_group_code = attribute_item.attribute_group.attribute_group_code
+            attribute_item_dict = model_to_dict(attribute_item)
+
+            """
+            If attribute type is a list or radio - get the Attribute Options and append to attribute dict
+            """
+            attribute_type = ATTRIBUTE_TYPE_DICT.get(attribute_item.attribute_type, None)
+            if attribute_type:
+                if attribute_type in MULTISELECT_ATTRIBUTE_TYPES:
+                    attribute_option_group = UserRoleAttributeOptionGroup.objects.get(attribute=attribute_item)
+                    attribute_options = UserRoleAttributeOptions.objects.values().filter(
+                        option_group=attribute_option_group)
+                    attribute_item_dict['select_values'] = attribute_options
+
+            # Add attribute item to attribute group list.
+            if item_attr_group_code in group_dict["child_attribute_groups"]:
+                group_dict.get("child_attribute_groups")[item_attr_group_code]["default_attributes"].append(
+                    attribute_item_dict)
 
     def list_attributes_data_type_by_role(self, role_id):
         """
@@ -316,14 +411,24 @@ class UserEntityDataAttributesModel:
             role_id=role_id).order_by('resource').values_list('resource').distinct()
         role_data_types = UserRoleEntityDataTypes.objects.values().filter(
             entity_data_type_id__in=role_permission_resources)
+        result_role_data_type_attributes = {}
 
         if len(role_data_types) > 0:
             for data_type in role_data_types:
                 data_type_id = data_type['entity_data_type_id']
-                result_role_attributes = self.get_role_attribute_groups(str(data_type_id), data_type)
+                attribute_set, viewable_groups, conditional_groups = self.get_role_attribute_groups(data_type_id)
+                result_role_data_type_attributes[str(data_type_id)] = {
+                    "attribute_groups": viewable_groups,
+                    "conditional_groups": conditional_groups,
+                    "section_detail": data_type
+                }
 
-            return HttpResponse(result=True, message="Attributes list generated successfully.",
-                                status=status.HTTP_200_OK, value=result_role_attributes)
+            return HttpResponse(result=True,
+                                message="Attributes list generated successfully.",
+                                status=status.HTTP_200_OK,
+                                value={
+                                    "section_attributes": result_role_data_type_attributes
+                                })
 
 
 class UserEntityDataModel:
@@ -436,67 +541,19 @@ class UserEntityDataModel:
 
 
 class AttributeHelper:
-    child_count = 0
-    attribute_groups = {}
-
     @staticmethod
-    def create_attribute_groups(attribute_groups, parent=None, **kwargs):
-        """
-        Iterate all attribute groups and prepare a dict of each attr group and it's children.
-        Children = child attribute groups and attributes.
-        This is a recursive process.
-        :return:
-        """
-        root = False
-        if 'root' in kwargs and 'section_data' in kwargs:
-            root = True
-            section_id = kwargs.get('section_id')
-            AttributeHelper.attribute_groups[section_id] = {
-                'section_data': kwargs.get('section_data'),
-                'attribute_groups': {},
-                'conditional_groups': {},
-
+    def iterate_child_attribute_groups(children_attribute_groups, group_dict):
+        # add children attribute groups to the parent attribute group detail
+        for child_group in children_attribute_groups:
+            group_dict["child_attribute_groups"][child_group.attribute_group_code] = {
+                'attributes': [],
+                'group_detail': AttributeGroupSerializer(child_group).data
             }
 
-        if 'section_id' not in kwargs:
-            return False
-
-        # Section ID is important
-        section_id = kwargs.get('section_id')
-        section_content = AttributeHelper.attribute_groups[str(section_id)]
-
-        for attribute_group_item in attribute_groups:
-            group_code = attribute_group_item.attribute_group_code
-            group_default_attributes = UserRoleAttribute.objects.filter(attribute_group=attribute_group_item,
-                                                                        is_active=True)
-            group_default_attributes_data = AttributeHelper.create_attribute_items(group_default_attributes)
-            # group_default_attributes_data = UserRoleAttributeSerializer(group_default_attributes, many=True).data
-            group_detail = AttributeGroupSerializer(attribute_group_item).data
-            group_dict = {
-                "group_detail": group_detail,
-                "default_attributes": group_default_attributes_data,
-                "attribute_groups": {}
-            }
-
-            if parent is None:
-                if root:
-                    section_content["attribute_groups"][group_code] = group_dict
-            else:
-                if not isinstance(parent['attribute_groups'], dict):
-                    parent['child_attribute_groups'][group_code] = {}
-                parent['attribute_groups'][group_code] = group_dict
-
-            # each attribute group and filter other attribute groups by parent attr group
-            children_attribute_groups = AttributeGroup.objects.filter(parent_attribute_group=attribute_group_item)
-
-            if len(children_attribute_groups) > 0:
-                AttributeHelper.create_attribute_groups(children_attribute_groups, parent=group_dict,
-                                                        section_id=section_id)
+        return group_dict
 
     @staticmethod
-    def create_attribute_items(children_attributes):
-        children_attributes_data = []
-
+    def iterate_attribute_items(children_attributes, group_dict):
         # loop all the attributes and put them into respective attribute group.
         for attribute_item in children_attributes:
             item_attr_group_code = attribute_item.attribute_group.attribute_group_code
@@ -513,7 +570,9 @@ class AttributeHelper:
                         option_group=attribute_option_group)
                     attribute_item_dict['select_values'] = attribute_options
 
-            # Add attribute item to attribute group list.
-            children_attributes_data.append(attribute_item_dict)
+            if item_attr_group_code in group_dict["child_attribute_groups"]:
+                group_dict.get('child_attribute_groups')[item_attr_group_code]['attributes'].append(attribute_item_dict)
+            else:
+                group_dict.get('child_attribute_groups')[item_attr_group_code]['attributes'] = []
 
-        return children_attributes_data
+        return group_dict
