@@ -28,9 +28,9 @@ class CaseManagerUsers(models.Model):
 
 
 class ClientStatusChoices(models.TextChoices):
-    EXISTING_NO_REASSESS = 'EXISTING_NO_REASSESS', _('Existing Extra-Mural Client - No Reassessment')
-    EXISTING_REASSESS = 'EXISTING_REASSESS', _('Existing Extra-Mural Client Reassessment')
-    NEW_EXTRA_MURAL = 'NEW_EXTRA_MURAL', _('New Extra-Mural Client Assessment')
+    EXISTING_EMC_NO_REASSESS = 'EXISTING_EMC_NO_REASSESS', _('Existing Extra-Mural Client - No Reassessment')
+    EXISTING_EMC_REASSESS = 'EXISTING_EMC_REASSESS', _('Existing Extra-Mural Client Reassessment')
+    NEW_EXTRA_MURAL_CLIENT = 'NEW_EXTRA_MURAL_CLIENT', _('New Extra-Mural Client Assessment')
     EXISTING_CASE_CLIENT_REASSESS = 'EXISTING_CASE_CLIENT_REASSESS', _('Existing Case Management Client Reassessment')
 
 
@@ -76,14 +76,14 @@ class ExistingEMCAssessment(models.Model):
 
 class NewEMCAssessment(models.Model):
     assessment_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
-    date = models.DateTimeField(null=True, blank=True)
+    date = models.DateField(null=True, blank=True)
     total_time = models.TimeField(auto_now=False, auto_now_add=False)
     mode_of_assessment = models.TextField()
 
 
 class ClientReAssessment(models.Model):
     assessment_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
-    date = models.DateTimeField(null=True, blank=True)
+    date = models.DateField(null=True, blank=True)
     reason = models.TextField()
     total_time = models.TimeField(auto_now=False, auto_now_add=False)
     mode_of_assessment = models.TextField()
@@ -106,7 +106,7 @@ class ClientAssessment(models.Model):
     client_status = models.CharField(
         max_length=100,
         choices=ClientStatusChoices.choices,
-        default=ClientStatusChoices.EXISTING_REASSESS,
+        default=ClientStatusChoices.EXISTING_EMC_NO_REASSESS,
         blank=True
     )
     existing_assessment = models.ForeignKey(
@@ -134,8 +134,12 @@ class ClientAssessment(models.Model):
         blank=True
     )
 
+    class Meta:
+        verbose_name = "Client Assessment"
+        verbose_name_plural = "Client Assessments"
+
     def __str__(self):
-        return str(self.client_assessment_id)
+        return self.client_status + " [" + str(self.client_assessment_id) + "]"
 
 
 class ClientIntervention(models.Model):
