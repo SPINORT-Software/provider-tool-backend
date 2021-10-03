@@ -20,7 +20,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api-auth/', include('rest_framework.urls')),
 
-    path('accounts/', include('users.urls')),
-    path('entity/', include('entities.urls')),
-    path('userentity/', include('userentity.urls'))
+    path('casemanager/', include('casemanager.urls')),
+    # path('entity/', include('entities.urls')),
+    # path('userentity/', include('userentity.urls'))
 ]
