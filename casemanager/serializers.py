@@ -14,6 +14,12 @@ class ClientAssessmentSerializer(ModelSerializer):
         fields = '__all__'
 
 
+class ClientInterventionSerializer(ModelSerializer):
+    class Meta:
+        model = ClientIntervention
+        fields = '__all__'
+
+
 class ExistingEMCAssessmentSerializer(ModelSerializer):
     class Meta:
         model = ExistingEMCAssessment

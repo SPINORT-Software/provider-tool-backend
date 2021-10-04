@@ -20,6 +20,11 @@ urlpatterns = [
 
     # ADD - EDIT - DELETE for Client Assessment
     path('client-assessment/<str:pk>', ClientAssessmentDetail.as_view()),
+
+    path('client-intervention', ClientInterventionList.as_view()),
+
+    path('client-intervention-create', ClientInterventionCreate.as_view()),
+
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

@@ -28,9 +28,12 @@ class CaseManagerUsers(models.Model):
 
 
 class ClientStatusChoices(models.TextChoices):
-    EXISTING_EMC_NO_REASSESS = 'EXISTING_EMC_NO_REASSESS', _('Existing Extra-Mural Client - No Reassessment')
-    EXISTING_EMC_REASSESS = 'EXISTING_EMC_REASSESS', _('Existing Extra-Mural Client Reassessment')
-    NEW_EXTRA_MURAL_CLIENT = 'NEW_EXTRA_MURAL_CLIENT', _('New Extra-Mural Client Assessment')
+    NEW_CASE_CLIENT_EXISTING_EMC_NO_REASSESS = 'NEW_CASE_CLIENT_EXISTING_EMC_NO_REASSESS', _(
+        'Existing Extra-Mural Client - No Reassessment')
+    NEW_CASE_CLIENT_EXISTING_EMC_REASSESS = 'NEW_CASE_CLIENT_EXISTING_EMC_REASSESS', _(
+        'Existing Extra-Mural Client Reassessment')
+    NEW_CASE_CLIENT_NEW_EXTRA_MURAL_CLIENT = 'NEW_CASE_CLIENT_NEW_EXTRA_MURAL_CLIENT', _(
+        'New Extra-Mural Client Assessment')
     EXISTING_CASE_CLIENT_REASSESS = 'EXISTING_CASE_CLIENT_REASSESS', _('Existing Case Management Client Reassessment')
 
 
@@ -106,7 +109,7 @@ class ClientAssessment(models.Model):
     client_status = models.CharField(
         max_length=100,
         choices=ClientStatusChoices.choices,
-        default=ClientStatusChoices.EXISTING_EMC_NO_REASSESS,
+        default=ClientStatusChoices.NEW_CASE_CLIENT_EXISTING_EMC_NO_REASSESS,
         blank=True
     )
     existing_assessment = models.ForeignKey(
@@ -150,8 +153,16 @@ class ClientIntervention(models.Model):
         verbose_name="Intervention Client",
         db_column="client"
     )
-    date = models.DateTimeField(null=True, blank=True)
+    casemanager = models.ForeignKey(
+        CaseManagerUsers,
+        on_delete=models.PROTECT,
+        verbose_name="Case Manager",
+        db_column="casemanager"
+    )
+    date = models.DateField(null=True, blank=True)
     total_time = models.TimeField(auto_now=False, auto_now_add=False)
-    mode_of_intervention = models.TextField()
-    clinical_type = models.TextField()
-    therapeutic_type = models.TextField()
+    mode_of_clinical_intervention = models.TextField(null=True, blank=True)
+    clinical_type = models.TextField(null=True, blank=True)
+    clinical_type_detail = models.TextField(null=True, blank=True)
+    therapeutic_type = models.TextField(null=True, blank=True)
+    therapeutic_type_detail = models.TextField(null=True, blank=True)
