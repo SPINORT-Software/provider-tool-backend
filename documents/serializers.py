@@ -6,3 +6,9 @@ class AssessmentFormsDocumentsSerializer(ModelSerializer):
     class Meta:
         model = AssessmentFormsDocuments
         fields = '__all__'
+
+
+class InterventionFormsDocumentsSerializer(ModelSerializer):
+    class Meta:
+        model = InterventionFormsDocuments
+        fields = '__all__'

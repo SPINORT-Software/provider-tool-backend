@@ -2,7 +2,7 @@ import copy
 
 from .models import DailyWorkLoad, ClientAssessment, ClientIntervention
 from casemanager.serializers import *
-from documents.serializers import AssessmentFormsDocumentsSerializer
+from documents.serializers import AssessmentFormsDocumentsSerializer, InterventionFormsDocumentsSerializer
 from rest_framework import status, generics, response
 from rest_framework.views import APIView
 from .constants import CLIENT_ASSESSMENT_TYPE_SERIALIZER, CLIENT_ASSESSMENT_TYPE_FIELD, \
@@ -192,10 +192,19 @@ class ClientInterventionCreate(APIView):
             if serializer.is_valid():
                 client_intervention = serializer.save()
                 if client_intervention:
-                    return Response({
-                        'result': True,
-                        'message': 'Client Intervention record created. '
-                    }, status=HTTP_201_CREATED)
+                    forms_request_data = request.data["forms"]
+                    forms_create_result = self.create_intervention_forms(client_intervention, forms_request_data)
+
+                    if forms_create_result:
+                        return Response({
+                            'result': True,
+                            'message': 'Client Intervention record created.'
+                        }, status=HTTP_201_CREATED)
+                    else:
+                        return Response({
+                            'result': True,
+                            'message': 'Failed to create Client Intervention record.'
+                        }, status=HTTP_500_INTERNAL_SERVER_ERROR)
                 else:
                     return Response({
                         'result': False,
@@ -214,3 +223,23 @@ class ClientInterventionCreate(APIView):
                 'result': False,
                 'message': 'Failed to process your request. '
             }, status=HTTP_500_INTERNAL_SERVER_ERROR)
+
+    def create_intervention_forms(self, client_intervention, forms_request_data):
+        interventionFormsCreate = True
+        if isinstance(forms_request_data, dict):
+            for form in forms_request_data:
+                if isinstance(forms_request_data[form], list):
+                    for form_document in forms_request_data[form]:
+                        serializer_data = {
+                            "document": form_document,
+                            "client_intervention": client_intervention.intervention_id
+                        }
+                        form_document_serializer = InterventionFormsDocumentsSerializer(data=serializer_data)
+                        if form_document_serializer.is_valid():
+                            form_document_serializer.save()
+                        else:
+                            interventionFormsCreate = False
+        else:
+            return False
+
+        return interventionFormsCreate
