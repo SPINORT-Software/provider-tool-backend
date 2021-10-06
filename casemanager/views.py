@@ -1,6 +1,5 @@
 import copy
-
-from .models import DailyWorkLoad, ClientAssessment, ClientIntervention
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from casemanager.serializers import *
 from documents.serializers import AssessmentFormsDocumentsSerializer, InterventionFormsDocumentsSerializer
 from rest_framework import status, generics, response
