@@ -1,6 +1,13 @@
 from django.db import models
 import uuid
 from users.models import Users
+from django.utils.translation import gettext_lazy as _
+
+
+class ClientStatus(models.TextChoices):
+    ACTIVE_CLIENT = 'ACTIVE_CLIENT', _('Active Client')
+    DISCHARGED_CLIENT = 'DISCHARGED_CLIENT', _('Discharged Client')
+    POTENTIAL_CLIENT = 'POTENTIAL_CLIENT', _('Potential Client')
 
 
 class Client(models.Model):
@@ -18,6 +25,12 @@ class Client(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(null=True, blank=True)
+    client_status = models.CharField(
+        max_length=100,
+        choices=ClientStatus.choices,
+        default=ClientStatus.POTENTIAL_CLIENT,
+        blank=True
+    )
 
     class Meta:
         verbose_name = "Client"

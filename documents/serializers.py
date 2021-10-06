@@ -12,3 +12,9 @@ class InterventionFormsDocumentsSerializer(ModelSerializer):
     class Meta:
         model = InterventionFormsDocuments
         fields = '__all__'
+
+
+class ReviewBoardReferralFormsDocumentsSerializer(ModelSerializer):
+    class Meta:
+        model = ReviewBoardReferralFormsDocuments
+        fields = '__all__'

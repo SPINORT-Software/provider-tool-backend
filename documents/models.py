@@ -2,7 +2,7 @@ from django.db import models
 import uuid
 from casemanager.models import ClientAssessment, ClientIntervention
 from reviewboard.models import ClientReferral
-from communityparamedic.models import NewClientAssessment
+from communityparamedic.models import NewCaseClientAssessment, ExistingCaseClientAssessment
 
 
 class DocumentTypes(models.Model):
@@ -70,7 +70,7 @@ class InterventionFormsDocuments(models.Model):
     )
 
 
-class ReferralFormsDocuments(models.Model):
+class ReviewBoardReferralFormsDocuments(models.Model):
     referral_form_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
     document = models.ForeignKey(
         Documents,
@@ -86,17 +86,33 @@ class ReferralFormsDocuments(models.Model):
     )
 
 
-class CommunityParamedicFormsDocuments(models.Model):
-    assessment_form_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
+class NewClientCommunityParamedicFormsDocuments(models.Model):
+    form_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
     document = models.ForeignKey(
         Documents,
         on_delete=models.PROTECT,
         verbose_name="Document",
         db_column="document"
     )
-    client_referral = models.ForeignKey(
-        NewClientAssessment,
+    client_assessment = models.ForeignKey(
+        NewCaseClientAssessment,
         on_delete=models.PROTECT,
-        verbose_name="Client Referral",
-        db_column="client_referral"
+        verbose_name="New Client Assessment",
+        db_column="client_assessment"
+    )
+
+
+class ExistingClientCommunityParamedicFormsDocuments(models.Model):
+    form_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
+    document = models.ForeignKey(
+        Documents,
+        on_delete=models.PROTECT,
+        verbose_name="Document",
+        db_column="document"
+    )
+    client_assessment = models.ForeignKey(
+        ExistingCaseClientAssessment,
+        on_delete=models.PROTECT,
+        verbose_name="Existing Client Assessment",
+        db_column="client_assessment"
     )

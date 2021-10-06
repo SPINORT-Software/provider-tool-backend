@@ -5,7 +5,7 @@ import uuid
 from django.utils.translation import gettext_lazy as _
 
 
-class CommunityParamedic(models.Model):
+class CommunityParamedicUser(models.Model):
     community_paramedic_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
     user_id = models.ForeignKey(
         Users,
@@ -21,25 +21,31 @@ class CommunityParamedic(models.Model):
         verbose_name_plural = "Community Paramedics"
 
     def __str__(self):
-        return f"{self.user_id.first_name} {self.user_id.last_name}]"
+        return f"{self.user_id.first_name} {self.user_id.last_name}"
 
 
 class DailyWorkLoad(models.Model):
     daily_workload_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
     community_paramedic = models.ForeignKey(
-        CommunityParamedic,
+        CommunityParamedicUser,
         on_delete=models.PROTECT,
         verbose_name="Community Paramedic",
-        db_column="community_paramedic"
+        db_column="community_paramedic",
+        null=True,
+        blank=True
     )
-
-    daily_workload_date = models.DateTimeField(null=True, blank=True)
-
+    daily_workload_date = models.DateField(null=True, blank=True)
     client_caseload_casemanagement_number_clients = models.IntegerField(null=True)
     client_caseload_casemanagement_total_time = models.TimeField(auto_now=False, auto_now_add=False)
-
     client_caseload_regular_number_clients = models.IntegerField(null=True)
     client_caseload_regular_total_time = models.TimeField(auto_now=False, auto_now_add=False)
+
+    class Meta:
+        verbose_name = "Daily Workload"
+        verbose_name_plural = "Daily Workloads"
+
+    def __str__(self):
+        return f"{self.daily_workload_date}"
 
 
 class ClientStatusChoices(models.TextChoices):
@@ -47,10 +53,105 @@ class ClientStatusChoices(models.TextChoices):
     NEW_CASE_MANAGEMENT_CLIENT = 'NEW_CASE_MANAGEMENT_CLIENT', _('New Case Management Client')
 
 
-class ClientAssessmentMaster(models.Model):
+class ClientVitalSigns(models.Model):
+    vital_signs_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
+    bp_value = models.TextField(null=True, blank=True)
+    pulse_value = models.TextField(null=True, blank=True)
+    hr_value = models.TextField(null=True, blank=True)
+    rr_value = models.TextField(null=True, blank=True)
+    temp_value = models.TextField(null=True, blank=True)
+    weight_value = models.TextField(null=True, blank=True)
+    oximetry_choice = models.TextField(null=True, blank=True)
+    oximetry_value = models.TextField(null=True, blank=True)
+    last_weight = models.TextField(null=True, blank=True)
+    last_weight_date = models.DateField(null=True, blank=True)
+
+
+class NewCaseClientAssessment(models.Model):
+    assessment_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
+    date = models.DateField(null=True, blank=True)
+    arrival_time = models.TimeField(null=True, blank=True)
+    departure_time = models.TimeField(null=True, blank=True)
+    vital_signs = models.ForeignKey(
+        ClientVitalSigns,
+        on_delete=models.PROTECT,
+        verbose_name="Vital Signs",
+        db_column="vital_signs"
+    )
+    priority_problems = models.TextField(null=True, blank=True)
+    priority_problems_detail = models.TextField(null=True, blank=True)
+    interventions = models.TextField(null=True, blank=True)
+    interventions_detail = models.TextField(null=True, blank=True)
+    recommendations = models.TextField(null=True, blank=True)
+    recommendations_detail = models.TextField(null=True, blank=True)
+    risks_changes_reported_to_emp = models.BooleanField(default=False)
+    reported_provider_name = models.ForeignKey(
+        Users,
+        on_delete=models.PROTECT,
+        verbose_name="Provider",
+        db_column="reported_provider"
+    )
+
+
+class ExistingCaseClientAssessmentChangeInCondition(models.Model):
+    change_in_condition_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
+    mental_status_changes = models.TextField()
+    functional_status_changes = models.TextField()
+    respiratory_changes = models.TextField()
+    gi_abdomen_changes = models.TextField()
+    gi_abdomen_changes_detail = models.TextField()
+    gu_urine_changes = models.TextField()
+
+
+class ExistingCaseClientAssessment(models.Model):
+    assessment_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
+    date = models.DateField(null=True, blank=True)
+    arrival_time = models.TimeField(null=True, blank=True)
+    departure_time = models.TimeField(null=True, blank=True)
+
+    assessment_change_in_condition = models.BooleanField(default=False)
+    assessment_change_in_condition_detail = models.TextField(null=True, blank=True)
+    assessment_changes_perceived_date = models.DateField(null=True, blank=True)
+    assessment_condition_worse_reasons = models.TextField(null=True, blank=True)
+    assessment_condition_better_reasons = models.TextField(null=True, blank=True)
+    assessment_condition_occurred_before = models.BooleanField(default=False)
+    assessment_treatment_last_episode = models.TextField(null=True, blank=True)
+    assessment_other_information = models.TextField(null=True, blank=True)
+
+    changes_in_condition = models.ForeignKey(
+        ExistingCaseClientAssessmentChangeInCondition,
+        on_delete=models.PROTECT,
+        verbose_name="Changes in Condition",
+        db_column="condition_changes"
+    )
+    vital_signs = models.ForeignKey(
+        ClientVitalSigns,
+        on_delete=models.PROTECT,
+        verbose_name="Vital Signs",
+        db_column="vital_signs"
+    )
+    priority_problems = models.TextField(null=True, blank=True)
+    priority_problems_detail = models.TextField(null=True, blank=True)
+
+    interventions = models.TextField(null=True, blank=True)
+    interventions_detail = models.TextField(null=True, blank=True)
+
+    recommendations = models.TextField(null=True, blank=True)
+    recommendations_detail = models.TextField(null=True, blank=True)
+
+    risks_changes_reported_to_emp = models.BooleanField(default=False)
+    reported_provider_name = models.ForeignKey(
+        Users,
+        on_delete=models.PROTECT,
+        verbose_name="Provider",
+        db_column="reported_provider"
+    )
+
+
+class CommunityClientAssessment(models.Model):
     client_assessment_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
     community_paramedic = models.ForeignKey(
-        CommunityParamedic,
+        CommunityParamedicUser,
         on_delete=models.PROTECT,
         verbose_name="Community Paramedic",
         db_column="community_paramedic"
@@ -60,6 +161,28 @@ class ClientAssessmentMaster(models.Model):
         on_delete=models.PROTECT,
         verbose_name="Assessment Client",
         db_column="client"
+    )
+    client_status = models.CharField(
+        max_length=100,
+        choices=ClientStatusChoices.choices,
+        default=ClientStatusChoices.NEW_CASE_MANAGEMENT_CLIENT,
+        blank=True
+    )
+    new_case_client_assessment = models.ForeignKey(
+        NewCaseClientAssessment,
+        on_delete=models.PROTECT,
+        verbose_name="New Case Management Client Assessment",
+        db_column="new_case_client_assessment",
+        null=True,
+        blank=True
+    )
+    existing_case_client_assessment = models.ForeignKey(
+        ExistingCaseClientAssessment,
+        on_delete=models.PROTECT,
+        verbose_name="Existing Case Client Assessment",
+        db_column="existing_case_client_assessment",
+        null=True,
+        blank=True
     )
 
 
@@ -80,25 +203,14 @@ class HomeSafetyAssessmentQuestions(models.Model):
     question = models.TextField()
 
 
-class NewClientAssessment(models.Model):
-    date = models.DateTimeField(null=True, blank=True)
-    arrival_time = models.TimeField(auto_now=False, auto_now_add=False)
-    departure_time = models.TimeField(auto_now=False, auto_now_add=False)
-    assessment_master = models.ForeignKey(
-        ClientAssessmentMaster,
-        on_delete=models.PROTECT,
-        verbose_name="Client Assessment",
-        db_column="assessment_master"
-    )
-
-
 class HomeSafetyAssessmentQuestionAnswers(models.Model):
     answer_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
-    new_client_assessment = models.ForeignKey(
-        NewClientAssessment,
+    NewCaseClientAssessment = models.ForeignKey(
+        NewCaseClientAssessment,
         on_delete=models.PROTECT,
-        verbose_name="New Client Assessment Record",
-        db_column="new_client_assessment"
+        verbose_name="New Case Client Assessment",
+        db_column="new_client_assessment",
+        default=None
     )
     question = models.ForeignKey(
         HomeSafetyAssessmentQuestions,
@@ -106,5 +218,5 @@ class HomeSafetyAssessmentQuestionAnswers(models.Model):
         verbose_name="Question",
         db_column="question"
     )
-    answer = models.BooleanField()
+    answer = models.BooleanField(default=False)
     answer_detail = models.TextField(null=True, blank=True)

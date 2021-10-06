@@ -1,3 +1,5 @@
 from django.contrib import admin
+from .models import CommunityParamedicUser, DailyWorkLoad
 
-# Register your models here.
+admin.site.register(CommunityParamedicUser)
+admin.site.register(DailyWorkLoad)

@@ -1,16 +1,16 @@
 from django.db import models
 from users.models import Users
 import uuid
-from clientpatient.models import Client
+from clientpatient.models import Client, ClientStatus
 from django.utils.translation import gettext_lazy as _
 
 
-class ReviewBoardMember(models.Model):
-    reviewboard_member_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
+class ReviewBoardUser(models.Model):
+    reviewboard_user_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
     user_id = models.ForeignKey(
         Users,
         on_delete=models.PROTECT,
-        verbose_name="User - Review Board",
+        verbose_name="User",
         db_column="user_id"
     )
     created_at = models.DateTimeField(auto_now_add=True)
@@ -21,40 +21,33 @@ class ReviewBoardMember(models.Model):
         verbose_name_plural = "Review Board Users"
 
     def __str__(self):
-        return f"{self.user_id.first_name} {self.user_id.last_name}]"
-
-
-class ReferralDecisionChoices(models.TextChoices):
-    REFERRAL_ACCEPTED = 'REFERRAL_ACCEPTED', _('Client Accepted')
-    REFERRAL_REFUSED = 'REFERRAL_REFUSED', _('Client Refused')
+        return f"{self.user_id.first_name} {self.user_id.last_name}"
 
 
 class ClientReferral(models.Model):
     referral_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
-    referral_date = models.DateTimeField(null=True, blank=True)
-    client = models.ForeignKey(
-        Client,
+    referral_date = models.DateField(null=True, blank=True)
+    review_board_user = models.ForeignKey(
+        ReviewBoardUser,
         on_delete=models.PROTECT,
-        verbose_name="Referral Client",
-        db_column="client"
+        verbose_name="Review Board User",
+        db_column="review_board_user"
     )
-    referral_source = models.TextField()
-    referral_source_detail = models.TextField()
-    organizations_upon_referral = models.TextField()
-    organizations_upon_referral_detail = models.TextField()
-    date_of_case_discussion = models.DateTimeField(null=True, blank=True)
-    members_present_case_discussion = models.TextField()
-    members_present_case_discussion_detail = models.TextField()
-    case_management_organization_responsible = models.TextField()
-    case_management_user_responsible = models.ForeignKey(
-        Users,
-        on_delete=models.PROTECT,
-        verbose_name="Person Responsible for Client Case Management",
-        db_column="case_management_user_responsible"
-    )
+    client_first_name = models.TextField()
+    client_last_name = models.TextField()
+    client_email = models.TextField()
+    referral_source = models.TextField(null=True, blank=True)
+    referral_source_detail = models.TextField(null=True, blank=True)
+    organizations_upon_referral = models.TextField(null=True, blank=True)
+    organizations_upon_referral_detail = models.TextField(null=True, blank=True)
+    date_of_case_discussion = models.DateField(null=True, blank=True)
+    members_present_case_discussion = models.TextField(null=True, blank=True)
+    members_present_case_discussion_detail = models.TextField(null=True, blank=True)
+    case_management_organization_responsible = models.TextField(null=True, blank=True)
+    case_management_organization_person_responsible = models.TextField(null=True, blank=True)
     decision = models.CharField(
         max_length=20,
-        choices=ReferralDecisionChoices.choices,
-        default=ReferralDecisionChoices.REFERRAL_REFUSED,
+        choices=ClientStatus.choices,
+        default=ClientStatus.POTENTIAL_CLIENT,
     )
     decision_detail = models.TextField()
