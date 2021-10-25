@@ -68,6 +68,9 @@ class ClientVitalSigns(models.Model):
 
 
 class NewCaseClientAssessment(models.Model):
+    """
+    Type of Client Assessment (this is not the primary record for Client Assessment)
+    """
     assessment_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
     date = models.DateField(null=True, blank=True)
     arrival_time = models.TimeField(null=True, blank=True)
@@ -99,11 +102,14 @@ class ExistingCaseClientAssessmentChangeInCondition(models.Model):
     functional_status_changes = models.TextField()
     respiratory_changes = models.TextField()
     gi_abdomen_changes = models.TextField()
-    gi_abdomen_changes_detail = models.TextField()
+    gi_abdomen_changes_detail = models.TextField(blank=True, null=True)
     gu_urine_changes = models.TextField()
 
 
 class ExistingCaseClientAssessment(models.Model):
+    """
+    Type of Client Assessment (this is not the primary record for Client Assessment)
+    """
     assessment_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
     date = models.DateField(null=True, blank=True)
     arrival_time = models.TimeField(null=True, blank=True)
@@ -149,6 +155,10 @@ class ExistingCaseClientAssessment(models.Model):
 
 
 class CommunityClientAssessment(models.Model):
+    """
+    Primary Client Assessment Class - this is the primary record created for a Community Paramedic's Client
+    Assessment.
+    """
     client_assessment_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
     community_paramedic = models.ForeignKey(
         CommunityParamedicUser,
@@ -186,37 +196,15 @@ class CommunityClientAssessment(models.Model):
     )
 
 
-class HomeSafetyAssessmentQuestionGroup(models.Model):
-    question_group_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
-    question_group_label = models.TextField()
-    question_group_code = models.TextField()
-
-
-class HomeSafetyAssessmentQuestions(models.Model):
-    question_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
-    question_group = models.ForeignKey(
-        HomeSafetyAssessmentQuestionGroup,
-        on_delete=models.PROTECT,
-        verbose_name="Question Group",
-        db_column="question_group"
-    )
-    question = models.TextField()
-
-
-class HomeSafetyAssessmentQuestionAnswers(models.Model):
+class HomeSafetyAssessment(models.Model):
     answer_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
-    NewCaseClientAssessment = models.ForeignKey(
+    new_client_assessment = models.ForeignKey(
         NewCaseClientAssessment,
         on_delete=models.PROTECT,
         verbose_name="New Case Client Assessment",
         db_column="new_client_assessment",
         default=None
     )
-    question = models.ForeignKey(
-        HomeSafetyAssessmentQuestions,
-        on_delete=models.PROTECT,
-        verbose_name="Question",
-        db_column="question"
-    )
-    answer = models.BooleanField(default=False)
+    question = models.TextField()
+    answer = models.IntegerField(default=False)
     answer_detail = models.TextField(null=True, blank=True)

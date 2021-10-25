@@ -12,6 +12,9 @@ urlpatterns = [
 
     # ADD - EDIT - DELETE for daily workload
     path('workload/<str:pk>', WorkloadDetail.as_view()),
+
+    path('assessment', AssessmentList.as_view()),
+    path('create-assessment', AssessmentCreate.as_view()),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
