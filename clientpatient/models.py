@@ -37,7 +37,7 @@ class Client(models.Model):
         verbose_name_plural = "Clients"
 
     def __str__(self):
-        return f"{self.user_id.first_name} {self.user_id.last_name}"
+        return f"{self.user_id.first_name} {self.user_id.last_name} [{self.client_id}]"
 
 
 class CommunicationLog(models.Model):
@@ -63,7 +63,9 @@ class VisitorLog(models.Model):
         Client,
         on_delete=models.PROTECT,
         verbose_name="Client",
-        db_column="client"
+        db_column="client",
+        blank=True,
+        null=True
     )
 
 
@@ -189,11 +191,12 @@ class CurrentMedication(models.Model):
 
 
 class PersonalInformation(models.Model):
-    clinical_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
-    completion_date = models.DateField(null=True, blank=True)
+    personal_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
+    completion_date = models.DateField(auto_now_add=True)
     revision_date = models.DateField(null=True, blank=True)
-    client = models.ForeignKey(
+    client = models.OneToOneField(
         Client,
+        unique=True,
         on_delete=models.PROTECT,
         verbose_name="Client",
         db_column="client"
@@ -219,3 +222,17 @@ class PersonalInformation(models.Model):
     housing_situation = models.TextField(null=True, blank=True)
     housing_situation_detail = models.TextField(null=True, blank=True)
 
+
+class HomeSafetyAssessment(models.Model):
+    answer_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
+    personal_information = models.ForeignKey(
+        PersonalInformation,
+        on_delete=models.PROTECT,
+        verbose_name="Personal Information",
+        db_column="personal_information",
+        default=None
+    )
+    question_group = models.TextField(null=True, blank=True)
+    question = models.TextField(null=True, blank=True)
+    answer = models.TextField(null=True, blank=True)
+    answer_detail = models.TextField(null=True, blank=True)

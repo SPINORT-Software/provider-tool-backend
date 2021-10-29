@@ -14,6 +14,15 @@ urlpatterns = [
     # Visitor Logs
     path('visitor-logs', VisitorLogs.VisitorsLogList.as_view()),
     path('visitor-logs/<str:pk>/', VisitorLogs.VisitorsLogUpdateDeleteRetrieve.as_view()),
+
+    # Personal Information
+    path('personal', PersonalInformation.PersonalInformationList.as_view()),
+    path('personal-create', PersonalInformation.PersonalInformationCreate.as_view()),
+    path('personal/<str:pk>/', PersonalInformation.PersonalInformationUpdateDeleteRetrieve.as_view()),
+
+    # Clinical Information
+    path('clinical', VisitorLogs.VisitorsLogList.as_view()),
+    path('clinical/<str:pk>/', VisitorLogs.VisitorsLogUpdateDeleteRetrieve.as_view()),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
