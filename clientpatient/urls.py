@@ -21,7 +21,7 @@ urlpatterns = [
     path('personal/<str:pk>/', PersonalInformation.PersonalInformationUpdateDeleteRetrieve.as_view()),
 
     # Clinical Information
-    path('clinical', VisitorLogs.VisitorsLogList.as_view()),
+    path('clinical', ClinicalInformation.ClinicalInformationCreate.as_view()),
     path('clinical/<str:pk>/', VisitorLogs.VisitorsLogUpdateDeleteRetrieve.as_view()),
 ]
 

@@ -45,3 +45,44 @@ class HomeSafetyAssessmentSerialzer(ModelSerializer):
     class Meta:
         model = HomeSafetyAssessment
         fields = '__all__'
+
+
+class MedicalDiagnosisSerializer(ModelSerializer):
+    class Meta:
+        model = MedicalDiagnosis
+        fields = '__all__'
+
+
+class HomeSupportServicesSerializer(ModelSerializer):
+    class Meta:
+        model = HomeSupportServices
+        fields = '__all__'
+
+
+class PreviousHospitalizationSerializer(ModelSerializer):
+    class Meta:
+        model = PreviousHospitalization
+        fields = '__all__'
+
+
+class EmergencyRoomVisitsSerializer(ModelSerializer):
+    class Meta:
+        model = EmergencyRoomVisits
+        fields = '__all__'
+
+
+class AmbulanceUseSerializer(ModelSerializer):
+    class Meta:
+        model = AmbulanceUse
+        fields = '__all__'
+
+
+class ClinicalInformationSerializer(ModelSerializer):
+    def to_representation(self, instance):
+        response = super().to_representation(instance)
+        response['client'] = ClientSerialzer(instance.client).data
+        return response
+
+    class Meta:
+        model = ClinicalInformation
+        fields = '__all__'

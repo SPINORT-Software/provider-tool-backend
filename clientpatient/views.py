@@ -1,3 +1,5 @@
+import datetime
+
 from rest_framework import status, generics, response, views
 from rest_framework.response import Response
 from .models import *
@@ -88,6 +90,7 @@ class PersonalInformation:
             existing_client = str(super().get_object().client.client_id)
 
             if request.data['client'] == existing_client:
+                request.data['revision_date'] = datetime.date.today().strftime('%Y-%m-%d')
                 response_personal = super().update(request, *args, **kwargs)
                 personal_id = kwargs.get('pk')
 
@@ -125,3 +128,76 @@ class PersonalInformation:
                 'status': 200,
                 'data': response_personal.data
             })
+
+
+class ClinicalInformation:
+    class ClinicalInformationCreate(generics.CreateAPIView):
+        """
+        Add Clinical Information.
+        """
+        queryset = ClinicalInformation.objects.all()
+        serializer_class = ClinicalInformationSerializer
+
+        def create(self, request, *args, **kwargs):
+            # Create Nested Model fields and append to request data
+            nested_process = {
+                'result': True,
+                'message': ''
+            }
+            self.add_medical(nested_process, request)
+            self.add_home_support(nested_process, request)
+            self.add_previous_hospitalization(nested_process, request)
+            self.add_emergency_room_visits(nested_process, request)
+            self.add_ambulance_use(nested_process, request)
+
+            response = super().create(request, *args, **kwargs)
+            return Response({
+                'status': 200,
+                'data': response.data
+            })
+
+        def add_ambulance_use(self, nested_process, request):
+            ambulance_use_serializer = AmbulanceUseSerializer(data=request.data['ambulance_use'])
+            if ambulance_use_serializer.is_valid():
+                ambulance_use = ambulance_use_serializer.save()
+                request.data['ambulance_use'] = ambulance_use.ambulance_use_id
+            else:
+                nested_process['result'] = False
+                nested_process['message'] = "Invalid ambulance use  values provided."
+
+        def add_emergency_room_visits(self, nested_process, request):
+            emergency_room_visits_serializer = EmergencyRoomVisitsSerializer(data=request.data['emergency_room_visits'])
+            if emergency_room_visits_serializer.is_valid():
+                emergency_room_visits = emergency_room_visits_serializer.save()
+                request.data['emergency_room_visits'] = emergency_room_visits.emergency_room_visit_id
+            else:
+                nested_process['result'] = False
+                nested_process['message'] = "Invalid emergency room visits values provided."
+
+        def add_previous_hospitalization(self, nested_process, request):
+            last_hospitalization_serializer = PreviousHospitalizationSerializer(
+                data=request.data['last_hospitalization'])
+            if last_hospitalization_serializer.is_valid():
+                last_hospitalization = last_hospitalization_serializer.save()
+                request.data['last_hospitalization'] = last_hospitalization.previous_hospitalization_id
+            else:
+                nested_process['result'] = False
+                nested_process['message'] = "Invalid last hospitalization values provided."
+
+        def add_home_support(self, nested_process, request):
+            home_support_services_serializer = HomeSupportServicesSerializer(data=request.data['home_support_services'])
+            if home_support_services_serializer.is_valid():
+                home_support_services = home_support_services_serializer.save()
+                request.data['home_support_services'] = home_support_services.home_support_services_id
+            else:
+                nested_process['result'] = False
+                nested_process['message'] = "Invalid home support services values provided."
+
+        def add_medical(self, nested_process, request):
+            medical_diagnosis_serializer = MedicalDiagnosisSerializer(data=request.data['medical_diagnosis'])
+            if medical_diagnosis_serializer.is_valid():
+                medical_diagnosis = medical_diagnosis_serializer.save()
+                request.data['medical_diagnosis'] = medical_diagnosis.medical_id
+            else:
+                nested_process['result'] = False
+                nested_process['message'] = "Invalid medical diagnosis values provided."

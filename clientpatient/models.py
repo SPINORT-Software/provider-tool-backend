@@ -119,7 +119,7 @@ class EmergencyRoomVisits(models.Model):
     emergency_room_count_six_months = models.IntegerField(null=True, blank=True)
     emergency_room_count_twelve_months = models.IntegerField(null=True, blank=True)
     emergency_room_last_date = models.DateField(null=True, blank=True)
-    emergency_room_last_medical_reason = models.DateField(null=True, blank=True)
+    emergency_room_last_medical_reason = models.TextField(null=True, blank=True)
 
 
 class AmbulanceUse(models.Model):
@@ -132,7 +132,7 @@ class AmbulanceUse(models.Model):
 
 class ClinicalInformation(models.Model):
     clinical_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
-    client = models.ForeignKey(
+    client = models.OneToOneField(
         Client,
         on_delete=models.PROTECT,
         verbose_name="Client",
@@ -144,31 +144,41 @@ class ClinicalInformation(models.Model):
         MedicalDiagnosis,
         on_delete=models.PROTECT,
         verbose_name="Medical Diagnosis",
-        db_column="medical_diagnosis"
+        db_column="medical_diagnosis",
+        blank=True,
+        null=True
     )
     home_support_services = models.ForeignKey(
         HomeSupportServices,
         on_delete=models.PROTECT,
         verbose_name="Home Support Services",
-        db_column="home_support_services"
+        db_column="home_support_services",
+        blank=True,
+        null=True
     )
     last_hospitalization = models.ForeignKey(
         PreviousHospitalization,
         on_delete=models.PROTECT,
         verbose_name="Last Hospitalization",
-        db_column="last_hospitalization"
+        db_column="last_hospitalization",
+        blank=True,
+        null=True
     )
     emergency_room_visits = models.ForeignKey(
         EmergencyRoomVisits,
         on_delete=models.PROTECT,
         verbose_name="ER Visits",
-        db_column="emergency_room_visits"
+        db_column="emergency_room_visits",
+        blank=True,
+        null=True
     )
     ambulance_use = models.ForeignKey(
         AmbulanceUse,
         on_delete=models.PROTECT,
         verbose_name="Ambulance Use",
-        db_column="ambulance_use"
+        db_column="ambulance_use",
+        blank=True,
+        null=True
     )
     family_physician = models.TextField(null=True, blank=True)
     nurse_practitioner = models.TextField(null=True, blank=True)
