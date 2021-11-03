@@ -138,7 +138,7 @@ class ClinicalInformation(models.Model):
         verbose_name="Client",
         db_column="client"
     )
-    completion_date = models.DateField(null=True, blank=True)
+    completion_date = models.DateField(auto_now_add=True)
     revision_date = models.DateField(null=True, blank=True)
     medical_diagnosis = models.ForeignKey(
         MedicalDiagnosis,

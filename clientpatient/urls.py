@@ -16,13 +16,16 @@ urlpatterns = [
     path('visitor-logs/<str:pk>/', VisitorLogs.VisitorsLogUpdateDeleteRetrieve.as_view()),
 
     # Personal Information
-    path('personal', PersonalInformation.PersonalInformationList.as_view()),
-    path('personal-create', PersonalInformation.PersonalInformationCreate.as_view()),
-    path('personal/<str:pk>/', PersonalInformation.PersonalInformationUpdateDeleteRetrieve.as_view()),
+    path('personal', PersonalInformationViews.PersonalInformationList.as_view()),
+    path('personal-create', PersonalInformationViews.PersonalInformationCreate.as_view()),
+    path('personal/<str:pk>/', PersonalInformationViews.PersonalInformationUpdateDeleteRetrieve.as_view()),
 
     # Clinical Information
-    path('clinical', ClinicalInformation.ClinicalInformationCreate.as_view()),
-    path('clinical/<str:pk>/', VisitorLogs.VisitorsLogUpdateDeleteRetrieve.as_view()),
+    path('clinical-create', ClinicalInformationViews.ClinicalInformationCreate.as_view()),
+    path('clinical', ClinicalInformationViews.ClinicalInformationList.as_view()),
+    path('clinical/<str:pk>/', ClinicalInformationViews.ClinicalInformationUpdateDeleteRetrieve.as_view()),
+
+    path('<str:client_id>/data', ClientViews.ClientDataRetrieve.as_view())
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

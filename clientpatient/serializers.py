@@ -77,10 +77,21 @@ class AmbulanceUseSerializer(ModelSerializer):
         fields = '__all__'
 
 
+class CurrentMedicationSerializer(ModelSerializer):
+    class Meta:
+        model = CurrentMedication
+        fields = '__all__'
+
+
 class ClinicalInformationSerializer(ModelSerializer):
     def to_representation(self, instance):
         response = super().to_representation(instance)
         response['client'] = ClientSerialzer(instance.client).data
+        response['medical_diagnosis'] = MedicalDiagnosisSerializer(instance.medical_diagnosis).data
+        response['home_support_services'] = HomeSupportServicesSerializer(instance.home_support_services).data
+        response['last_hospitalization'] = PreviousHospitalizationSerializer(instance.last_hospitalization).data
+        response['emergency_room_visits'] = EmergencyRoomVisitsSerializer(instance.emergency_room_visits).data
+        response['ambulance_use'] = AmbulanceUseSerializer(instance.ambulance_use).data
         return response
 
     class Meta:
