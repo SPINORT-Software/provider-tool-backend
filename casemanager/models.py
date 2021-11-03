@@ -81,15 +81,15 @@ class NewEMCAssessment(models.Model):
     assessment_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
     date = models.DateField(null=True, blank=True)
     total_time = models.TimeField(auto_now=False, auto_now_add=False)
-    mode_of_assessment = models.TextField()
+    mode_of_assessment = models.TextField(null=True, blank=True)
 
 
 class ClientReAssessment(models.Model):
     assessment_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
     date = models.DateField(null=True, blank=True)
-    reason = models.TextField()
+    reason = models.TextField(null=True, blank=True)
     total_time = models.TimeField(auto_now=False, auto_now_add=False)
-    mode_of_assessment = models.TextField()
+    mode_of_assessment = models.TextField(null=True, blank=True)
 
 
 class ClientAssessment(models.Model):

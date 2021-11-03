@@ -45,7 +45,8 @@ INSTALLED_APPS = [
     'documents',
     'reviewboard',
     'communityparamedic',
-    'core'
+    'core',
+    'clinician'
 ]
 
 MIDDLEWARE = [
