@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="cb744dec-d346-4c8e-b110-6b6349e6b94b" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/providertool.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/providertool.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/clinician/serializers.py" beforeDir="false" afterPath="$PROJECT_DIR$/clinician/serializers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/clinician/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/clinician/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/clinician/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/clinician/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/providertool/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/providertool/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="1zhGe7d6g801yrYwzp9YBNM7cc4" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="DatabaseDriversLRU" value="mysql" />
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.tslint" value="true" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="cb744dec-d346-4c8e-b110-6b6349e6b94b" name="Changes" comment="" />
+      <created>1634592999483</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1634592999483</updated>
+      <workItem from="1634593001146" duration="1072000" />
+      <workItem from="1636147978146" duration="6133000" />
+      <workItem from="1636219578201" duration="3406000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>

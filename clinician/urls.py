@@ -16,10 +16,11 @@ urlpatterns = [
     path('<str:clinician>/workload', Workload.ClinicianWorkloadList.as_view()),
 
     # # LIST for Client Assessment
-    # path('client-assessment', ClientAssessmentList.as_view()),
-    #
-    # path('client-assessment-create', ClientAssessmentCreate.as_view()),
-    #
+    path('assessment', AssessmentViews.AssessmentList.as_view()),
+
+    path('assessment-create', AssessmentViews.AssessmentCreate.as_view()),
+
+
     # # ADD - EDIT - DELETE for Client Assessment
     # path('client-assessment/<str:pk>', ClientAssessmentDetail.as_view()),
     #

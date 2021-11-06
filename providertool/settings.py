@@ -90,6 +90,10 @@ DATABASES = {
         'OPTIONS': {
             'read_default_file': '/etc/mysql/my.cnf',
         },
+        'USER': 'root',
+        'PASSWORD': '%(Dkp[5e<RrR{t;k',
+        'NAME': 'providertool',
+        'HOST': 'localhost'
         # 'NAME': BASE_DIR / 'db.sqlite3',
     }
 }

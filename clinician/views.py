@@ -49,6 +49,20 @@ class Workload:
                 'data': DailyWorkLoadSerialzer(workload_objects, many=True).data
             })
 
+
+class AssessmentViews:
+    class AssessmentList(generics.ListAPIView):
+        queryset = ClinicianClientAssessment.objects.all()
+        serializer_class = ClientAssessmentSerialzer
+
+    class AssessmentCreate(generics.CreateAPIView):
+        queryset = ClinicianClientAssessment.objects.all()
+        serializer_class = ClientAssessmentSerialzer
+
+        def create(self, request, *args, **kwargs):
+            print(request.data)
+            return Response("OK")
+
 # class InterventionsViews:
 #     class WorkloadListCreateView(generics.ListCreateAPIView):
 #         queryset = DailyWorkLoad.objects.all()
