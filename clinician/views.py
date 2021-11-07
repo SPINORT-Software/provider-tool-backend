@@ -4,20 +4,23 @@ from .models import *
 from .serializers import *
 import datetime
 from rest_framework.response import Response
-from rest_framework.exceptions import PermissionDenied
+from rest_framework.exceptions import *
+from rest_framework.views import APIView
+from core.views import ClientAssessmentFactory
+from core.constants import USER_TYPE_CLINICIAN
 
 
 class Workload:
     class WorkloadListCreateView(generics.ListCreateAPIView):
         queryset = DailyWorkLoad.objects.all()
-        serializer_class = DailyWorkLoadSerialzer
+        serializer_class = DailyWorkLoadSerializer
 
     class WorkloadUpdateDeleteRetrieve(generics.RetrieveUpdateDestroyAPIView):
         """
         Retrieve, Update and Delete workload.
         """
         queryset = DailyWorkLoad.objects.all()
-        serializer_class = DailyWorkLoadSerialzer
+        serializer_class = DailyWorkLoadSerializer
 
         def update(self, request, *args, **kwargs):
             existing_clinician = str(super().get_object().clinician.clinician_id)
@@ -38,7 +41,7 @@ class Workload:
 
     class ClinicianWorkloadList(generics.ListAPIView):
         queryset = DailyWorkLoad.objects.all()
-        serializer_class = DailyWorkLoadSerialzer
+        serializer_class = DailyWorkLoadSerializer
 
         def list(self, request, *args, **kwargs):
             clinician_id = kwargs.get('clinician')
@@ -46,22 +49,19 @@ class Workload:
 
             return Response({
                 'status': 200,
-                'data': DailyWorkLoadSerialzer(workload_objects, many=True).data
+                'data': DailyWorkLoadSerializer(workload_objects, many=True).data
             })
 
 
 class AssessmentViews:
     class AssessmentList(generics.ListAPIView):
         queryset = ClinicianClientAssessment.objects.all()
-        serializer_class = ClientAssessmentSerialzer
+        serializer_class = ClientAssessmentSerializer
 
-    class AssessmentCreate(generics.CreateAPIView):
-        queryset = ClinicianClientAssessment.objects.all()
-        serializer_class = ClientAssessmentSerialzer
-
-        def create(self, request, *args, **kwargs):
-            print(request.data)
-            return Response("OK")
+    class AssessmentCreate(APIView):
+        def post(self, request):
+            casemanager_client_assessment = ClientAssessmentFactory(request, USER_TYPE_CLINICIAN)
+            return casemanager_client_assessment.process_request()
 
 # class InterventionsViews:
 #     class WorkloadListCreateView(generics.ListCreateAPIView):

@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from rest_framework_jwt.settings import api_settings
 from django.contrib.auth.models import User
+from .models import *
+from rest_framework.serializers import ModelSerializer
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -32,3 +34,21 @@ class UserSerializerWithToken(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('token', 'username', 'password')
+
+
+class ExistingEMCAssessmentSerializer(ModelSerializer):
+    class Meta:
+        model = ExistingEMCAssessment
+        fields = '__all__'
+
+
+class NewEMCAssessmentSerializer(ModelSerializer):
+    class Meta:
+        model = NewEMCAssessment
+        fields = '__all__'
+
+
+class ClientReAssessmentSerializer(ModelSerializer):
+    class Meta:
+        model = ClientReAssessment
+        fields = '__all__'

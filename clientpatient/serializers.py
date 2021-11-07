@@ -2,7 +2,7 @@ from rest_framework.serializers import ModelSerializer, SerializerMethodField
 from .models import *
 
 
-class ClientSerialzer(ModelSerializer):
+class ClientSerializer(ModelSerializer):
     class Meta:
         model = Client
         fields = '__all__'
@@ -11,7 +11,7 @@ class ClientSerialzer(ModelSerializer):
 class CommunicationLogSerializer(ModelSerializer):
     def to_representation(self, instance):
         response = super().to_representation(instance)
-        response['client'] = ClientSerialzer(instance.client).data
+        response['client'] = ClientSerializer(instance.client).data
         return response
 
     class Meta:
@@ -22,7 +22,7 @@ class CommunicationLogSerializer(ModelSerializer):
 class VisitorLogSerializer(ModelSerializer):
     def to_representation(self, instance):
         response = super().to_representation(instance)
-        response['client'] = ClientSerialzer(instance.client).data
+        response['client'] = ClientSerializer(instance.client).data
         return response
 
     class Meta:
@@ -33,7 +33,7 @@ class VisitorLogSerializer(ModelSerializer):
 class PersonalInformationSerializer(ModelSerializer):
     def to_representation(self, instance):
         response = super().to_representation(instance)
-        response['client'] = ClientSerialzer(instance.client).data
+        response['client'] = ClientSerializer(instance.client).data
         return response
 
     class Meta:
@@ -86,7 +86,7 @@ class CurrentMedicationSerializer(ModelSerializer):
 class ClinicalInformationSerializer(ModelSerializer):
     def to_representation(self, instance):
         response = super().to_representation(instance)
-        response['client'] = ClientSerialzer(instance.client).data
+        response['client'] = ClientSerializer(instance.client).data
         response['medical_diagnosis'] = MedicalDiagnosisSerializer(instance.medical_diagnosis).data
         response['home_support_services'] = HomeSupportServicesSerializer(instance.home_support_services).data
         response['last_hospitalization'] = PreviousHospitalizationSerializer(instance.last_hospitalization).data

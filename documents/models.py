@@ -1,6 +1,7 @@
 from django.db import models
 import uuid
-from casemanager.models import ClientAssessment, ClientIntervention
+from casemanager.models import CaseManagerClientAssessment, ClientIntervention
+from clinician.models import ClinicianClientAssessment
 from reviewboard.models import ClientReferral
 from communityparamedic.models import NewCaseClientAssessment, ExistingCaseClientAssessment
 
@@ -37,7 +38,7 @@ class Documents(models.Model):
         return self.name
 
 
-class AssessmentFormsDocuments(models.Model):
+class CaseManagerAssessmentFormsDocuments(models.Model):
     assessment_form_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
     document = models.ForeignKey(
         Documents,
@@ -46,7 +47,24 @@ class AssessmentFormsDocuments(models.Model):
         db_column="document"
     )
     client_assessment = models.ForeignKey(
-        ClientAssessment,
+        CaseManagerClientAssessment,
+        on_delete=models.PROTECT,
+        verbose_name="Client Assessment",
+        db_column="client_assessment"
+    )
+    is_provider_form = models.BooleanField(default=False)
+
+
+class ClinicianAssessmentFormsDocuments(models.Model):
+    assessment_form_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
+    document = models.ForeignKey(
+        Documents,
+        on_delete=models.PROTECT,
+        verbose_name="Document",
+        db_column="document"
+    )
+    client_assessment = models.ForeignKey(
+        ClinicianClientAssessment,
         on_delete=models.PROTECT,
         verbose_name="Client Assessment",
         db_column="client_assessment"

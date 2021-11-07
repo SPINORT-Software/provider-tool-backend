@@ -2,9 +2,15 @@ from rest_framework.serializers import ModelSerializer
 from .models import *
 
 
-class AssessmentFormsDocumentsSerializer(ModelSerializer):
+class ClinicianAssessmentFormsDocumentsSerializer(ModelSerializer):
     class Meta:
-        model = AssessmentFormsDocuments
+        model = ClinicianAssessmentFormsDocuments
+        fields = '__all__'
+
+
+class CaseManagerAssessmentFormsDocumentsSerializer(ModelSerializer):
+    class Meta:
+        model = CaseManagerAssessmentFormsDocuments
         fields = '__all__'
 
 

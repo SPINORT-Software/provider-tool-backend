@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 import uuid
 from clientpatient.models import Client
 from django.utils.translation import gettext_lazy as _
+from core.models import *
 
 
 class ClinicanUsers(models.Model):
@@ -51,36 +52,6 @@ class DailyWorkLoad(models.Model):
         return self.daily_workload_date
 
 
-class ClinicianExistingEMCAssessment(models.Model):
-    assessment_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
-    date = models.DateField(null=True, blank=True)
-
-
-class ClinicianNewEMCAssessment(models.Model):
-    assessment_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
-    date = models.DateField(null=True, blank=True)
-    total_time = models.TimeField(auto_now=False, auto_now_add=False)
-    mode_of_assessment = models.TextField(null=True, blank=True)
-
-
-class ClinicianClientReAssessment(models.Model):
-    assessment_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
-    date = models.DateField(null=True, blank=True)
-    reason = models.TextField(null=True, blank=True)
-    total_time = models.TimeField(auto_now=False, auto_now_add=False)
-    mode_of_assessment = models.TextField(null=True, blank=True)
-
-
-class ClinicianClientStatusChoices(models.TextChoices):
-    NEW_CASE_CLIENT_EXISTING_EMC_NO_REASSESS = 'NEW_CASE_CLIENT_EXISTING_EMC_NO_REASSESS', _(
-        'Existing Extra-Mural Client - No Reassessment')
-    NEW_CASE_CLIENT_EXISTING_EMC_REASSESS = 'NEW_CASE_CLIENT_EXISTING_EMC_REASSESS', _(
-        'Existing Extra-Mural Client Reassessment')
-    NEW_CASE_CLIENT_NEW_EXTRA_MURAL_CLIENT = 'NEW_CASE_CLIENT_NEW_EXTRA_MURAL_CLIENT', _(
-        'New Extra-Mural Client Assessment')
-    EXISTING_CASE_CLIENT_REASSESS = 'EXISTING_CASE_CLIENT_REASSESS', _('Existing Case Management Client Reassessment')
-
-
 class ClinicianClientAssessment(models.Model):
     client_assessment_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
     clinician = models.ForeignKey(
@@ -97,12 +68,12 @@ class ClinicianClientAssessment(models.Model):
     )
     client_status = models.CharField(
         max_length=100,
-        choices=ClinicianClientStatusChoices.choices,
-        default=ClinicianClientStatusChoices.NEW_CASE_CLIENT_EXISTING_EMC_NO_REASSESS,
+        choices=ClientStatusChoices.choices,
+        default=ClientStatusChoices.NEW_CASE_CLIENT_EXISTING_EMC_NO_REASSESS,
         blank=True
     )
     existing_assessment = models.ForeignKey(
-        ClinicianExistingEMCAssessment,
+        ExistingEMCAssessment,
         on_delete=models.PROTECT,
         verbose_name="Existing Extra Mural Client Assessment",
         db_column="existing_emp_assessment",
@@ -110,7 +81,7 @@ class ClinicianClientAssessment(models.Model):
         blank=True
     )
     reassessment = models.ForeignKey(
-        ClinicianClientReAssessment,
+        ClientReAssessment,
         on_delete=models.PROTECT,
         verbose_name="Client Reassessment",
         db_column="client_reassessment",
@@ -118,7 +89,7 @@ class ClinicianClientAssessment(models.Model):
         blank=True
     )
     newextramuralclient_assessment = models.ForeignKey(
-        ClinicianNewEMCAssessment,
+        NewEMCAssessment,
         on_delete=models.PROTECT,
         verbose_name="New Extra-Mural Client Assessment",
         db_column="new_extra_muralclient_assessment",

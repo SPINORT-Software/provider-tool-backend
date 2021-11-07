@@ -5,20 +5,49 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="cb744dec-d346-4c8e-b110-6b6349e6b94b" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/providertool.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/providertool.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/core/constants.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/7fcd4e23-8603-4e7b-98c9-cd3349282915.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/7fcd4e23-8603-4e7b-98c9-cd3349282915.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/casemanager/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/casemanager/admin.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/casemanager/constants.py" beforeDir="false" afterPath="$PROJECT_DIR$/casemanager/constants.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/casemanager/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/casemanager/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/casemanager/serializers.py" beforeDir="false" afterPath="$PROJECT_DIR$/casemanager/serializers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/casemanager/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/casemanager/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/clientpatient/serializers.py" beforeDir="false" afterPath="$PROJECT_DIR$/clientpatient/serializers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/clinician/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/clinician/models.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/clinician/serializers.py" beforeDir="false" afterPath="$PROJECT_DIR$/clinician/serializers.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/clinician/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/clinician/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/clinician/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/clinician/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/providertool/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/providertool/settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/core/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/core/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/core/serializers.py" beforeDir="false" afterPath="$PROJECT_DIR$/core/serializers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/core/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/core/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/documents/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/documents/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/documents/serializers.py" beforeDir="false" afterPath="$PROJECT_DIR$/documents/serializers.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitSEFilterConfiguration">
+    <file-type-list>
+      <filtered-out-file-type name="LOCAL_BRANCH" />
+      <filtered-out-file-type name="REMOTE_BRANCH" />
+      <filtered-out-file-type name="TAG" />
+      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
+    </file-type-list>
+  </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/venv/lib/python3.9/site-packages/rest_framework/exceptions.py" root0="SKIP_INSPECTION" />
   </component>
   <component name="ProjectId" id="1zhGe7d6g801yrYwzp9YBNM7cc4" />
   <component name="ProjectViewState">
@@ -34,6 +63,7 @@
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
+    <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -45,7 +75,7 @@
       <updated>1634592999483</updated>
       <workItem from="1634593001146" duration="1072000" />
       <workItem from="1636147978146" duration="6133000" />
-      <workItem from="1636219578201" duration="3406000" />
+      <workItem from="1636219578201" duration="20935000" />
     </task>
     <servers />
   </component>
