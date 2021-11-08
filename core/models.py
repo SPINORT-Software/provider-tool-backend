@@ -1,6 +1,33 @@
 from django.db import models
 import uuid
 from django.utils.translation import gettext_lazy as _
+from django.contrib.auth.models import User
+
+
+class Types(models.TextChoices):
+    TYPE_CLIENT = 'TYPE_CLIENT', _('CLIENT')
+    TYPE_CLINICIAN = 'TYPE_CLINICIAN', _('CLINICIAN')
+    TYPE_REVIEW_BOARD = 'TYPE_REVIEW_BOARD', _('REVIEW BOARD')
+    TYPE_COMMUNITY_PARAMEDIC = 'TYPE_COMMUNITY_PARAMEDIC', _('COMMUNITY PARAMEDIC')
+    TYPE_CASE_MANAGER = 'TYPE_CASE_MANAGER', _('CASE MANAGER')
+    TYPE_ADMIN = 'TYPE_ADMIN', _('ADMIN')
+    TYPE_NORMAL_USER = 'TYPE_NORMAL_USER', _('NORMAL USER')
+
+
+class UserType(models.Model):
+    user = models.OneToOneField(
+        User,
+        on_delete=models.PROTECT,
+        verbose_name="User"
+    )
+    type = models.CharField(
+        max_length=100,
+        choices=Types.choices,
+        default=Types.TYPE_NORMAL_USER
+    )
+
+    def __str__(self):
+        return self.user.first_name + " " + self.user.last_name
 
 
 class ExistingEMCAssessment(models.Model):

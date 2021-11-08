@@ -4,6 +4,7 @@ from casemanager.models import CaseManagerClientAssessment, ClientIntervention
 from clinician.models import ClinicianClientAssessment
 from reviewboard.models import ClientReferral
 from communityparamedic.models import NewCaseClientAssessment, ExistingCaseClientAssessment
+from core.models import ClientStatusChoices
 
 
 class DocumentTypes(models.Model):
@@ -52,6 +53,7 @@ class CaseManagerAssessmentFormsDocuments(models.Model):
         verbose_name="Client Assessment",
         db_column="client_assessment"
     )
+    assessment_type = models.TextField()
     is_provider_form = models.BooleanField(default=False)
 
 
@@ -69,6 +71,7 @@ class ClinicianAssessmentFormsDocuments(models.Model):
         verbose_name="Client Assessment",
         db_column="client_assessment"
     )
+    assessment_type = models.TextField()
     is_provider_form = models.BooleanField(default=False)
 
 

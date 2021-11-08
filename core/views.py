@@ -86,6 +86,7 @@ class ClientAssessmentFactory:
                     'message': 'Invalid assessment request data'
                 }, status=HTTP_400_BAD_REQUEST)
         except Exception as e:
+            print(e)
             return Response({
                 'result': False,
                 'message': 'Failed to process your request. '
@@ -109,8 +110,10 @@ class ClientAssessmentFactory:
                                                                             client_assessment_model_field,
                                                                             client_assessment,
                                                                             type_data)
+
                 if assessment_type_record:
-                    assessment_forms_create_result = self.create_assessment_forms(client_assessment, type_forms)
+                    assessment_forms_create_result = self.create_assessment_forms(client_assessment, type_forms,
+                                                                                  assessment_type_key)
                     if not assessment_forms_create_result:
                         assessment_type_record_create = False
                 else:
@@ -142,7 +145,8 @@ class ClientAssessmentFactory:
         if assessment_type_record:
             if 'assessment_type_forms' in self.request_data:
                 forms_request_data = self.request_data['assessment_type_forms']
-                assessment_forms_create_result = self.create_assessment_forms(client_assessment, forms_request_data)
+                assessment_forms_create_result = self.create_assessment_forms(client_assessment, forms_request_data,
+                                                                              client_assessment_model_field)
                 if assessment_forms_create_result:
                     return Response({
                         'result': True,
@@ -160,7 +164,7 @@ class ClientAssessmentFactory:
                 'message': 'Failed to create Client Assessment record.'
             }, status=HTTP_500_INTERNAL_SERVER_ERROR)
 
-    def create_assessment_forms(self, client_assessment, forms_request_data):
+    def create_assessment_forms(self, client_assessment, forms_request_data, assessment_type):
         assessment_forms_create = True
 
         if any(key in forms_request_data for key in ("provider_specific_forms", "assessment_forms")) and isinstance(
@@ -168,11 +172,14 @@ class ClientAssessmentFactory:
             for form in forms_request_data:
                 if isinstance(forms_request_data[form], list):
                     for form_document in forms_request_data[form]:
+
+                        print(assessment_type)
+
                         serializer_data = {
                             "document": form_document,
-                            "client_assessment": client_assessment.client_assessment_id
+                            "client_assessment": client_assessment.client_assessment_id,
+                            "assessment_type": assessment_type
                         }
-
                         if form == "provider_specific_forms":
                             serializer_data["is_provider_form"] = True
                         form_document_serializer = self.AssessmentFormsSerializer(data=serializer_data)

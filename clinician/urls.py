@@ -20,6 +20,8 @@ urlpatterns = [
 
     path('assessment-create', AssessmentViews.AssessmentCreate.as_view()),
 
+    path('assessment/<str:pk>', AssessmentViews.AssessmentDetail.as_view()),
+
 
     # # ADD - EDIT - DELETE for Client Assessment
     # path('client-assessment/<str:pk>', ClientAssessmentDetail.as_view()),

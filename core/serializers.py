@@ -5,10 +5,22 @@ from .models import *
 from rest_framework.serializers import ModelSerializer
 
 
+class UserTypeSerializer(ModelSerializer):
+    class Meta:
+        model = UserType
+        fields = '__all__'
+
+
 class UserSerializer(serializers.ModelSerializer):
+    user_type = serializers.SerializerMethodField()
+
+    def get_user_type(self, obj):
+        user = UserType.objects.get(user=obj)
+        return UserTypeSerializer(user).data['type']
+
     class Meta:
         model = User
-        fields = ('username', 'first_name', 'last_name', 'date_joined')
+        fields = ('username', 'first_name', 'last_name', 'date_joined', 'user_type', 'id')
 
 
 class UserSerializerWithToken(serializers.ModelSerializer):

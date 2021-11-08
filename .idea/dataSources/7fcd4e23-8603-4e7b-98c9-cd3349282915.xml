@@ -3162,445 +3162,455 @@ model</ColNames>
       <DataType>char(32)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <index id="803" parent="324" name="documents_assessment_client_assessment_5be2edd4_fk_casemanag">
+    <column id="803" parent="324" name="assessment_type">
+      <Position>5</Position>
+      <DataType>longtext|0s</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <index id="804" parent="324" name="documents_assessment_client_assessment_5be2edd4_fk_casemanag">
       <ColNames>client_assessment</ColNames>
       <Type>btree</Type>
     </index>
-    <index id="804" parent="324" name="documents_assessment_document_68fdb5c0_fk_documents">
+    <index id="805" parent="324" name="documents_assessment_document_68fdb5c0_fk_documents">
       <ColNames>document</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="805" parent="324" name="PRIMARY">
+    <key id="806" parent="324" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>assessment_form_id</ColNames>
       <Primary>1</Primary>
     </key>
-    <foreign-key id="806" parent="324" name="documents_assessment_client_assessment_5be2edd4_fk_casemanag">
+    <foreign-key id="807" parent="324" name="documents_assessment_client_assessment_5be2edd4_fk_casemanag">
       <ColNames>client_assessment</ColNames>
       <RefTableName>casemanager_casemanagerclientassessment</RefTableName>
       <RefColNames>client_assessment_id</RefColNames>
     </foreign-key>
-    <foreign-key id="807" parent="324" name="documents_assessment_document_68fdb5c0_fk_documents">
+    <foreign-key id="808" parent="324" name="documents_assessment_document_68fdb5c0_fk_documents">
       <ColNames>document</ColNames>
       <RefTableName>documents_documents</RefTableName>
       <RefColNames>document_id</RefColNames>
     </foreign-key>
-    <column id="808" parent="325" name="assessment_form_id">
+    <column id="809" parent="325" name="assessment_form_id">
       <Position>1</Position>
       <DataType>char(32)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="809" parent="325" name="is_provider_form">
+    <column id="810" parent="325" name="is_provider_form">
       <Position>2</Position>
       <DataType>tinyint(1)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="810" parent="325" name="client_assessment">
+    <column id="811" parent="325" name="client_assessment">
       <Position>3</Position>
       <DataType>char(32)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="811" parent="325" name="document">
+    <column id="812" parent="325" name="document">
       <Position>4</Position>
       <DataType>char(32)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <index id="812" parent="325" name="documents_cliniciana_client_assessment_c5d79f73_fk_clinician">
+    <column id="813" parent="325" name="assessment_type">
+      <Position>5</Position>
+      <DataType>longtext|0s</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <index id="814" parent="325" name="documents_cliniciana_client_assessment_c5d79f73_fk_clinician">
       <ColNames>client_assessment</ColNames>
       <Type>btree</Type>
     </index>
-    <index id="813" parent="325" name="documents_cliniciana_document_f67cf3ca_fk_documents">
+    <index id="815" parent="325" name="documents_cliniciana_document_f67cf3ca_fk_documents">
       <ColNames>document</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="814" parent="325" name="PRIMARY">
+    <key id="816" parent="325" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>assessment_form_id</ColNames>
       <Primary>1</Primary>
     </key>
-    <foreign-key id="815" parent="325" name="documents_cliniciana_client_assessment_c5d79f73_fk_clinician">
+    <foreign-key id="817" parent="325" name="documents_cliniciana_client_assessment_c5d79f73_fk_clinician">
       <ColNames>client_assessment</ColNames>
       <RefTableName>clinician_clinicianclientassessment</RefTableName>
       <RefColNames>client_assessment_id</RefColNames>
     </foreign-key>
-    <foreign-key id="816" parent="325" name="documents_cliniciana_document_f67cf3ca_fk_documents">
+    <foreign-key id="818" parent="325" name="documents_cliniciana_document_f67cf3ca_fk_documents">
       <ColNames>document</ColNames>
       <RefTableName>documents_documents</RefTableName>
       <RefColNames>document_id</RefColNames>
     </foreign-key>
-    <column id="817" parent="326" name="document_id">
+    <column id="819" parent="326" name="document_id">
       <Position>1</Position>
       <DataType>char(32)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="818" parent="326" name="name">
+    <column id="820" parent="326" name="name">
       <Position>2</Position>
       <DataType>longtext|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="819" parent="326" name="path">
+    <column id="821" parent="326" name="path">
       <Position>3</Position>
       <DataType>longtext|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="820" parent="326" name="type">
+    <column id="822" parent="326" name="type">
       <Position>4</Position>
       <DataType>char(32)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <index id="821" parent="326" name="documents_documents_type_0e2e99c6_fk_documents">
+    <index id="823" parent="326" name="documents_documents_type_0e2e99c6_fk_documents">
       <ColNames>type</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="822" parent="326" name="PRIMARY">
+    <key id="824" parent="326" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>document_id</ColNames>
       <Primary>1</Primary>
     </key>
-    <foreign-key id="823" parent="326" name="documents_documents_type_0e2e99c6_fk_documents">
+    <foreign-key id="825" parent="326" name="documents_documents_type_0e2e99c6_fk_documents">
       <ColNames>type</ColNames>
       <RefTableName>documents_documenttypes</RefTableName>
       <RefColNames>type_id</RefColNames>
     </foreign-key>
-    <column id="824" parent="327" name="type_id">
+    <column id="826" parent="327" name="type_id">
       <Position>1</Position>
       <DataType>char(32)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="825" parent="327" name="type_label">
+    <column id="827" parent="327" name="type_label">
       <Position>2</Position>
       <DataType>longtext|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="826" parent="327" name="type_code">
+    <column id="828" parent="327" name="type_code">
       <Position>3</Position>
       <DataType>longtext|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <key id="827" parent="327" name="PRIMARY">
+    <key id="829" parent="327" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>type_id</ColNames>
       <Primary>1</Primary>
     </key>
-    <column id="828" parent="328" name="form_id">
+    <column id="830" parent="328" name="form_id">
       <Position>1</Position>
       <DataType>char(32)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="829" parent="328" name="client_assessment">
+    <column id="831" parent="328" name="client_assessment">
       <Position>2</Position>
       <DataType>char(32)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="830" parent="328" name="document">
+    <column id="832" parent="328" name="document">
       <Position>3</Position>
       <DataType>char(32)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <index id="831" parent="328" name="documents_existingcl_client_assessment_c370b430_fk_community">
+    <index id="833" parent="328" name="documents_existingcl_client_assessment_c370b430_fk_community">
       <ColNames>client_assessment</ColNames>
       <Type>btree</Type>
     </index>
-    <index id="832" parent="328" name="documents_existingcl_document_540dcf33_fk_documents">
+    <index id="834" parent="328" name="documents_existingcl_document_540dcf33_fk_documents">
       <ColNames>document</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="833" parent="328" name="PRIMARY">
+    <key id="835" parent="328" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>form_id</ColNames>
       <Primary>1</Primary>
     </key>
-    <foreign-key id="834" parent="328" name="documents_existingcl_client_assessment_c370b430_fk_community">
+    <foreign-key id="836" parent="328" name="documents_existingcl_client_assessment_c370b430_fk_community">
       <ColNames>client_assessment</ColNames>
       <RefTableName>communityparamedic_existingcaseclientassessment</RefTableName>
       <RefColNames>assessment_id</RefColNames>
     </foreign-key>
-    <foreign-key id="835" parent="328" name="documents_existingcl_document_540dcf33_fk_documents">
+    <foreign-key id="837" parent="328" name="documents_existingcl_document_540dcf33_fk_documents">
       <ColNames>document</ColNames>
       <RefTableName>documents_documents</RefTableName>
       <RefColNames>document_id</RefColNames>
     </foreign-key>
-    <column id="836" parent="329" name="intervention_form_id">
+    <column id="838" parent="329" name="intervention_form_id">
       <Position>1</Position>
       <DataType>char(32)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="837" parent="329" name="client_intervention">
+    <column id="839" parent="329" name="client_intervention">
       <Position>2</Position>
       <DataType>char(32)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="838" parent="329" name="document">
+    <column id="840" parent="329" name="document">
       <Position>3</Position>
       <DataType>char(32)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <index id="839" parent="329" name="documents_interventi_client_intervention_ba69cf13_fk_casemanag">
+    <index id="841" parent="329" name="documents_interventi_client_intervention_ba69cf13_fk_casemanag">
       <ColNames>client_intervention</ColNames>
       <Type>btree</Type>
     </index>
-    <index id="840" parent="329" name="documents_interventi_document_3da1f340_fk_documents">
+    <index id="842" parent="329" name="documents_interventi_document_3da1f340_fk_documents">
       <ColNames>document</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="841" parent="329" name="PRIMARY">
+    <key id="843" parent="329" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>intervention_form_id</ColNames>
       <Primary>1</Primary>
     </key>
-    <foreign-key id="842" parent="329" name="documents_interventi_client_intervention_ba69cf13_fk_casemanag">
+    <foreign-key id="844" parent="329" name="documents_interventi_client_intervention_ba69cf13_fk_casemanag">
       <ColNames>client_intervention</ColNames>
       <RefTableName>casemanager_clientintervention</RefTableName>
       <RefColNames>intervention_id</RefColNames>
     </foreign-key>
-    <foreign-key id="843" parent="329" name="documents_interventi_document_3da1f340_fk_documents">
+    <foreign-key id="845" parent="329" name="documents_interventi_document_3da1f340_fk_documents">
       <ColNames>document</ColNames>
       <RefTableName>documents_documents</RefTableName>
       <RefColNames>document_id</RefColNames>
     </foreign-key>
-    <column id="844" parent="330" name="form_id">
+    <column id="846" parent="330" name="form_id">
       <Position>1</Position>
       <DataType>char(32)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="845" parent="330" name="client_assessment">
+    <column id="847" parent="330" name="client_assessment">
       <Position>2</Position>
       <DataType>char(32)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="846" parent="330" name="document">
+    <column id="848" parent="330" name="document">
       <Position>3</Position>
       <DataType>char(32)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <index id="847" parent="330" name="documents_newclientc_client_assessment_4bfe9aa3_fk_community">
+    <index id="849" parent="330" name="documents_newclientc_client_assessment_4bfe9aa3_fk_community">
       <ColNames>client_assessment</ColNames>
       <Type>btree</Type>
     </index>
-    <index id="848" parent="330" name="documents_newclientc_document_c4cbf72e_fk_documents">
+    <index id="850" parent="330" name="documents_newclientc_document_c4cbf72e_fk_documents">
       <ColNames>document</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="849" parent="330" name="PRIMARY">
+    <key id="851" parent="330" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>form_id</ColNames>
       <Primary>1</Primary>
     </key>
-    <foreign-key id="850" parent="330" name="documents_newclientc_client_assessment_4bfe9aa3_fk_community">
+    <foreign-key id="852" parent="330" name="documents_newclientc_client_assessment_4bfe9aa3_fk_community">
       <ColNames>client_assessment</ColNames>
       <RefTableName>communityparamedic_newcaseclientassessment</RefTableName>
       <RefColNames>assessment_id</RefColNames>
     </foreign-key>
-    <foreign-key id="851" parent="330" name="documents_newclientc_document_c4cbf72e_fk_documents">
+    <foreign-key id="853" parent="330" name="documents_newclientc_document_c4cbf72e_fk_documents">
       <ColNames>document</ColNames>
       <RefTableName>documents_documents</RefTableName>
       <RefColNames>document_id</RefColNames>
     </foreign-key>
-    <column id="852" parent="331" name="referral_form_id">
+    <column id="854" parent="331" name="referral_form_id">
       <Position>1</Position>
       <DataType>char(32)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="853" parent="331" name="client_referral">
+    <column id="855" parent="331" name="client_referral">
       <Position>2</Position>
       <DataType>char(32)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="854" parent="331" name="document">
+    <column id="856" parent="331" name="document">
       <Position>3</Position>
       <DataType>char(32)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <index id="855" parent="331" name="documents_reviewboar_client_referral_17e60b90_fk_reviewboa">
+    <index id="857" parent="331" name="documents_reviewboar_client_referral_17e60b90_fk_reviewboa">
       <ColNames>client_referral</ColNames>
       <Type>btree</Type>
     </index>
-    <index id="856" parent="331" name="documents_reviewboar_document_33a315fe_fk_documents">
+    <index id="858" parent="331" name="documents_reviewboar_document_33a315fe_fk_documents">
       <ColNames>document</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="857" parent="331" name="PRIMARY">
+    <key id="859" parent="331" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>referral_form_id</ColNames>
       <Primary>1</Primary>
     </key>
-    <foreign-key id="858" parent="331" name="documents_reviewboar_client_referral_17e60b90_fk_reviewboa">
+    <foreign-key id="860" parent="331" name="documents_reviewboar_client_referral_17e60b90_fk_reviewboa">
       <ColNames>client_referral</ColNames>
       <RefTableName>reviewboard_clientreferral</RefTableName>
       <RefColNames>referral_id</RefColNames>
     </foreign-key>
-    <foreign-key id="859" parent="331" name="documents_reviewboar_document_33a315fe_fk_documents">
+    <foreign-key id="861" parent="331" name="documents_reviewboar_document_33a315fe_fk_documents">
       <ColNames>document</ColNames>
       <RefTableName>documents_documents</RefTableName>
       <RefColNames>document_id</RefColNames>
     </foreign-key>
-    <column id="860" parent="332" name="referral_id">
+    <column id="862" parent="332" name="referral_id">
       <Position>1</Position>
       <DataType>char(32)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="861" parent="332" name="referral_date">
+    <column id="863" parent="332" name="referral_date">
       <Position>2</Position>
       <DataType>date|0s</DataType>
     </column>
-    <column id="862" parent="332" name="client_first_name">
+    <column id="864" parent="332" name="client_first_name">
       <Position>3</Position>
       <DataType>longtext|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="863" parent="332" name="client_last_name">
+    <column id="865" parent="332" name="client_last_name">
       <Position>4</Position>
       <DataType>longtext|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="864" parent="332" name="client_email">
+    <column id="866" parent="332" name="client_email">
       <Position>5</Position>
       <DataType>longtext|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="865" parent="332" name="referral_source">
+    <column id="867" parent="332" name="referral_source">
       <Position>6</Position>
       <DataType>longtext|0s</DataType>
     </column>
-    <column id="866" parent="332" name="referral_source_detail">
+    <column id="868" parent="332" name="referral_source_detail">
       <Position>7</Position>
       <DataType>longtext|0s</DataType>
     </column>
-    <column id="867" parent="332" name="organizations_upon_referral">
+    <column id="869" parent="332" name="organizations_upon_referral">
       <Position>8</Position>
       <DataType>longtext|0s</DataType>
     </column>
-    <column id="868" parent="332" name="organizations_upon_referral_detail">
+    <column id="870" parent="332" name="organizations_upon_referral_detail">
       <Position>9</Position>
       <DataType>longtext|0s</DataType>
     </column>
-    <column id="869" parent="332" name="date_of_case_discussion">
+    <column id="871" parent="332" name="date_of_case_discussion">
       <Position>10</Position>
       <DataType>date|0s</DataType>
     </column>
-    <column id="870" parent="332" name="members_present_case_discussion">
+    <column id="872" parent="332" name="members_present_case_discussion">
       <Position>11</Position>
       <DataType>longtext|0s</DataType>
     </column>
-    <column id="871" parent="332" name="members_present_case_discussion_detail">
+    <column id="873" parent="332" name="members_present_case_discussion_detail">
       <Position>12</Position>
       <DataType>longtext|0s</DataType>
     </column>
-    <column id="872" parent="332" name="case_management_organization_responsible">
+    <column id="874" parent="332" name="case_management_organization_responsible">
       <Position>13</Position>
       <DataType>longtext|0s</DataType>
     </column>
-    <column id="873" parent="332" name="case_management_organization_person_responsible">
+    <column id="875" parent="332" name="case_management_organization_person_responsible">
       <Position>14</Position>
       <DataType>longtext|0s</DataType>
     </column>
-    <column id="874" parent="332" name="decision">
+    <column id="876" parent="332" name="decision">
       <Position>15</Position>
       <DataType>varchar(20)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="875" parent="332" name="decision_detail">
+    <column id="877" parent="332" name="decision_detail">
       <Position>16</Position>
       <DataType>longtext|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="876" parent="332" name="review_board_user">
+    <column id="878" parent="332" name="review_board_user">
       <Position>17</Position>
       <DataType>char(32)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <index id="877" parent="332" name="reviewboard_clientre_review_board_user_7a2ba76b_fk_reviewboa">
+    <index id="879" parent="332" name="reviewboard_clientre_review_board_user_7a2ba76b_fk_reviewboa">
       <ColNames>review_board_user</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="878" parent="332" name="PRIMARY">
+    <key id="880" parent="332" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>referral_id</ColNames>
       <Primary>1</Primary>
     </key>
-    <foreign-key id="879" parent="332" name="reviewboard_clientre_review_board_user_7a2ba76b_fk_reviewboa">
+    <foreign-key id="881" parent="332" name="reviewboard_clientre_review_board_user_7a2ba76b_fk_reviewboa">
       <ColNames>review_board_user</ColNames>
       <RefTableName>reviewboard_reviewboarduser</RefTableName>
       <RefColNames>reviewboard_user_id</RefColNames>
     </foreign-key>
-    <column id="880" parent="333" name="reviewboard_user_id">
+    <column id="882" parent="333" name="reviewboard_user_id">
       <Position>1</Position>
       <DataType>char(32)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="881" parent="333" name="created_at">
+    <column id="883" parent="333" name="created_at">
       <Position>2</Position>
       <DataType>datetime(6)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="882" parent="333" name="updated_at">
+    <column id="884" parent="333" name="updated_at">
       <Position>3</Position>
       <DataType>datetime(6)|0s</DataType>
     </column>
-    <column id="883" parent="333" name="user_id">
+    <column id="885" parent="333" name="user_id">
       <Position>4</Position>
       <DataType>char(32)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <index id="884" parent="333" name="reviewboard_reviewbo_user_id_35f1bf69_fk_users_use">
+    <index id="886" parent="333" name="reviewboard_reviewbo_user_id_35f1bf69_fk_users_use">
       <ColNames>user_id</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="885" parent="333" name="PRIMARY">
+    <key id="887" parent="333" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>reviewboard_user_id</ColNames>
       <Primary>1</Primary>
     </key>
-    <foreign-key id="886" parent="333" name="reviewboard_reviewbo_user_id_35f1bf69_fk_users_use">
+    <foreign-key id="888" parent="333" name="reviewboard_reviewbo_user_id_35f1bf69_fk_users_use">
       <ColNames>user_id</ColNames>
       <RefTableName>users_users</RefTableName>
       <RefColNames>user_id</RefColNames>
     </foreign-key>
-    <column id="887" parent="334" name="user_id">
+    <column id="889" parent="334" name="user_id">
       <Position>1</Position>
       <DataType>char(32)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="888" parent="334" name="email">
+    <column id="890" parent="334" name="email">
       <Position>2</Position>
       <DataType>varchar(45)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="889" parent="334" name="password">
+    <column id="891" parent="334" name="password">
       <Position>3</Position>
       <DataType>longtext|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="890" parent="334" name="first_name">
+    <column id="892" parent="334" name="first_name">
       <Position>4</Position>
       <DataType>longtext|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="891" parent="334" name="last_name">
+    <column id="893" parent="334" name="last_name">
       <Position>5</Position>
       <DataType>longtext|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="892" parent="334" name="created_at">
+    <column id="894" parent="334" name="created_at">
       <Position>6</Position>
       <DataType>datetime(6)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="893" parent="334" name="updated_at">
+    <column id="895" parent="334" name="updated_at">
       <Position>7</Position>
       <DataType>datetime(6)|0s</DataType>
     </column>
-    <index id="894" parent="334" name="email">
+    <index id="896" parent="334" name="email">
       <ColNames>email</ColNames>
       <Unique>1</Unique>
       <Type>btree</Type>
     </index>
-    <key id="895" parent="334" name="PRIMARY">
+    <key id="897" parent="334" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>user_id</ColNames>
       <Primary>1</Primary>
     </key>
-    <key id="896" parent="334" name="email">
+    <key id="898" parent="334" name="email">
       <ColNames>email</ColNames>
       <UnderlyingIndexName>email</UnderlyingIndexName>
     </key>

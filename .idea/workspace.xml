@@ -5,18 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="cb744dec-d346-4c8e-b110-6b6349e6b94b" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/core/constants.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/dataSources/7fcd4e23-8603-4e7b-98c9-cd3349282915.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/7fcd4e23-8603-4e7b-98c9-cd3349282915.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/casemanager/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/casemanager/admin.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/casemanager/constants.py" beforeDir="false" afterPath="$PROJECT_DIR$/casemanager/constants.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/casemanager/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/casemanager/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/casemanager/serializers.py" beforeDir="false" afterPath="$PROJECT_DIR$/casemanager/serializers.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/casemanager/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/casemanager/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/clientpatient/serializers.py" beforeDir="false" afterPath="$PROJECT_DIR$/clientpatient/serializers.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/clinician/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/clinician/models.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/clinician/serializers.py" beforeDir="false" afterPath="$PROJECT_DIR$/clinician/serializers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/clinician/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/clinician/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/clinician/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/clinician/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/core/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/core/admin.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/core/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/core/models.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/core/serializers.py" beforeDir="false" afterPath="$PROJECT_DIR$/core/serializers.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/core/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/core/views.py" afterDir="false" />
@@ -75,7 +69,7 @@
       <updated>1634592999483</updated>
       <workItem from="1634593001146" duration="1072000" />
       <workItem from="1636147978146" duration="6133000" />
-      <workItem from="1636219578201" duration="20935000" />
+      <workItem from="1636219578201" duration="36308000" />
     </task>
     <servers />
   </component>
