@@ -18,7 +18,8 @@ class UserType(models.Model):
     user = models.OneToOneField(
         User,
         on_delete=models.PROTECT,
-        verbose_name="User"
+        verbose_name="User",
+        unique=True
     )
     type = models.CharField(
         max_length=100,

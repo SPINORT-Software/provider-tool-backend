@@ -9,7 +9,11 @@ class ReviewBoardUserSerializer(ModelSerializer):
 
 
 class ClientReferralSerializer(ModelSerializer):
-    review_board_user = ReviewBoardUserSerializer()
+    def to_representation(self, instance):
+        response = super().to_representation(instance)
+        response['review_board_user'] = ReviewBoardUserSerializer(instance.review_board_user).data
+        return response
+
     class Meta:
         model = ClientReferral
         fields = '__all__'

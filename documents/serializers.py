@@ -38,8 +38,11 @@ class InterventionFormsDocumentsSerializer(ModelSerializer):
 
 
 class ReviewBoardReferralFormsDocumentsSerializer(ModelSerializer):
+    def to_representation(self, instance):
+        response = super().to_representation(instance)
+        response['document'] = DocumentsSerializer(instance.document).data
+        return response
+
     class Meta:
         model = ReviewBoardReferralFormsDocuments
         fields = '__all__'
-
-

@@ -1,7 +1,7 @@
 from django.http import HttpResponseRedirect
 from django.contrib.auth.models import User
 from rest_framework import permissions, status
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, authentication_classes
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -11,16 +11,24 @@ from .serializers import UserSerializer, UserSerializerWithToken
 from .constants import *
 from rest_framework.status import *
 from documents.serializers import *
+from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 
 
 @api_view(['GET'])
+@authentication_classes((JSONWebTokenAuthentication,))
 def current_user(request):
     """
     Determine the current user by their token, and return their data
     """
-
     serializer = UserSerializer(request.user)
     return Response(serializer.data)
+
+
+def my_jwt_response_handler(token, user=None, request=None):
+    return {
+        'token': token,
+        'user': UserSerializer(user, context={'request': request}).data
+    }
 
 
 class UserList(APIView):
@@ -28,7 +36,6 @@ class UserList(APIView):
     Create a new user. It's called 'UserList' because normally we'd have a get
     method here too, for retrieving a list of all User objects.
     """
-
     permission_classes = (permissions.AllowAny,)
 
     def post(self, request, format=None):
@@ -37,13 +44,6 @@ class UserList(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-def my_jwt_response_handler(token, user=None, request=None):
-    return {
-        'token': token,
-        'user': UserSerializer(user, context={'request': request}).data
-    }
 
 
 class ClientAssessmentFactory:

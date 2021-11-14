@@ -10,6 +10,10 @@ urlpatterns = [
     # LIST for Client Assessment
     path('referral', ClientReferralList.as_view()),
 
+    path('referral/<str:pk>', ClientReferralRetrieveView.as_view()),
+
+    path('<str:pk>/referral', ClientReferralListUserFilter.as_view()),
+
     path('referral-create', ClientReferralCreate.as_view()),
 ]
 

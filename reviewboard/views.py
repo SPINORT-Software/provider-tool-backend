@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework.status import *
 import json
 from rest_framework import generics
+from documents.models import ReviewBoardReferralFormsDocuments
 
 
 class ClientReferralList(generics.ListCreateAPIView):
@@ -14,6 +15,52 @@ class ClientReferralList(generics.ListCreateAPIView):
     """
     queryset = ClientReferral.objects.all()
     serializer_class = ClientReferralSerializer
+
+
+class ClientReferralListUserFilter(generics.ListAPIView):
+    """
+    List all client referral by user.
+    """
+    queryset = ClientReferral.objects.all()
+    serializer_class = ClientReferralSerializer
+
+    def get_queryset(self):
+        queryset = super(ClientReferralListUserFilter, self).get_queryset()
+        review_board_user = self.kwargs['pk']
+        return queryset.filter(review_board_user=review_board_user)
+
+    def list(self, request, *args, **kwargs):
+        retrieve_response = super().list(request, *args, **kwargs)
+        return Response({
+            'status': 200,
+            'data': retrieve_response.data
+        })
+
+
+class ClientReferralRetrieveView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    Retrieve client referral detail.
+    """
+    queryset = ClientReferral.objects.all()
+    serializer_class = ClientReferralSerializer
+
+    def retrieve(self, request, *args, **kwargs):
+        retrieve_response = super().retrieve(request, *args, **kwargs)
+        referral_forms = ReviewBoardReferralFormsDocuments.objects.filter(client_referral=kwargs.get('pk'))
+        retrieve_response.data['referral_forms'] = ReviewBoardReferralFormsDocumentsSerializer(referral_forms,
+                                                                                               many=True).data
+        return Response({
+            'status': 200,
+            'data': retrieve_response.data
+        })
+
+    def update(self, request, *args, **kwargs):
+        retrieve_response = super().update(request, *args, **kwargs)
+
+        return Response({
+            'status': 200,
+            'data': retrieve_response.data
+        })
 
 
 class ClientReferralCreate(APIView):

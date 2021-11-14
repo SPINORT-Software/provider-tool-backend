@@ -3,12 +3,14 @@ from users.models import Users
 import uuid
 from clientpatient.models import Client, ClientStatus
 from django.utils.translation import gettext_lazy as _
+from django.contrib.auth.models import User
+import json
 
 
 class ReviewBoardUser(models.Model):
     reviewboard_user_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
     user_id = models.ForeignKey(
-        Users,
+        User,
         on_delete=models.PROTECT,
         verbose_name="User",
         db_column="user_id"
@@ -51,3 +53,9 @@ class ClientReferral(models.Model):
         default=ClientStatus.POTENTIAL_CLIENT,
     )
     decision_detail = models.TextField()
+
+    def save(self, *args, **kwargs):
+        # self.organizations_upon_referral = json.dumps(self.organizations_upon_referral)
+        self.organizations_upon_referral = "Hello 1"
+        print(self.organizations_upon_referral)
+        super().save(*args, **kwargs)
