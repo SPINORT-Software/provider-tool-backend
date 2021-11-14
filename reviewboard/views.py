@@ -57,6 +57,14 @@ class ClientReferralRetrieveView(generics.RetrieveUpdateDestroyAPIView):
     def update(self, request, *args, **kwargs):
         retrieve_response = super().update(request, *args, **kwargs)
 
+        if retrieve_response.status_code == 200:
+            if 'referral_forms' in request.data:
+                referral_forms = request.data['referral_forms']
+                client_referral_id = kwargs.get('pk')
+                client_referral_object = ClientReferral.objects.get(referral_id=client_referral_id)
+                ReviewBoardReferralFormsDocuments.objects.filter(client_referral=client_referral_object).delete()
+                ClientReferralCreate.create_referral_forms(client_referral_object, referral_forms)
+
         return Response({
             'status': 200,
             'data': retrieve_response.data
@@ -91,11 +99,13 @@ class ClientReferralCreate(APIView):
                 client_referral = serializer.save()
                 if client_referral:
                     forms_request_data = request.data["referral_forms"]
-                    forms_create_result = self.create_referral_forms(client_referral, forms_request_data)
+                    forms_create_result = ClientReferralCreate.create_referral_forms(client_referral,
+                                                                                     forms_request_data)
 
                     if forms_create_result:
                         return Response({
                             'result': True,
+                            'data': ClientReferralSerializer(client_referral).data,
                             'message': 'Client Referral record created.'
                         }, status=HTTP_201_CREATED)
                     else:
@@ -122,7 +132,8 @@ class ClientReferralCreate(APIView):
                 'message': 'Failed to process your request. '
             }, status=HTTP_500_INTERNAL_SERVER_ERROR)
 
-    def create_referral_forms(self, client_referral, forms_request_data):
+    @staticmethod
+    def create_referral_forms(client_referral, forms_request_data):
         referralFormsCreate = True
         if isinstance(forms_request_data, dict):
             for form in forms_request_data:

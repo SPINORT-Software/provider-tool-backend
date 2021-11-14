@@ -40,10 +40,10 @@ class ClientReferral(models.Model):
     client_email = models.TextField()
     referral_source = models.TextField(null=True, blank=True)
     referral_source_detail = models.TextField(null=True, blank=True)
-    organizations_upon_referral = models.TextField(null=True, blank=True)
+    organizations_upon_referral = models.JSONField(null=True, blank=True)
     organizations_upon_referral_detail = models.TextField(null=True, blank=True)
     date_of_case_discussion = models.DateField(null=True, blank=True)
-    members_present_case_discussion = models.TextField(null=True, blank=True)
+    members_present_case_discussion = models.JSONField(null=True, blank=True)
     members_present_case_discussion_detail = models.TextField(null=True, blank=True)
     case_management_organization_responsible = models.TextField(null=True, blank=True)
     case_management_organization_person_responsible = models.TextField(null=True, blank=True)
@@ -54,8 +54,3 @@ class ClientReferral(models.Model):
     )
     decision_detail = models.TextField()
 
-    def save(self, *args, **kwargs):
-        # self.organizations_upon_referral = json.dumps(self.organizations_upon_referral)
-        self.organizations_upon_referral = "Hello 1"
-        print(self.organizations_upon_referral)
-        super().save(*args, **kwargs)
