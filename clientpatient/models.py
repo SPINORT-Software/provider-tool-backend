@@ -1,7 +1,10 @@
 from django.db import models
 import uuid
-from users.models import Users
 from django.utils.translation import gettext_lazy as _
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.contrib.auth.models import User
+from django.conf import settings
 
 
 class ClientStatus(models.TextChoices):
@@ -17,9 +20,9 @@ class Client(models.Model):
     """
     client_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
     client_active = models.BooleanField(default=False, verbose_name="Client Active")
-    user_id = models.ForeignKey(
-        Users,
-        on_delete=models.PROTECT,
+    user_id = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
         verbose_name="User - Client",
         db_column="user_id"
     )
@@ -38,6 +41,11 @@ class Client(models.Model):
 
     def __str__(self):
         return f"{self.user_id.first_name} {self.user_id.last_name} [{self.client_id}]"
+
+
+@receiver(post_save, sender=User)
+def save_user_profile(sender, instance, **kwargs):
+    instance.client.save()
 
 
 class CommunicationLog(models.Model):

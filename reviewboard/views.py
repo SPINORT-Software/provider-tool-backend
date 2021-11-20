@@ -7,6 +7,7 @@ from rest_framework.status import *
 import json
 from rest_framework import generics
 from documents.models import ReviewBoardReferralFormsDocuments
+from providertool.errors import default_error_response
 
 
 class ClientReferralList(generics.ListCreateAPIView):
@@ -45,10 +46,13 @@ class ClientReferralRetrieveView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ClientReferralSerializer
 
     def retrieve(self, request, *args, **kwargs):
+        referral = super().get_object()
+        # print(referral.review_board_user.user.reviewboarduser)
+        print(referral.review_board_user.user)
+
+        return Response("ok")
+
         retrieve_response = super().retrieve(request, *args, **kwargs)
-        referral_forms = ReviewBoardReferralFormsDocuments.objects.filter(client_referral=kwargs.get('pk'))
-        retrieve_response.data['referral_forms'] = ReviewBoardReferralFormsDocumentsSerializer(referral_forms,
-                                                                                               many=True).data
         return Response({
             'status': 200,
             'data': retrieve_response.data
@@ -84,19 +88,10 @@ class ClientReferralCreate(APIView):
                     'message': 'Invalid client referral request data'
                 }, status=HTTP_400_BAD_REQUEST)
 
-            referral_data = copy.deepcopy(request.data['data'])
-
-            if "organizations_upon_referral" in referral_data:
-                clinical_type_json = json.dumps(referral_data["organizations_upon_referral"])
-                referral_data["organizations_upon_referral"] = clinical_type_json
-
-            if "members_present_case_discussion" in referral_data:
-                clinical_type_json = json.dumps(referral_data["members_present_case_discussion"])
-                referral_data["members_present_case_discussion"] = clinical_type_json
-
-            serializer = ClientReferralSerializer(data=referral_data)
+            serializer = ClientReferralSerializer(data=request.data['data'])
             if serializer.is_valid():
                 client_referral = serializer.save()
+
                 if client_referral:
                     forms_request_data = request.data["referral_forms"]
                     forms_create_result = ClientReferralCreate.create_referral_forms(client_referral,
@@ -109,24 +104,23 @@ class ClientReferralCreate(APIView):
                             'message': 'Client Referral record created.'
                         }, status=HTTP_201_CREATED)
                     else:
+                        client_referral.delete()
                         return Response({
                             'result': True,
-                            'message': 'Failed to create Client Referral record.'
+                            'message': 'Failed to create referral forms. Try to create the referral again later.'
                         }, status=HTTP_500_INTERNAL_SERVER_ERROR)
                 else:
                     return Response({
                         'result': False,
-                        'message': 'Failed to create Client Referral record.'
+                        'message': 'Failed to create Client Referral record. '
                     }, status=HTTP_500_INTERNAL_SERVER_ERROR)
             else:
-                print(serializer.errors)
                 return Response({
                     'result': False,
-                    'message': 'Invalid referral request data'
+                    'message': default_error_response(serializer)
                 }, status=HTTP_400_BAD_REQUEST)
 
         except Exception as e:
-            print(str(e))
             return Response({
                 'result': False,
                 'message': 'Failed to process your request. '

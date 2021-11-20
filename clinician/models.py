@@ -4,6 +4,9 @@ import uuid
 from clientpatient.models import Client
 from django.utils.translation import gettext_lazy as _
 from core.models import *
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.conf import settings
 
 
 class ClinicanUsers(models.Model):
@@ -12,7 +15,7 @@ class ClinicanUsers(models.Model):
     """
     clinician_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         on_delete=models.PROTECT,
         verbose_name="User - Clinican",
         db_column="user_id"
@@ -26,6 +29,11 @@ class ClinicanUsers(models.Model):
 
     def __str__(self):
         return f"{self.user.first_name} {self.user.last_name}"
+
+
+@receiver(post_save, sender=User)
+def save_user_profile(sender, instance, **kwargs):
+    instance.clinicianuser.save()
 
 
 class DailyWorkLoad(models.Model):

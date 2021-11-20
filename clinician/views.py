@@ -10,6 +10,9 @@ from core.views import ClientAssessmentFactory
 from core.constants import USER_TYPE_CLINICIAN
 from documents.models import ClinicianAssessmentFormsDocuments
 from documents.serializers import ClinicianAssessmentFormsDocumentsDetailSerializer
+from rest_framework.viewsets import ModelViewSet
+from rest_framework.pagination import PageNumberPagination
+from django.core.exceptions import *
 
 
 class Workload:
@@ -63,9 +66,9 @@ class AssessmentViews:
     class AssessmentCreate(APIView):
         def post(self, request):
             casemanager_client_assessment = ClientAssessmentFactory(request, USER_TYPE_CLINICIAN)
-            return casemanager_client_assessment.process_request()
+            return casemanager_client_assessment.process_create_request()
 
-    class AssessmentDetail(generics.RetrieveUpdateDestroyAPIView):
+    class AssessmentRetrieveView(generics.RetrieveUpdateAPIView):
         queryset = ClinicianClientAssessment.objects.all()
         serializer_class = ClientAssessmentDetailSerializer
 
@@ -84,6 +87,31 @@ class AssessmentViews:
             return Response({
                 'status': 200,
                 'data': retrieve_response.data
+            })
+
+        def update(self, request, *args, **kwargs):
+            existing_object_client = super().get_object().client
+            casemanager_client_assessment = ClientAssessmentFactory(request, USER_TYPE_CLINICIAN)
+            return casemanager_client_assessment.process_update_request(existing_object_client)
+
+    class ClinicianAssessmentList(ModelViewSet):
+        queryset = ClinicianClientAssessment.objects.all()
+        serializer_class = ClientAssessmentSerializer
+        pagination_class = PageNumberPagination
+
+        def get_queryset(self):
+            try:
+                clinician_id = self.kwargs.get('clinician')
+                return super().get_queryset().filter(clinician=clinician_id)
+            except ValidationError as e:
+                return []
+
+        def list(self, request, *args, **kwargs):
+            list_response = super().list(request, args, kwargs)
+            return Response({
+                'result': True,
+                'message': 'Assessment list generated for Clinician.',
+                'data': list_response.data
             })
 
 # class InterventionsViews:

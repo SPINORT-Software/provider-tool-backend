@@ -16,3 +16,15 @@ class MissingRequiredParamsException(Error):
         self.errors = {
             'result': self.result
         }
+
+
+def default_error_response(serializer):
+    """
+    Prepare serializer error messages for response.
+    :param serializer:
+    :return:
+    """
+    error_message = []
+    for key in serializer._errors:
+        error_message.append("%s" % (serializer._errors[key][0]))
+    return ",".join(error_message)

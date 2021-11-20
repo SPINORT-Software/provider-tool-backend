@@ -2,7 +2,8 @@ from django.db import models
 import uuid
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import User
-
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 class Types(models.TextChoices):
     TYPE_CLIENT = 'TYPE_CLIENT', _('CLIENT')
@@ -14,21 +15,26 @@ class Types(models.TextChoices):
     TYPE_NORMAL_USER = 'TYPE_NORMAL_USER', _('NORMAL USER')
 
 
-class UserType(models.Model):
-    user = models.OneToOneField(
-        User,
-        on_delete=models.PROTECT,
-        verbose_name="User",
-        unique=True
-    )
-    type = models.CharField(
-        max_length=100,
-        choices=Types.choices,
-        default=Types.TYPE_NORMAL_USER
-    )
-
-    def __str__(self):
-        return self.user.first_name + " " + self.user.last_name
+# class UserType(models.Model):
+#     user = models.OneToOneField(
+#         User,
+#         on_delete=models.PROTECT,
+#         verbose_name="User",
+#         unique=True
+#     )
+#     type = models.CharField(
+#         max_length=100,
+#         choices=Types.choices,
+#         default=Types.TYPE_NORMAL_USER
+#     )
+#
+#     def __str__(self):
+#         return self.user.first_name + " " + self.user.last_name
+#
+#
+# @receiver(post_save, sender=User)
+# def save_user_profile(sender, instance, **kwargs):
+#     instance.usertype.save()
 
 
 class ExistingEMCAssessment(models.Model):

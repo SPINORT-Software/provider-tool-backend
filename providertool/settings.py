@@ -46,7 +46,8 @@ INSTALLED_APPS = [
     'reviewboard',
     'communityparamedic',
     'core',
-    'clinician'
+    'clinician',
+    'authentication'
 ]
 
 MIDDLEWARE = [
@@ -90,11 +91,11 @@ DATABASES = {
         'OPTIONS': {
             'read_default_file': '/etc/mysql/my.cnf',
         },
-        # 'USER': 'root',
-        # 'PASSWORD': '%(Dkp[5e<RrR{t;k',
-        # 'NAME': 'providertool',
-        # 'HOST': 'localhost'
-        # 'NAME': BASE_DIR / 'db.sqlite3',
+        'USER': 'root',
+        'PASSWORD': '%(Dkp[5e<RrR{t;k',
+        'NAME': 'providertool',
+        'HOST': 'localhost',
+        # 'NAME': BASE_DIR / 'db.sqlite3'
     }
 }
 
@@ -149,13 +150,16 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 5,
     'DEFAULT_PERMISSION_CLASSES': (
-        # 'rest_framework.permissions.IsAuthenticated',
+        'rest_framework.permissions.IsAuthenticated',
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        'authentication.backends.JWTAuthentication',
+        # 'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication',
     ),
+    'EXCEPTION_HANDLER': 'core.exceptions.core_exception_handler',
+    'NON_FIELD_ERRORS_KEY': 'error'
 }
 CORS_ORIGIN_WHITELIST = (
     'http://localhost:3000',
@@ -164,3 +168,10 @@ CORS_ORIGIN_WHITELIST = (
 JWT_AUTH = {
     'JWT_RESPONSE_PAYLOAD_HANDLER': 'core.views.my_jwt_response_handler'
 }
+
+# Tell Django about the custom `User` model we created. The string
+# `authentication.User` tells Django we are referring to the `User` model in
+# the `authentication` module. This module is registered above in a setting
+# called `INSTALLED_APPS`.
+AUTH_USER_MODEL = 'authentication.User'
+

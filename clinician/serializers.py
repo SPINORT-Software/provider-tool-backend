@@ -1,7 +1,7 @@
-from rest_framework.serializers import ModelSerializer, SerializerMethodField
+from rest_framework.serializers import ModelSerializer
 from .models import *
 from clientpatient.serializers import ClientSerializer
-from core.serializers import *
+from core.serializers.models import ExistingEMCAssessmentSerializer, ClientReAssessmentSerializer, NewEMCAssessmentSerializer
 
 
 class DailyWorkLoadSerializer(ModelSerializer):

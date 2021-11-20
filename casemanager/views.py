@@ -43,7 +43,7 @@ class ClientAssessmentCreate(APIView):
 
     def post(self, request):
         casemanager_client_assessment = ClientAssessmentFactory(request, USER_TYPE_CASE_MANAGER)
-        return casemanager_client_assessment.process_request()
+        return casemanager_client_assessment.process_create_request()
 
 
 class ClientAssessmentDetail(APIView):

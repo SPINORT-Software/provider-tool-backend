@@ -26,7 +26,7 @@ urlpatterns = [
     path('casemanager/', include('casemanager.urls')),
     path('review-board/', include('reviewboard.urls')),
     path('communityparamedic/', include('communityparamedic.urls')),
-
+    path('auth/', include('authentication.urls')),
     path('token-auth/', obtain_jwt_token),
     path('core/', include('core.urls'))
 ]

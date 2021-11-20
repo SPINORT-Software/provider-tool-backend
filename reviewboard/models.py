@@ -5,13 +5,15 @@ from clientpatient.models import Client, ClientStatus
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import User
 import json
-
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.conf import settings
 
 class ReviewBoardUser(models.Model):
     reviewboard_user_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
-    user_id = models.ForeignKey(
-        User,
-        on_delete=models.PROTECT,
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
         verbose_name="User",
         db_column="user_id"
     )
@@ -23,7 +25,7 @@ class ReviewBoardUser(models.Model):
         verbose_name_plural = "Review Board Users"
 
     def __str__(self):
-        return f"{self.user_id.first_name} {self.user_id.last_name}"
+        return f"{self.user.first_name} {self.user.last_name}"
 
 
 class ClientReferral(models.Model):
@@ -53,4 +55,3 @@ class ClientReferral(models.Model):
         default=ClientStatus.POTENTIAL_CLIENT,
     )
     decision_detail = models.TextField()
-

@@ -7,11 +7,12 @@ from rest_framework.views import APIView
 
 import casemanager.serializers
 import clinician.serializers
-from .serializers import UserSerializer, UserSerializerWithToken
+from .serializers.auth import UserSerializer, UserSerializerWithToken
 from .constants import *
 from rest_framework.status import *
 from documents.serializers import *
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
+from providertool.errors import default_error_response
 
 
 @api_view(['GET'])
@@ -69,16 +70,18 @@ class ClientAssessmentFactory:
             self.ClientAssessmentSerializer = clinician.serializers.ClientAssessmentSerializer
             self.AssessmentFormsSerializer = ClinicianAssessmentFormsDocumentsSerializer
 
-    def process_request(self):
+    def process_create_request(self):
         try:
             assessment_data_serializer = self.ClientAssessmentSerializer(data=self.request_data['assessment'])
             if assessment_data_serializer.is_valid():
                 client_assessment = assessment_data_serializer.save()
                 request_assessment_type = assessment_data_serializer.validated_data['client_status']
 
-                if request_assessment_type == "NEW_CASE_CLIENT_EXISTING_EMC_REASSESS":
+                if request_assessment_type == NEW_CASE_CLIENT_EXISTING_EMC_REASSESS:
                     return self.multiple_assessment_type_process(client_assessment, request_assessment_type)
-                else:
+                elif request_assessment_type in (
+                        NEW_CASE_CLIENT_NEW_EXTRA_MURAL_CLIENT, NEW_CASE_CLIENT_EXISTING_EMC_NO_REASSESS,
+                        EXISTING_CASE_CLIENT_REASSESS):
                     return self.single_assessment_type_process(client_assessment, request_assessment_type)
             else:
                 return Response({
@@ -86,7 +89,6 @@ class ClientAssessmentFactory:
                     'message': 'Invalid assessment request data'
                 }, status=HTTP_400_BAD_REQUEST)
         except Exception as e:
-            print(e)
             return Response({
                 'result': False,
                 'message': 'Failed to process your request. '
@@ -204,3 +206,28 @@ class ClientAssessmentFactory:
                 client_assessment.save()
                 return assessment_type_record
         return False
+
+    def process_update_request(self, existing_object_client):
+        try:
+            assessment_data_serializer = self.ClientAssessmentSerializer(data=self.request_data['assessment'])
+            if assessment_data_serializer.is_valid():
+                return Response("OK")
+                # client_assessment = assessment_data_serializer.save()
+                # request_assessment_type = assessment_data_serializer.validated_data['client_status']
+                #
+                # if request_assessment_type == NEW_CASE_CLIENT_EXISTING_EMC_REASSESS:
+                #     return self.multiple_assessment_type_process(client_assessment, request_assessment_type)
+                # elif request_assessment_type in (
+                #         NEW_CASE_CLIENT_NEW_EXTRA_MURAL_CLIENT, NEW_CASE_CLIENT_EXISTING_EMC_NO_REASSESS,
+                #         EXISTING_CASE_CLIENT_REASSESS):
+                #     return self.single_assessment_type_process(client_assessment, request_assessment_type)
+            else:
+                return Response({
+                    'result': False,
+                    'message': default_error_response(assessment_data_serializer)
+                }, status=HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({
+                'result': False,
+                'message': 'Failed to process your request. '
+            }, status=HTTP_500_INTERNAL_SERVER_ERROR)
