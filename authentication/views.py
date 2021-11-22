@@ -8,6 +8,8 @@ from .serializers import RegistrationSerializer, LoginSerializer, UserSerializer
 from .renderers import UserJSONRenderer
 from .backends import JWTAuthentication
 from .models import User
+from reviewboard.models import ReviewBoardUser
+from django.contrib.auth import authenticate
 
 
 class RegistrationAPIView(APIView):
@@ -18,11 +20,9 @@ class RegistrationAPIView(APIView):
 
     def post(self, request):
         user = request.data.get('user', {})
-
         serializer = self.serializer_class(data=user)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
@@ -41,7 +41,11 @@ class LoginAPIView(APIView):
         serializer = self.serializer_class(data=user)
         serializer.is_valid(raise_exception=True)
 
+        username = serializer.validated_data.get('username')
+        user_type = serializer.validated_data.get('user_type')
+
         return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 
 class UserView(RetrieveAPIView):

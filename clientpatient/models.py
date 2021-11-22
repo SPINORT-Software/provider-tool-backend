@@ -5,7 +5,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.contrib.auth.models import User
 from django.conf import settings
-
+from authentication.models import Types as UserTypes
 
 class ClientStatus(models.TextChoices):
     ACTIVE_CLIENT = 'ACTIVE_CLIENT', _('Active Client')
@@ -20,8 +20,9 @@ class Client(models.Model):
     """
     client_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
     client_active = models.BooleanField(default=False, verbose_name="Client Active")
-    user_id = models.OneToOneField(
+    user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
+        related_name='clientuser',
         on_delete=models.CASCADE,
         verbose_name="User - Client",
         db_column="user_id"
@@ -40,8 +41,14 @@ class Client(models.Model):
         verbose_name_plural = "Clients"
 
     def __str__(self):
-        return f"{self.user_id.first_name} {self.user_id.last_name} [{self.client_id}]"
+        return f"{self.user.first_name} {self.user.last_name} [{self.client_id}]"
 
+
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def create_user_clientuser(sender, instance, created, **kwargs):
+    if created:
+        if hasattr(instance, 'user_type') and instance.user_type == UserTypes.TYPE_CLIENT:
+            Client.objects.create(user=instance)
 
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):

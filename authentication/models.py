@@ -20,7 +20,7 @@ class UserManager(BaseUserManager):
     to create `User` objects.
     """
 
-    def create_user(self, username, email, password=None, user_type=None):
+    def create_user(self, username, email, password=None, user_type=None, first_name=None, last_name=None):
         """Create and return a `User` with an email, username and password."""
         if username is None:
             raise TypeError('Users must have a username.')
@@ -31,6 +31,8 @@ class UserManager(BaseUserManager):
         user = self.model(username=username, email=self.normalize_email(email))
         user.set_password(password)
         user.user_type = user_type
+        user.first_name = first_name
+        user.last_name = last_name
         user.save()
 
         return user
@@ -112,6 +114,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     # objects of this type.
     objects = UserManager()
 
+    # user_type_pk = {
+    #     'TYPE_REVIEW_BOARD': (ReviewBoardUser, 'reviewboard_user_id')
+    # }
+
     def __str__(self):
         """
         Returns a string representation of this `User`.
@@ -130,6 +136,13 @@ class User(AbstractBaseUser, PermissionsMixin):
         a "dynamic property".
         """
         return self._generate_jwt_token()
+
+    @property
+    def user_type_pk(self):
+        """
+        Get user type model instance.
+        """
+        return self._get_user_type_instance()
 
     def get_full_name(self):
         """
@@ -162,3 +175,24 @@ class User(AbstractBaseUser, PermissionsMixin):
         }, settings.SECRET_KEY, algorithm='HS256')
 
         return token.decode('utf-8')
+
+    def _get_user_type_instance(self):
+        """
+        Get the user type model PK value for frontend.
+        :return:
+        """
+        try:
+            user_type_models = {
+                'TYPE_REVIEW_BOARD': ('reviewboarduser', 'reviewboard_user_id'),
+                'TYPE_CLINICIAN': ('clinicianuser', 'clinician_id'),
+                'TYPE_CLIENT': ('clientuser', 'client_id'),
+            }
+            user_type_data = user_type_models.get(self.user_type, None)
+            if user_type_data:
+                user_type_model_field = user_type_data[0]
+                user_type_model_pk = user_type_data[1]
+                user_type_instance = getattr(self, user_type_model_field)
+                return getattr(user_type_instance, user_type_model_pk)
+            return False
+        except Exception as e:
+            return False

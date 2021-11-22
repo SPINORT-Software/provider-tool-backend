@@ -7,6 +7,7 @@ from core.models import *
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.conf import settings
+from authentication.models import Types as UserTypes
 
 
 class ClinicanUsers(models.Model):
@@ -14,9 +15,9 @@ class ClinicanUsers(models.Model):
     Clinician Entity.
     """
     clinician_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
-    user = models.ForeignKey(
+    user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         verbose_name="User - Clinican",
         db_column="user_id"
     )
@@ -31,9 +32,11 @@ class ClinicanUsers(models.Model):
         return f"{self.user.first_name} {self.user.last_name}"
 
 
-@receiver(post_save, sender=User)
-def save_user_profile(sender, instance, **kwargs):
-    instance.clinicianuser.save()
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def create_user_clinicianusers(sender, instance, created, **kwargs):
+    if created:
+        if hasattr(instance, 'user_type') and instance.user_type == UserTypes.TYPE_CLINICIAN:
+            ClinicanUsers.objects.create(user=instance)
 
 
 class DailyWorkLoad(models.Model):

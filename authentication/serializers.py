@@ -7,7 +7,7 @@ from django.contrib.auth import authenticate
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['email', 'username', 'token', 'user_type']
+        fields = ['email', 'username', 'token', 'user_type', 'user_type_pk']
 
 
 class RegistrationSerializer(serializers.ModelSerializer):
@@ -29,7 +29,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
         model = User
         # List all of the fields that could possibly be included in a request
         # or response, including fields specified explicitly above.
-        fields = ['email', 'username', 'password', 'token', 'user_type']
+        fields = ['email', 'username', 'password', 'token', 'user_type', 'first_name', 'last_name']
 
     def create(self, validated_data):
         # Use the `create_user` method we wrote earlier to create a new user.
@@ -42,6 +42,7 @@ class LoginSerializer(serializers.Serializer):
     password = serializers.CharField(max_length=128, write_only=True)
     user_type = serializers.CharField(max_length=128, read_only=True)
     token = serializers.CharField(max_length=255, read_only=True)
+    user_type_pk = serializers.CharField(max_length=255, read_only=True)
 
     def validate(self, data):
         # The `validate` method is where we make sure that the current
@@ -90,11 +91,11 @@ class LoginSerializer(serializers.Serializer):
 
         # The `validate` method should return a dictionary of validated data.
         # This is the data that is passed to the `create` and `update` methods
-        # that we will see later on.
 
         return {
             'email': user.email,
             'username': user.username,
             'token': user.token,
-            'user_type': user.user_type
+            'user_type': user.user_type,
+            'user_type_pk': user.user_type_pk
         }
