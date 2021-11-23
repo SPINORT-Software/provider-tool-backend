@@ -47,10 +47,6 @@ class ClientReferralRetrieveView(generics.RetrieveUpdateDestroyAPIView):
 
     def retrieve(self, request, *args, **kwargs):
         referral = super().get_object()
-        # print(referral.review_board_user.user.reviewboarduser)
-        print(referral.review_board_user.user)
-
-        return Response("ok")
 
         retrieve_response = super().retrieve(request, *args, **kwargs)
         return Response({

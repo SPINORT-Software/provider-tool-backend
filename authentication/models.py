@@ -186,6 +186,7 @@ class User(AbstractBaseUser, PermissionsMixin):
                 'TYPE_REVIEW_BOARD': ('reviewboarduser', 'reviewboard_user_id'),
                 'TYPE_CLINICIAN': ('clinicianuser', 'clinician_id'),
                 'TYPE_CLIENT': ('clientuser', 'client_id'),
+                'TYPE_COMMUNITY_PARAMEDIC': ('communityparamedicuser', 'community_paramedic_id'),
             }
             user_type_data = user_type_models.get(self.user_type, None)
             if user_type_data:

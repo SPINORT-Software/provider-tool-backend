@@ -4,7 +4,7 @@ from casemanager.models import CaseManagerClientAssessment, ClientIntervention
 from clinician.models import ClinicianClientAssessment
 from reviewboard.models import ClientReferral
 from communityparamedic.models import NewCaseClientAssessment, ExistingCaseClientAssessment
-from core.models import ClientStatusChoices
+from django.conf import settings
 
 
 class DocumentTypes(models.Model):
@@ -29,6 +29,13 @@ class Documents(models.Model):
         on_delete=models.PROTECT,
         verbose_name="Document Type",
         db_column="type"
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        verbose_name="User",
+        db_column="user_id",
+        default=None
     )
 
     class Meta:

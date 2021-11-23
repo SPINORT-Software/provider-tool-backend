@@ -3,12 +3,17 @@ from users.models import Users
 from clientpatient.models import Client
 import uuid
 from django.utils.translation import gettext_lazy as _
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.conf import settings
+from authentication.models import Types as UserTypes
 
 
 class CommunityParamedicUser(models.Model):
     community_paramedic_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
-    user_id = models.ForeignKey(
-        Users,
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        related_name='communityparamedicuser',
         on_delete=models.PROTECT,
         verbose_name="User - Community Paramedic",
         db_column="user_id"
@@ -22,6 +27,13 @@ class CommunityParamedicUser(models.Model):
 
     def __str__(self):
         return f"{self.user_id.first_name} {self.user_id.last_name}"
+
+
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def create_user_communityparamedicuser(sender, instance, created, **kwargs):
+    if created:
+        if hasattr(instance, 'user_type') and instance.user_type == UserTypes.TYPE_COMMUNITY_PARAMEDIC:
+            CommunityParamedicUser.objects.create(user=instance)
 
 
 class DailyWorkLoad(models.Model):

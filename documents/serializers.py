@@ -1,20 +1,25 @@
-from rest_framework.serializers import ModelSerializer
+from rest_framework import serializers
 from .models import *
 
 
-class DocumentsSerializer(ModelSerializer):
+class DocumentsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Documents
         fields = '__all__'
 
 
-class ClinicianAssessmentFormsDocumentsSerializer(ModelSerializer):
+class DocumentUploadSerializer(serializers.Serializer):
+    file = serializers.FileField()
+    type = serializers.CharField(max_length=100)
+
+
+class ClinicianAssessmentFormsDocumentsSerializer(serializers.ModelSerializer):
     class Meta:
         model = ClinicianAssessmentFormsDocuments
         fields = '__all__'
 
 
-class ClinicianAssessmentFormsDocumentsDetailSerializer(ModelSerializer):
+class ClinicianAssessmentFormsDocumentsDetailSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         response = super().to_representation(instance)
         response['document'] = DocumentsSerializer(instance.document).data
@@ -25,19 +30,19 @@ class ClinicianAssessmentFormsDocumentsDetailSerializer(ModelSerializer):
         fields = '__all__'
 
 
-class CaseManagerAssessmentFormsDocumentsSerializer(ModelSerializer):
+class CaseManagerAssessmentFormsDocumentsSerializer(serializers.ModelSerializer):
     class Meta:
         model = CaseManagerAssessmentFormsDocuments
         fields = '__all__'
 
 
-class InterventionFormsDocumentsSerializer(ModelSerializer):
+class InterventionFormsDocumentsSerializer(serializers.ModelSerializer):
     class Meta:
         model = InterventionFormsDocuments
         fields = '__all__'
 
 
-class ReviewBoardReferralFormsDocumentsSerializer(ModelSerializer):
+class ReviewBoardReferralFormsDocumentsSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         response = super().to_representation(instance)
         response['document'] = DocumentsSerializer(instance.document).data

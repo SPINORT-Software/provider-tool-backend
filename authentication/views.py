@@ -41,11 +41,7 @@ class LoginAPIView(APIView):
         serializer = self.serializer_class(data=user)
         serializer.is_valid(raise_exception=True)
 
-        username = serializer.validated_data.get('username')
-        user_type = serializer.validated_data.get('user_type')
-
         return Response(serializer.data, status=status.HTTP_200_OK)
-
 
 
 class UserView(RetrieveAPIView):
