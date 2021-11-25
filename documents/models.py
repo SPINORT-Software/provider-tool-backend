@@ -112,6 +112,7 @@ class ReviewBoardReferralFormsDocuments(models.Model):
         verbose_name="Client Referral",
         db_column="client_referral"
     )
+    category = models.TextField(blank=True, null=True)
 
 
 class NewClientCommunityParamedicFormsDocuments(models.Model):

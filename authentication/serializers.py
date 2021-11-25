@@ -7,7 +7,7 @@ from django.contrib.auth import authenticate
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['email', 'username', 'token', 'user_type', 'user_type_pk']
+        fields = ['token', 'user_type', 'user_type_pk']
 
 
 class RegistrationSerializer(serializers.ModelSerializer):

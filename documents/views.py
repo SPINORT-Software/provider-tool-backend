@@ -47,13 +47,13 @@ class FileUploadView(APIView):
                 return Response({
                     'status': 400,
                     'data': document_upload_serializer.errors
-                })
+                }, status=status.HTTP_400_BAD_REQUEST)
 
         except Exception as e:
             return Response({
                 'status': 400,
                 'data': str(e)
-            })
+            }, status=status.HTTP_400_BAD_REQUEST)
 
     def response_serializer(self, document_serializer):
         """

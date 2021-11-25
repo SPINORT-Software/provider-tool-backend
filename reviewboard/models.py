@@ -68,4 +68,4 @@ class ClientReferral(models.Model):
         choices=ClientStatus.choices,
         default=ClientStatus.POTENTIAL_CLIENT,
     )
-    decision_detail = models.TextField()
+    decision_detail = models.TextField(null=True, blank=True)

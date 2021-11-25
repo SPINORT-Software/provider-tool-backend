@@ -26,16 +26,26 @@ class ClientReferralListUserFilter(generics.ListAPIView):
     serializer_class = ClientReferralSerializer
 
     def get_queryset(self):
-        queryset = super(ClientReferralListUserFilter, self).get_queryset()
-        review_board_user = self.kwargs['pk']
-        return queryset.filter(review_board_user=review_board_user)
+        try:
+            queryset = super(ClientReferralListUserFilter, self).get_queryset()
+            review_board_user = self.kwargs['pk']
+            return queryset.filter(review_board_user=review_board_user)
+        except Exception as e:
+            print(e)
+            return []
 
     def list(self, request, *args, **kwargs):
         retrieve_response = super().list(request, *args, **kwargs)
-        return Response({
-            'status': 200,
-            'data': retrieve_response.data
-        })
+        if retrieve_response:
+            return Response({
+                'status': 200,
+                'data': retrieve_response.data
+            })
+        else:
+            return Response({
+                'status': 200,
+                'data': []
+            })
 
 
 class ClientReferralRetrieveView(generics.RetrieveUpdateDestroyAPIView):
@@ -94,6 +104,13 @@ class ClientReferralCreate(APIView):
                                                                                      forms_request_data)
 
                     if forms_create_result:
+                        """
+                        Based on Decision value - 
+                        POTENTIAL_CLIENT: create client account in inactive status
+                        ACTIVE_CLIENT: 
+                        DISCHARGED_CLIENT:
+                        """
+
                         return Response({
                             'result': True,
                             'data': ClientReferralSerializer(client_referral).data,
@@ -111,6 +128,7 @@ class ClientReferralCreate(APIView):
                         'message': 'Failed to create Client Referral record. '
                     }, status=HTTP_500_INTERNAL_SERVER_ERROR)
             else:
+                print(serializer.errors)
                 return Response({
                     'result': False,
                     'message': default_error_response(serializer)
@@ -127,11 +145,13 @@ class ClientReferralCreate(APIView):
         referralFormsCreate = True
         if isinstance(forms_request_data, dict):
             for form in forms_request_data:
+                print(form)
                 if isinstance(forms_request_data[form], list):
                     for form_document in forms_request_data[form]:
                         serializer_data = {
                             "document": form_document,
-                            "client_referral": client_referral.referral_id
+                            "client_referral": client_referral.referral_id,
+                            "category": form
                         }
                         form_document_serializer = ReviewBoardReferralFormsDocumentsSerializer(data=serializer_data)
                         if form_document_serializer.is_valid():
