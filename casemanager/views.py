@@ -10,12 +10,56 @@ import json
 from core.views import ClientAssessmentFactory
 from core.constants import USER_TYPE_CASE_MANAGER
 from .serializers import CaseManagerClientAssessmentSerializer
+from django.core.exceptions import *
 
 
 class WorkloadList(generics.ListCreateAPIView):
     """
     List all workload, or create a new daily workload.
     """
+    queryset = DailyWorkLoad.objects.all()
+    serializer_class = DailyWorkloadSerializer
+    pagination_class = None
+
+    def create(self, request, *args, **kwargs):
+        create_response = super().create(request, args, kwargs)
+
+        return Response({
+            'result': True,
+            'message': 'Daily workload list created for Case Manager.',
+            'data': create_response.data
+        })
+
+    def list(self, request, *args, **kwargs):
+        list_response = super().list(request, args, kwargs)
+        return Response({
+            'result': True,
+            'message': 'Daily workload list generated.',
+            'data': list_response.data
+        })
+
+
+class WorkloadListFilterByCaseManager(generics.ListCreateAPIView):
+    """
+    List all workload, or create a new daily workload.
+    """
+    pagination_class = None
+
+    def get_queryset(self):
+        try:
+            casemanager = self.kwargs.get('casemanager')
+            return super().get_queryset().filter(casemanager=casemanager)
+        except ValidationError as e:
+            return []
+
+    def list(self, request, *args, **kwargs):
+        list_response = super().list(request, args, kwargs)
+        return Response({
+            'result': True,
+            'message': 'Daily workload list generated for Case Manager.',
+            'data': list_response.data
+        })
+
     queryset = DailyWorkLoad.objects.all()
     serializer_class = DailyWorkloadSerializer
 

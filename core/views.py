@@ -4,15 +4,19 @@ from rest_framework import permissions, status
 from rest_framework.decorators import api_view, authentication_classes
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.generics import ListAPIView
 
 import casemanager.serializers
 import clinician.serializers
 from .serializers.auth import UserSerializer, UserSerializerWithToken
+from authentication.serializers import UserSearchSerializer
 from .constants import *
 from rest_framework.status import *
 from documents.serializers import *
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from providertool.errors import default_error_response
+from rest_framework import filters
+from authentication.models import User as CustomAuthUser
 
 
 @api_view(['GET'])
@@ -47,6 +51,14 @@ class UserList(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+class UserSearch(ListAPIView):
+    queryset = CustomAuthUser.objects.all()
+    serializer_class = UserSearchSerializer
+    filter_backends = (filters.SearchFilter,)
+    pagination_class = None
+    search_fields = ('first_name', 'last_name', 'email')
+
+
 class ClientAssessmentFactory:
     """
     Create a new client assessment
@@ -61,7 +73,7 @@ class ClientAssessmentFactory:
             """
             Client Assessment serializers for Case Manager 
             """
-            self.ClientAssessmentSerializer = casemanager.serializers.ClientAssessmentSerializer
+            self.ClientAssessmentSerializer = casemanager.serializers.CaseManagerClientAssessmentSerializer
             self.AssessmentFormsSerializer = CaseManagerAssessmentFormsDocumentsSerializer
         if user_type == USER_TYPE_CLINICIAN:
             """
@@ -86,12 +98,13 @@ class ClientAssessmentFactory:
             else:
                 return Response({
                     'result': False,
-                    'message': 'Invalid assessment request data'
+                    'message': assessment_data_serializer.errors
                 }, status=HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response({
                 'result': False,
-                'message': 'Failed to process your request. '
+                'message': 'Failed to process your request. ',
+                'error': e
             }, status=HTTP_500_INTERNAL_SERVER_ERROR)
 
     def multiple_assessment_type_process(self, client_assessment, request_assessment_type):
@@ -103,7 +116,6 @@ class ClientAssessmentFactory:
 
             for assessment_type_key in assessment_type_request_fields:
                 type_data = assessment_type_data[assessment_type_key]['data']
-                type_forms = assessment_type_data[assessment_type_key]['assessment_type_forms']
 
                 AssessmentTypeSerializer = CLIENT_ASSESSMENT_FIELD_SERIALIZER.get(assessment_type_key)
                 client_assessment_model_field = assessment_type_key
@@ -114,10 +126,15 @@ class ClientAssessmentFactory:
                                                                             type_data)
 
                 if assessment_type_record:
-                    assessment_forms_create_result = self.create_assessment_forms(client_assessment, type_forms,
-                                                                                  assessment_type_key)
-                    if not assessment_forms_create_result:
-                        assessment_type_record_create = False
+                    """
+                    If assessment_type_forms exists in request body. 
+                    """
+                    if "assessment_type_forms" in assessment_type_data[assessment_type_key]:
+                        type_forms = assessment_type_data[assessment_type_key]['assessment_type_forms']
+                        assessment_forms_create_result = self.create_assessment_forms(client_assessment, type_forms,
+                                                                                      assessment_type_key)
+                        if not assessment_forms_create_result:
+                            assessment_type_record_create = False
                 else:
                     assessment_type_record_create = False
 
@@ -129,7 +146,7 @@ class ClientAssessmentFactory:
             }, status=HTTP_201_CREATED)
 
         return Response({
-            'result': True,
+            'result': False,
             'message': 'Failed to create Client Assessment record.'
         }, status=HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -174,9 +191,6 @@ class ClientAssessmentFactory:
             for form in forms_request_data:
                 if isinstance(forms_request_data[form], list):
                     for form_document in forms_request_data[form]:
-
-                        print(assessment_type)
-
                         serializer_data = {
                             "document": form_document,
                             "client_assessment": client_assessment.client_assessment_id,

@@ -47,7 +47,10 @@ INSTALLED_APPS = [
     'communityparamedic',
     'core',
     'clinician',
-    'authentication'
+    'authentication',
+    'messaging',
+
+    'channels'
 ]
 
 MIDDLEWARE = [
@@ -81,6 +84,16 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'providertool.wsgi.application'
+ASGI_APPLICATION = 'providertool.asgi.application'
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            'hosts': [('127.0.0.1', 6379)],
+        }
+    }
+}
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
@@ -174,4 +187,3 @@ JWT_AUTH = {
 # the `authentication` module. This module is registered above in a setting
 # called `INSTALLED_APPS`.
 AUTH_USER_MODEL = 'authentication.User'
-

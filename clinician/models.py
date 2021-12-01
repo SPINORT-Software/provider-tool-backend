@@ -19,8 +19,10 @@ class ClinicanUsers(models.Model):
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         verbose_name="User - Clinican",
-        db_column="user_id"
+        db_column="user_id",
+        related_name="clinicianuser"
     )
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(null=True, blank=True)
 

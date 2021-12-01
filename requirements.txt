@@ -13,3 +13,6 @@ sqlparse==0.4.1
 typing-extensions==3.10.0.0
 zipp==3.5.0
 djangorestframework-jwt
+channels
+redis
+channels_redis

@@ -7,6 +7,7 @@ def add_document_types(apps, schema_editor):
     document_types_list = [
         ('Referral Form', 'TYPE_REVIEW_BOARD_REFERRAL'),
         ('Assessment Form', 'TYPE_CASE_MANAGER_ASSESSMENT'),
+        ('Provider Specific Assessment Form', 'TYPE_CASE_MANAGER_ASSESSMENT_PROVIDER_SPECIFIC_FORM'),
         ('Intervention Form', 'TYPE_CASE_MANAGER_INTERVENTION')
     ]
 

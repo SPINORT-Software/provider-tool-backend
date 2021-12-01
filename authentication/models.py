@@ -138,6 +138,10 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self._generate_jwt_token()
 
     @property
+    def fullname(self):
+        return self.first_name + " " + self.last_name
+
+    @property
     def user_type_pk(self):
         """
         Get user type model instance.
@@ -187,6 +191,7 @@ class User(AbstractBaseUser, PermissionsMixin):
                 'TYPE_CLINICIAN': ('clinicianuser', 'clinician_id'),
                 'TYPE_CLIENT': ('clientuser', 'client_id'),
                 'TYPE_COMMUNITY_PARAMEDIC': ('communityparamedicuser', 'community_paramedic_id'),
+                'TYPE_CASE_MANAGER': ('casemanager', 'casemanager_id'),
             }
             user_type_data = user_type_models.get(self.user_type, None)
             if user_type_data:
@@ -196,4 +201,5 @@ class User(AbstractBaseUser, PermissionsMixin):
                 return getattr(user_type_instance, user_type_model_pk)
             return False
         except Exception as e:
+            print(e)
             return False

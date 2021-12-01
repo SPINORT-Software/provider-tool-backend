@@ -1,7 +1,10 @@
 from django.db import models
 import uuid
 from clientpatient.models import Client
-from users.models import Users
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.conf import settings
+from authentication.models import Types as UserTypes
 from core.models import *
 
 
@@ -10,11 +13,12 @@ class CaseManagerUsers(models.Model):
     Case Manager Entity.
     """
     casemanager_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
-    user_id = models.ForeignKey(
-        Users,
-        on_delete=models.PROTECT,
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
         verbose_name="User - Case Manager",
-        db_column="user_id"
+        db_column="user_id",
+        related_name="casemanager"
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(null=True, blank=True)
@@ -24,7 +28,15 @@ class CaseManagerUsers(models.Model):
         verbose_name_plural = "Case Managers"
 
     def __str__(self):
-        return f"{self.user_id.first_name} {self.user_id.last_name}"
+        return f"{self.user.first_name} {self.user.last_name}"
+
+
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def create_user_casemanagerusers(sender, instance, created, **kwargs):
+    if created:
+        print("User created")
+        if hasattr(instance, 'user_type') and instance.user_type == UserTypes.TYPE_CASE_MANAGER:
+            CaseManagerUsers.objects.create(user=instance)
 
 
 class DailyWorkLoad(models.Model):

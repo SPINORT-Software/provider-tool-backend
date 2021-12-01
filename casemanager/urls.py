@@ -10,6 +10,8 @@ urlpatterns = [
     # LIST for daily workload
     path('workload', WorkloadList.as_view()),
 
+    path('<str:casemanager>/workload', WorkloadListFilterByCaseManager.as_view()),
+
     # ADD - EDIT - DELETE for daily workload
     path('workload/<str:pk>', WorkloadDetail.as_view()),
 
