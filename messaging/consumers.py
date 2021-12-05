@@ -59,6 +59,7 @@ class MessageConsumer(AsyncWebsocketConsumer):
 
     # Receive message from room group
     async def chat_message(self, event):
+        print(event)
         message = event['message']
         username = event['username']
 

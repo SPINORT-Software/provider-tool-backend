@@ -5,23 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="cb744dec-d346-4c8e-b110-6b6349e6b94b" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/messaging/consumers.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/messaging/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/dataSources/7fcd4e23-8603-4e7b-98c9-cd3349282915.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/7fcd4e23-8603-4e7b-98c9-cd3349282915.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/authentication/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/authentication/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/authentication/serializers.py" beforeDir="false" afterPath="$PROJECT_DIR$/authentication/serializers.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/casemanager/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/casemanager/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/casemanager/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/casemanager/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/casemanager/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/casemanager/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/clinician/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/clinician/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/clientpatient/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/clientpatient/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/clientpatient/serializers.py" beforeDir="false" afterPath="$PROJECT_DIR$/clientpatient/serializers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/clientpatient/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/clientpatient/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/clientpatient/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/clientpatient/views.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/core/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/core/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/core/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/core/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/documents/migrations/add_document_types.py" beforeDir="false" afterPath="$PROJECT_DIR$/documents/migrations/add_document_types.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/messaging/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/messaging/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/providertool/asgi.py" beforeDir="false" afterPath="$PROJECT_DIR$/providertool/asgi.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/providertool/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/providertool/settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/messaging/consumers.py" beforeDir="false" afterPath="$PROJECT_DIR$/messaging/consumers.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -90,7 +83,7 @@
       <workItem from="1636219578201" duration="37891000" />
       <workItem from="1636413181680" duration="69562000" />
       <workItem from="1637272707070" duration="72414000" />
-      <workItem from="1638051677359" duration="26303000" />
+      <workItem from="1638051677359" duration="35345000" />
     </task>
     <servers />
   </component>

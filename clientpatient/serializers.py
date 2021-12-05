@@ -34,6 +34,8 @@ class PersonalInformationSerializer(ModelSerializer):
     def to_representation(self, instance):
         response = super().to_representation(instance)
         response['client'] = ClientSerializer(instance.client).data
+        home_safety_data = HomeSafetyAssessment.objects.values().filter(personal_information=instance.personal_id)
+        response['home_safety_assessment'] = HomeSafetyAssessmentSerialzer(home_safety_data, many=True).data
         return response
 
     class Meta:

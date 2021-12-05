@@ -6,6 +6,7 @@ from .models import *
 from .serializers import *
 from django.core import serializers
 from django.forms.models import model_to_dict
+from django.core.exceptions import *
 
 
 class CommunicationLogs:
@@ -66,6 +67,26 @@ class PersonalInformationViews:
             # TODO log error
             return False, None
 
+    class ClientPersonalInformationRetrieve(generics.RetrieveAPIView):
+        queryset = PersonalInformation.objects.all()
+        serializer_class = PersonalInformationSerializer
+        lookup_field = 'client'
+
+        def get_queryset(self):
+            try:
+                client = self.kwargs.get('client')
+                return super().get_queryset().filter(client=client)
+            except ValidationError as e:
+                return []
+
+        def retrieve(self, request, *args, **kwargs):
+            retrieve_response = super().retrieve(request, *args, **kwargs)
+
+            return Response({
+                'status': 200,
+                'data': retrieve_response.data
+            })
+
     class PersonalInformationList(generics.ListAPIView):
         """
         List all client's Personal Information
@@ -79,11 +100,6 @@ class PersonalInformationViews:
 
         def retrieve(self, request, *args, **kwargs):
             retrieve_response = super().retrieve(request, *args, **kwargs)
-
-            # Retrieve Home Safety Assessment Data
-            retrieve_response.data['home_safety_assessment'] = HomeSafetyAssessment.objects.values().filter(
-                personal_information=kwargs.get('pk'))
-
             return Response({
                 'status': 200,
                 'data': retrieve_response.data
@@ -119,29 +135,16 @@ class PersonalInformationViews:
         serializer_class = PersonalInformationSerializer
 
         def create(self, request, *args, **kwargs):
-            for data_key in request.data.keys():
-                if data_key != "home_safety_assessment":
-                    request.data[data_key] = request.data[data_key].replace("&$#", " ")
             response_personal = super().create(request, *args, **kwargs)
 
-            personal_id = response_personal.data["personal_id"]
-            home_safety_add_result, home_safety_serialized_data = PersonalInformationViews.add_home_safety(request,
-                                                                                                           personal_id,
-                                                                                                           request.data[
-                                                                                                               "home_safety_assessment"])
+            if "home_safety_assessment" in request.data:
+                personal_id = response_personal.data["personal_id"]
+                PersonalInformationViews.add_home_safety(request, personal_id, request.data["home_safety_assessment"])
 
-            if home_safety_add_result:
-                return Response({
-                    'status': 200,
-                    'data': response_personal.data
-                })
-            else:
-                # Could not add home safety data - hence remove the personal information object.
-                PersonalInformation.objects.get(personal_id=personal_id).delete()
-                return Response({
-                    'status': 500,
-                    'data': "Failed to add personal information. Please try again"
-                })
+            return Response({
+                'status': 200,
+                'data': response_personal.data
+            })
 
 
 class ClinicalInformationViews:

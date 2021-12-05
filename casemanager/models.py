@@ -47,24 +47,23 @@ class DailyWorkLoad(models.Model):
         verbose_name="Case Manager",
         db_column="casemanager"
     )
-
     daily_workload_date = models.DateField(null=True, blank=True)
-    client_caseload_casemanagement_number_clients = models.IntegerField(null=True, blank=True)
-    client_caseload_casemanagement_total_time = models.TimeField(auto_now=False, auto_now_add=False, blank=True)
+    client_caseload_casemanagement_number_clients = models.TextField(null=True, blank=True)
+    client_caseload_casemanagement_total_time = models.TextField(null=True, blank=True)
 
-    client_caseload_regular_number_clients = models.IntegerField(null=True, blank=True)
-    client_caseload_regular_total_time = models.TimeField(auto_now=False, auto_now_add=False, blank=True)
+    client_caseload_regular_number_clients = models.TextField(null=True, blank=True)
+    client_caseload_regular_total_time = models.TextField(null=True, blank=True)
 
-    project_case_management_total_time = models.TimeField(auto_now=False, auto_now_add=False, blank=True)
-    project_case_management_admin_total_time = models.TimeField(auto_now=False, auto_now_add=False, blank=True)
-    project_case_management_admin_other = models.TextField(blank=True)
+    project_case_management_total_time = models.TextField(null=True, blank=True)
+    project_case_management_admin_total_time = models.TextField(null=True, blank=True)
+    project_case_management_admin_other = models.TextField(null=True, blank=True)
 
-    research_related_meetings_total_time = models.TimeField(auto_now=False, auto_now_add=False, blank=True)
-    research_related_administration_total_time = models.TimeField(auto_now=False, auto_now_add=False, blank=True)
-    research_related_other = models.TextField(blank=True)
+    research_related_meetings_total_time = models.TextField(null=True, blank=True)
+    research_related_administration_total_time = models.TextField(null=True, blank=True)
+    research_related_other = models.TextField(null=True, blank=True)
 
-    service_recipient_travel = models.TimeField(auto_now=False, auto_now_add=False, blank=True)
-    functional_center = models.TimeField(auto_now=False, auto_now_add=False, blank=True)
+    service_recipient_travel = models.TextField(null=True, blank=True)
+    functional_center = models.TextField(null=True, blank=True)
 
     class Meta:
         verbose_name = 'Daily Workload'

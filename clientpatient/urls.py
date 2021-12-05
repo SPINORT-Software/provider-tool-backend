@@ -19,6 +19,7 @@ urlpatterns = [
     path('personal', PersonalInformationViews.PersonalInformationList.as_view()),
     path('personal-create', PersonalInformationViews.PersonalInformationCreate.as_view()),
     path('personal/<str:pk>/', PersonalInformationViews.PersonalInformationUpdateDeleteRetrieve.as_view()),
+    path('<str:client>/personal', PersonalInformationViews.ClientPersonalInformationRetrieve.as_view()),
 
     # Clinical Information
     path('clinical-create', ClinicalInformationViews.ClinicalInformationCreate.as_view()),

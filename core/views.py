@@ -17,7 +17,9 @@ from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from providertool.errors import default_error_response
 from rest_framework import filters
 from authentication.models import User as CustomAuthUser
-
+from clientpatient.models import Client, ClientStatus
+from clientpatient.serializers import ClientSerializer
+from django.core.exceptions import ValidationError
 
 @api_view(['GET'])
 @authentication_classes((JSONWebTokenAuthentication,))
@@ -52,6 +54,20 @@ class UserList(APIView):
 
 
 class UserSearch(ListAPIView):
+    queryset = CustomAuthUser.objects.all()
+    serializer_class = UserSearchSerializer
+    filter_backends = (filters.SearchFilter,)
+    pagination_class = None
+    search_fields = ('first_name', 'last_name', 'email')
+
+
+class ClientSearch(ListAPIView):
+    def get_queryset(self):
+        try:
+            return super().get_queryset().filter(clientuser__client_status=ClientStatus.POTENTIAL_CLIENT)
+        except ValidationError as e:
+            return []
+
     queryset = CustomAuthUser.objects.all()
     serializer_class = UserSearchSerializer
     filter_backends = (filters.SearchFilter,)
