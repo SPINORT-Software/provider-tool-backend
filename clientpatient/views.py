@@ -447,3 +447,14 @@ class ClientViews:
                     pi_home_data = HomeSafetyAssessment.objects.filter(personal_information=pi_object)
                     pi_data['home_safety_assessment'] = HomeSafetyAssessmentSerialzer(pi_home_data, many=True).data
             return pi_data
+
+    class ClientProfileRetrieve(views.APIView):
+        def get(self, request, client_id):
+            """
+            Retrieve basic details of the Client by Client UUID
+            {email, phone, location}
+            :param request:
+            :param client_id:
+            :return:
+            """
+            return Response("OK")

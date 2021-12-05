@@ -24,6 +24,7 @@ class Documents(models.Model):
     document_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
     name = models.TextField()
     path = models.TextField(blank=True)
+    uploaded_at = models.DateTimeField(blank=True, null=True, auto_now_add=True)
     type = models.ForeignKey(
         DocumentTypes,
         on_delete=models.PROTECT,

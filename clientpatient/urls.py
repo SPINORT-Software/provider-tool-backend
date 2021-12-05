@@ -26,6 +26,7 @@ urlpatterns = [
     path('clinical', ClinicalInformationViews.ClinicalInformationList.as_view()),
     path('clinical/<str:pk>/', ClinicalInformationViews.ClinicalInformationUpdateDeleteRetrieve.as_view()),
 
+    path('<str:client_id>/profile', ClientViews.ClientProfileRetrieve.as_view()),
     path('<str:client_id>/data', ClientViews.ClientDataRetrieve.as_view())
 ]
 

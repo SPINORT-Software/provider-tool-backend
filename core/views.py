@@ -21,6 +21,7 @@ from clientpatient.models import Client, ClientStatus
 from clientpatient.serializers import ClientSerializer
 from django.core.exceptions import ValidationError
 
+
 @api_view(['GET'])
 @authentication_classes((JSONWebTokenAuthentication,))
 def current_user(request):
@@ -64,7 +65,7 @@ class UserSearch(ListAPIView):
 class ClientSearch(ListAPIView):
     def get_queryset(self):
         try:
-            return super().get_queryset().filter(clientuser__client_status=ClientStatus.POTENTIAL_CLIENT)
+            return super().get_queryset().filter(clientuser__client_status=ClientStatus.ACTIVE_CLIENT)
         except ValidationError as e:
             return []
 
@@ -73,6 +74,14 @@ class ClientSearch(ListAPIView):
     filter_backends = (filters.SearchFilter,)
     pagination_class = None
     search_fields = ('first_name', 'last_name', 'email')
+
+
+class ClientSearchByEmail(ListAPIView):
+    queryset = CustomAuthUser.objects.all()
+    serializer_class = UserSearchSerializer
+    filter_backends = (filters.SearchFilter,)
+    pagination_class = None
+    search_fields = ('email',)
 
 
 class ClientAssessmentFactory:
