@@ -8,6 +8,12 @@ import json
 from rest_framework import generics
 from documents.models import ReviewBoardReferralFormsDocuments
 from providertool.errors import default_error_response
+from clientpatient.models import Client
+from authentication.serializers import RegistrationSerializer
+import string
+import random
+from providertool.errors import default_error_response
+from authentication.models import User
 
 
 class ClientReferralList(generics.ListCreateAPIView):
@@ -86,6 +92,28 @@ class ClientReferralCreate(APIView):
     Create a new client referral.
     """
 
+    def password_generator(self, length=8):
+        '''
+        Generates a random password having the specified length
+        :length -> length of password to be generated. Defaults to 8
+            if nothing is specified.
+        :returns string <class 'str'>
+        '''
+        LETTERS = string.ascii_letters
+        NUMBERS = string.digits
+
+        # create alphanumerical from string constants
+        printable = f'{LETTERS}{NUMBERS}'
+
+        # convert printable from string to list and shuffle
+        printable = list(printable)
+        random.shuffle(printable)
+
+        # generate random password and convert to string
+        random_password = random.choices(printable, k=length)
+        random_password = ''.join(random_password)
+        return random_password
+
     def post(self, request):
         try:
             if 'data' not in request.data:
@@ -110,12 +138,41 @@ class ClientReferralCreate(APIView):
                         ACTIVE_CLIENT: 
                         DISCHARGED_CLIENT:
                         """
+                        client_referral_data = ClientReferralSerializer(client_referral).data
+                        client_referral_decision = client_referral_data.get('decision')
+                        client_email = client_referral_data.get('client_email')
+                        client_username = client_email.split("@")[0]
 
-                        return Response({
-                            'result': True,
-                            'data': ClientReferralSerializer(client_referral).data,
-                            'message': 'Client Referral record created.'
-                        }, status=HTTP_201_CREATED)
+                        registration_data = {
+                            "email": client_email,
+                            "username": client_username,
+                            "first_name": client_referral_data.get('client_first_name'),
+                            "last_name": client_referral_data.get('client_last_name'),
+                            "password": self.password_generator(16),
+                            "user_type": "TYPE_CLIENT"
+                        }
+                        client_creation_serializer = RegistrationSerializer(data=registration_data)
+
+                        if client_creation_serializer.is_valid():
+                            client_creation_serializer.save()
+                            client_user = User.objects.get(email=client_email).clientuser
+                            client_user.client_status = client_referral_decision
+                            client_user.save()
+
+                            return Response({
+                                'result': True,
+                                'data': {
+                                    'referral': ClientReferralSerializer(client_referral).data,
+                                    'client': client_creation_serializer.data
+                                },
+                                'message': 'Client Referral record created.'
+                            }, status=HTTP_201_CREATED)
+                        else:
+                            client_referral.delete()
+                            return Response({
+                                'result': False,
+                                'message': default_error_response(client_creation_serializer)
+                            }, status=HTTP_201_CREATED)
                     else:
                         client_referral.delete()
                         return Response({
@@ -128,7 +185,6 @@ class ClientReferralCreate(APIView):
                         'message': 'Failed to create Client Referral record. '
                     }, status=HTTP_500_INTERNAL_SERVER_ERROR)
             else:
-                print(serializer.errors)
                 return Response({
                     'result': False,
                     'message': default_error_response(serializer)
@@ -137,7 +193,7 @@ class ClientReferralCreate(APIView):
         except Exception as e:
             return Response({
                 'result': False,
-                'message': 'Failed to process your request. '
+                'message': str(e)
             }, status=HTTP_500_INTERNAL_SERVER_ERROR)
 
     @staticmethod
