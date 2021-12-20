@@ -1,8 +1,14 @@
 from rest_framework.serializers import ModelSerializer, SerializerMethodField
 from .models import *
+from authentication.serializers import UserSearchSerializer
 
 
 class ClientSerializer(ModelSerializer):
+    def to_representation(self, instance):
+        response = super().to_representation(instance)
+        response['user'] = UserSearchSerializer(instance.user).data
+        return response
+
     class Meta:
         model = Client
         fields = '__all__'

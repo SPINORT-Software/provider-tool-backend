@@ -1,7 +1,9 @@
 import copy
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from casemanager.serializers import *
-from documents.serializers import InterventionFormsDocumentsSerializer
+from documents.models import CaseManagerAssessmentFormsDocuments
+from documents.serializers import InterventionFormsDocumentsSerializer, \
+    CaseManagerAssessmentFormsDocumentsDetailSerializer
 from rest_framework import status, generics, response
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -71,11 +73,49 @@ class WorkloadDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = DailyWorkLoad.objects.all()
     serializer_class = DailyWorkloadSerializer
 
+    def retrieve(self, request, *args, **kwargs):
+        retrieve_response = super().retrieve(request, args, kwargs)
+        return Response({
+            'result': True,
+            'data': retrieve_response.data
+        })
+
+    def update(self, request, *args, **kwargs):
+        update_response = super().update(request, args, kwargs)
+        return Response({
+            'result': True,
+            'data': update_response.data
+        })
+
 
 class ClientAssessmentList(generics.ListAPIView):
     """
     List all client assessments
     """
+    queryset = CaseManagerClientAssessment.objects.all()
+    serializer_class = CaseManagerClientAssessmentSerializer
+
+
+class ClientAssessmentListFilterByCaseManager(generics.ListAPIView):
+    """
+    List all client assessment.
+    """
+    pagination_class = None
+
+    def get_queryset(self):
+        try:
+            casemanager = self.kwargs.get('casemanager')
+            return super().get_queryset().filter(casemanager=casemanager)
+        except ValidationError as e:
+            return []
+
+    def list(self, request, *args, **kwargs):
+        list_response = super().list(request, args, kwargs)
+        return Response({
+            'result': True,
+            'data': list_response.data
+        })
+
     queryset = CaseManagerClientAssessment.objects.all()
     serializer_class = CaseManagerClientAssessmentSerializer
 
@@ -90,11 +130,34 @@ class ClientAssessmentCreate(APIView):
         return casemanager_client_assessment.process_create_request()
 
 
-class ClientAssessmentDetail(APIView):
-    """
-    Add a client assessment, update a client assessment detail, delete a client assessment
-    """
-    pass
+class ClientAssessmentDetail(generics.RetrieveAPIView):
+    queryset = CaseManagerClientAssessment.objects.all()
+    serializer_class = CaseManagerClientAssessmentSerializer
+
+    def retrieve(self, request, *args, **kwargs):
+        try:
+            retrieve_response = super().retrieve(request, *args, **kwargs)
+            assessment_forms = CaseManagerAssessmentFormsDocuments.objects.filter(client_assessment=kwargs.get('pk'))
+
+            for assessment_form in assessment_forms:
+                assessment_key = assessment_form.assessment_type
+                form_serialized_data = CaseManagerAssessmentFormsDocumentsDetailSerializer(assessment_form).data
+
+                if assessment_key in retrieve_response.data:
+                    assessment_key_data = retrieve_response.data[assessment_key]
+                    if 'assessment_forms' not in assessment_key_data:
+                        assessment_key_data['assessment_forms'] = []
+                    assessment_key_data['assessment_forms'].append(form_serialized_data)
+
+            return Response({
+                'status': 200,
+                'data': retrieve_response.data
+            })
+        except Exception as e:
+            return Response({
+                'status': 500,
+                'data': 'There was an error processing the request.'
+            })
 
 
 class ClientInterventionList(generics.ListAPIView):

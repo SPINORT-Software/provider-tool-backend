@@ -148,7 +148,8 @@ class ClientReferralCreate(APIView):
                             "username": client_username,
                             "first_name": client_referral_data.get('client_first_name'),
                             "last_name": client_referral_data.get('client_last_name'),
-                            "password": self.password_generator(16),
+                            # "password": self.password_generator(16),
+                            "password": "admin123",
                             "user_type": "TYPE_CLIENT"
                         }
                         client_creation_serializer = RegistrationSerializer(data=registration_data)

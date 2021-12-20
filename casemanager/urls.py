@@ -15,10 +15,12 @@ urlpatterns = [
     # ADD - EDIT - DELETE for daily workload
     path('workload/<str:pk>', WorkloadDetail.as_view()),
 
+    path('client-assessment-create', ClientAssessmentCreate.as_view()),
+
     # LIST for Client Assessment
     path('client-assessment', ClientAssessmentList.as_view()),
 
-    path('client-assessment-create', ClientAssessmentCreate.as_view()),
+    path('<str:casemanager>/client-assessment', ClientAssessmentListFilterByCaseManager.as_view()),
 
     # ADD - EDIT - DELETE for Client Assessment
     path('client-assessment/<str:pk>', ClientAssessmentDetail.as_view()),

@@ -112,7 +112,7 @@ class ClientAssessmentFactory:
             assessment_data_serializer = self.ClientAssessmentSerializer(data=self.request_data['assessment'])
             if assessment_data_serializer.is_valid():
                 client_assessment = assessment_data_serializer.save()
-                request_assessment_type = assessment_data_serializer.validated_data['client_status']
+                request_assessment_type = assessment_data_serializer.validated_data['assessment_status']
 
                 if request_assessment_type == NEW_CASE_CLIENT_EXISTING_EMC_REASSESS:
                     return self.multiple_assessment_type_process(client_assessment, request_assessment_type)
@@ -126,10 +126,10 @@ class ClientAssessmentFactory:
                     'message': assessment_data_serializer.errors
                 }, status=HTTP_400_BAD_REQUEST)
         except Exception as e:
+            print(str(e))
             return Response({
                 'result': False,
                 'message': 'Failed to process your request. ',
-                'error': e
             }, status=HTTP_500_INTERNAL_SERVER_ERROR)
 
     def multiple_assessment_type_process(self, client_assessment, request_assessment_type):

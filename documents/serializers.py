@@ -1,8 +1,14 @@
 from rest_framework import serializers
 from .models import *
+import datetime
 
 
 class DocumentsSerializer(serializers.ModelSerializer):
+    def to_representation(self, instance):
+        response = super().to_representation(instance)
+        response['uploaded_at'] = instance.uploaded_at.strftime("%Y-%m-%d %H:%M:%S")
+        return response
+
     class Meta:
         model = Documents
         fields = '__all__'
@@ -31,6 +37,17 @@ class ClinicianAssessmentFormsDocumentsDetailSerializer(serializers.ModelSeriali
 
 
 class CaseManagerAssessmentFormsDocumentsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CaseManagerAssessmentFormsDocuments
+        fields = '__all__'
+
+
+class CaseManagerAssessmentFormsDocumentsDetailSerializer(serializers.ModelSerializer):
+    def to_representation(self, instance):
+        response = super().to_representation(instance)
+        response['document'] = DocumentsSerializer(instance.document).data
+        return response
+
     class Meta:
         model = CaseManagerAssessmentFormsDocuments
         fields = '__all__'

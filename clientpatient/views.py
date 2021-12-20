@@ -17,6 +17,14 @@ class CommunicationLogs:
         queryset = CommunicationLog.objects.all()
         serializer_class = CommunicationLogSerializer
 
+        def create(self, request, *args, **kwargs):
+            response = super().create(request, *args, **kwargs)
+            return Response({
+                'status': True,
+                'data': response.data
+            }, status=status.HTTP_201_CREATED)
+
+
     class CommunicationLogUpdateDeleteRetrieve(generics.RetrieveUpdateDestroyAPIView):
         """
         Retrieve, Update and Delete communication logs.
@@ -36,9 +44,9 @@ class VisitorLogs:
         def create(self, request, *args, **kwargs):
             response = super().create(request, *args, **kwargs)
             return Response({
-                'status': 200,
+                'status': True,
                 'data': response.data
-            })
+            }, status=status.HTTP_201_CREATED)
 
     class VisitorsLogUpdateDeleteRetrieve(generics.RetrieveUpdateDestroyAPIView):
         """

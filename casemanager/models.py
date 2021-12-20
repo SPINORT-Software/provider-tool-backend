@@ -75,6 +75,8 @@ class DailyWorkLoad(models.Model):
 
 class CaseManagerClientAssessment(models.Model):
     client_assessment_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
+    assessment_date = models.DateField(auto_now_add=True, null=True, blank=True)
+    assessment_time = models.TimeField(auto_now_add=True, null=True, blank=True)
     casemanager = models.ForeignKey(
         CaseManagerUsers,
         on_delete=models.PROTECT,
@@ -87,11 +89,12 @@ class CaseManagerClientAssessment(models.Model):
         verbose_name="Assessment Client",
         db_column="client"
     )
-    client_status = models.CharField(
+    assessment_status = models.CharField(
         max_length=100,
         choices=ClientStatusChoices.choices,
         default=ClientStatusChoices.NEW_CASE_CLIENT_EXISTING_EMC_NO_REASSESS,
-        blank=True
+        blank=True,
+        db_column="assessment_status"
     )
     existing_assessment = models.ForeignKey(
         ExistingEMCAssessment,
