@@ -26,7 +26,7 @@ class Documents(models.Model):
     path = models.TextField(blank=True)
     uploaded_at = models.DateTimeField(blank=True, null=True, auto_now_add=True)
     type = models.ForeignKey(
-        DocumentTypes,
+        DocumentTypes, 
         on_delete=models.PROTECT,
         verbose_name="Document Type",
         db_column="type"
