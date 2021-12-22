@@ -68,9 +68,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     # database to improve lookup performance.
     username = models.CharField(db_index=True, max_length=255, unique=True)
 
-    first_name = models.TextField()
+    first_name = models.TextField(null=True, blank=True)
 
-    last_name = models.TextField()
+    last_name = models.TextField(null=True, blank=True)
 
     # We also need a way to contact the user and a way for the user to identify
     # themselves when logging in. Since we need an email address for contacting
@@ -100,7 +100,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     user_type = models.CharField(
         max_length=100,
         choices=Types.choices,
-        default=Types.TYPE_NORMAL_USER
+        default=Types.TYPE_NORMAL_USER,
+        null=True,
+        blank=True
     )
 
     # More fields required by Django when specifying a custom user model.
