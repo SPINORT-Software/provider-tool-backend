@@ -6,7 +6,6 @@ djangorestframework==3.12.4
 djangorestframework-simplejwt
 importlib-metadata==4.6.1
 Markdown==3.3.4
-mysqlclient
 PyJWT==1.7.1
 pytz==2021.1
 sqlparse==0.4.1
@@ -16,3 +15,4 @@ djangorestframework-jwt
 channels
 redis
 channels_redis
+psycopg2-binary==2.9.1
