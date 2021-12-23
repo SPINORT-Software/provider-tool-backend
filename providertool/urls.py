@@ -29,5 +29,6 @@ urlpatterns = [
     path('auth/', include('authentication.urls')),
     path('token-auth/', obtain_jwt_token),
     path('core/', include('core.urls')),
-    path('documents/', include('documents.urls'))
+    path('documents/', include('documents.urls')),
+    path('xmpp/', include("xmpp.urls")),
 ]

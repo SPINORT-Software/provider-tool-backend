@@ -45,7 +45,9 @@ INSTALLED_APPS = [
     'authentication',
     'messaging',
 
-    'channels'
+    'channels',
+    'xmpp',
+    'django_gravatar',
 ]
 
 MIDDLEWARE = [
@@ -192,3 +194,7 @@ JWT_AUTH = {
 # the `authentication` module. This module is registered above in a setting
 # called `INSTALLED_APPS`.
 AUTH_USER_MODEL = 'authentication.User'
+
+
+XMPP_DOMAIN = 'http://localhost:5443'
+XMPP_BOSH_SERVICE_URL = 'http://localhost:5443/bosh'

@@ -12,6 +12,8 @@ services:
       - ./.env.dev
     depends_on:
       - db
+    networks:
+      - db-net
 
   db:
     image: postgres:13.0-alpine
@@ -23,6 +25,26 @@ services:
       - POSTGRES_DB=providertool
       - POSTGRES_USER=providertool-admin
       - POSTGRES_PASSWORD=provider-tool
+    networks:
+      - db-net
+
+  frontend:
+    restart: always
+    command: yarn start
+    build:
+      context: ./frontend/
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    stdin_open: true
+    depends_on:
+      - web
+    networks:
+      - db-net
 
 volumes:
   postgres_data:
+
+networks:
+  db-net:
+    driver: bridge

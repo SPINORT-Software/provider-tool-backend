@@ -141,7 +141,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     @property
     def fullname(self):
-        return self.first_name + " " + self.last_name
+        return str(self.first_name) + " " + str(self.last_name)
 
     @property
     def user_type_pk(self):
