@@ -1,14 +1,15 @@
 from django.db import models
 from django.contrib.auth.models import User
-import uuid
-from clientpatient.models import Client
 from django.utils.translation import gettext_lazy as _
-from core.models import *
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.conf import settings
-from authentication.models import Types as UserTypes
 
+import uuid
+
+from authentication.models import Types as UserTypes
+from core.models import *
+from clientpatient.models import Client
 
 class ClinicanUsers(models.Model):
     """

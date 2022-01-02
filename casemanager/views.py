@@ -58,7 +58,7 @@ class WorkloadListFilterByCaseManager(generics.ListCreateAPIView):
         list_response = super().list(request, args, kwargs)
         return Response({
             'result': True,
-            'message': 'Daily workload list generated for Case Manager.',
+            'messages': 'Daily workload list generated for Case Manager.',
             'data': list_response.data
         })
 

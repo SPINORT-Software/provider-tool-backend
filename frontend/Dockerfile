@@ -7,4 +7,6 @@ RUN yarn add sass
 COPY . ./
 EXPOSE 3000
 
-CMD ["yarn", "start"]
+ADD . /app/frontend
+
+CMD ["nodemon"]

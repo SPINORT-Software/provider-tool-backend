@@ -7,7 +7,6 @@ from django.conf import settings
 from authentication.models import Types as UserTypes
 from core.models import *
 
-
 class CaseManagerUsers(models.Model):
     """
     Case Manager Entity.
@@ -22,6 +21,13 @@ class CaseManagerUsers(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(null=True, blank=True)
+    provider_type = models.CharField(
+        max_length=100,
+        choices=ProviderTypes.choices,
+        default=ProviderTypes.PROVIDER_TYPE_DEFAULT,
+        null=True,
+        blank=True
+    )
 
     class Meta:
         verbose_name = "Case Manager"

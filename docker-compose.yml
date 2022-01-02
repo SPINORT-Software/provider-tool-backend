@@ -5,13 +5,22 @@ services:
     build: .
     command: python3 manage.py runserver 0.0.0.0:8000
     volumes:
-      - .:/usr/src/app/
+      - .:/app/
     ports:
       - 8000:8000
     env_file:
       - ./.env.dev
     depends_on:
       - db
+    networks:
+      - db-net
+
+
+  redis:
+    image: redis:4-alpine
+    restart: always
+    ports:
+      - "6379:6379"
     networks:
       - db-net
 
@@ -30,7 +39,7 @@ services:
 
   frontend:
     restart: always
-    command: yarn start
+    command: nodemon
     build:
       context: ./frontend/
       dockerfile: Dockerfile
@@ -41,6 +50,8 @@ services:
       - web
     networks:
       - db-net
+    environment:
+      - CHOKIDAR_USEPOLLING=true
 
 volumes:
   postgres_data:

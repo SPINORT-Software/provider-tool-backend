@@ -7,7 +7,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.conf import settings
 from authentication.models import Types as UserTypes
-
+from core.models import ProviderTypes
 
 class CommunityParamedicUser(models.Model):
     community_paramedic_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
@@ -18,6 +18,14 @@ class CommunityParamedicUser(models.Model):
         verbose_name="User - Community Paramedic",
         db_column="user_id"
     )
+    provider_type = models.CharField(
+        max_length=100,
+        choices=ProviderTypes.choices,
+        default=ProviderTypes.PROVIDER_TYPE_DEFAULT,
+        null=True,
+        blank=True
+    )
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(null=True, blank=True)
 

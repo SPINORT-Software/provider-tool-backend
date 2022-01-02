@@ -5,49 +5,18 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="cb744dec-d346-4c8e-b110-6b6349e6b94b" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/entrypoint.sh" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/Dockerfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/authentication/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/authentication/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/casemanager/migrations/0001_initial.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/casemanager/migrations/0002_alter_casemanagerusers_user_id.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/casemanager/migrations/0003_rename_user_id_casemanagerusers_user.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/casemanager/migrations/0004_alter_casemanagerusers_user.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/casemanager/migrations/0005_auto_20211205_1500.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/casemanager/migrations/0006_alter_dailyworkload_research_related_other.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/casemanager/migrations/0007_auto_20211205_1503.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/casemanager/migrations/0008_casemanagerclientassessment_assessment_date.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/casemanager/migrations/0009_auto_20211209_1209.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/casemanager/migrations/0010_alter_casemanagerclientassessment_client_status.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/casemanager/migrations/0011_rename_client_status_casemanagerclientassessment_assessment_status.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/clientpatient/migrations/0001_initial.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/clientpatient/migrations/0002_auto_20211122_0433.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/clientpatient/migrations/0003_auto_20211204_1826.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/clientpatient/migrations/0004_alter_personalinformation_language_proficiency.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/clinician/migrations/0001_initial.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/clinician/migrations/0002_alter_clinicanusers_user.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/clinician/migrations/0003_alter_clinicanusers_user.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/clinician/migrations/0004_alter_clinicanusers_user.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/clinician/migrations/0005_alter_clinicanusers_user.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/communityparamedic/migrations/0001_initial.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/communityparamedic/migrations/0002_auto_20211122_0512.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/migrations/0001_initial.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/migrations/0002_delete_usertype.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/casemanager/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/casemanager/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/casemanager/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/casemanager/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/clinician/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/clinician/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/communityparamedic/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/communityparamedic/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/core/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/core/models.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/documents/migrations/0001_documents_user.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/documents/migrations/0001_initial.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/documents/migrations/0002_reviewboardreferralformsdocuments_category.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/documents/migrations/0003_documents_uploaded_at.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/documents/migrations/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/documents/migrations/add_document_types.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/messaging/migrations/0001_initial.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/reviewboard/migrations/0001_initial.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/reviewboard/migrations/0002_alter_reviewboarduser_user_id.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/reviewboard/migrations/0003_auto_20211114_0318.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/reviewboard/migrations/0004_rename_user_id_reviewboarduser_user.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/reviewboard/migrations/0005_alter_reviewboarduser_user.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/reviewboard/migrations/0006_alter_reviewboarduser_user.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/reviewboard/migrations/0007_alter_clientreferral_decision_detail.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/Dockerfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/messaging/consumers.py" beforeDir="false" afterPath="$PROJECT_DIR$/messaging/consumers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/messaging/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/messaging/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/providertool/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/providertool/settings.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -104,6 +73,7 @@
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
+    <property name="nodejs_package_manager_path" value="yarn" />
     <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
   </component>
   <component name="RecentsManager">
@@ -131,7 +101,8 @@
       <workItem from="1637272707070" duration="72414000" />
       <workItem from="1638051677359" duration="72808000" />
       <workItem from="1639422004459" duration="11097000" />
-      <workItem from="1640186759352" duration="8643000" />
+      <workItem from="1640186759352" duration="41325000" />
+      <workItem from="1640888246794" duration="1243000" />
     </task>
     <servers />
   </component>
@@ -148,5 +119,6 @@
         </entry>
       </map>
     </option>
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
 </project>
