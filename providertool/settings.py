@@ -87,7 +87,7 @@ CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            'hosts': [('redis', 6379)],
+            'hosts': [('redis', '6379')],
         }
     }
 }
@@ -166,6 +166,8 @@ CORS_ORIGIN_ALLOW_ALL = True
 
 ALLOWED_HOSTS = ['*']
 
+DJANGO_ALLOW_ASYNC_UNSAFE = True
+
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 5,
@@ -195,6 +197,32 @@ JWT_AUTH = {
 # called `INSTALLED_APPS`.
 AUTH_USER_MODEL = 'authentication.User'
 
-
-XMPP_DOMAIN = 'http://localhost:5443'
-XMPP_BOSH_SERVICE_URL = 'http://localhost:5443/bosh'
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'console': {
+            'format': '%(name)-12s %(levelname)-8s %(message)s'
+        },
+        'file': {
+            'format': '%(asctime)s %(name)-12s %(levelname)-8s %(message)s'
+        }
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'formatter': 'file',
+            'filename': '/tmp/debug.log'
+        }
+    },
+    'loggers': {
+        '': {
+            'level': 'DEBUG',
+            'handlers': ['console', 'file']
+        }
+    }
+}

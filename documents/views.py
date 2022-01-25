@@ -38,7 +38,7 @@ class FileUploadView(APIView):
                 document_serializer = DocumentsSerializer(data={
                     "name": file_obj.name,
                     "path": "",
-                    "type": DocumentTypes.objects.get(type_code=file_type).type_id,
+                    "type": file_type,
                     "user": User.objects.get(username=username).pk
                 })
 

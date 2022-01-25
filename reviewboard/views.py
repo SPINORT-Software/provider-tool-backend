@@ -160,6 +160,8 @@ class ClientReferralCreate(APIView):
                             client_user.client_status = client_referral_decision
                             client_user.save()
 
+                            # Send email to the new client with temporary password
+                            # Reset to be done on client first login
                             return Response({
                                 'result': True,
                                 'data': {

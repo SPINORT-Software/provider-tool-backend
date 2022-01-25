@@ -9,4 +9,4 @@ EXPOSE 3000
 
 ADD . /app/frontend
 
-CMD ["nodemon"]
+CMD ["yarn"]

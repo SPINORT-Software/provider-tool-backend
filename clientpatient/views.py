@@ -2,11 +2,13 @@ import datetime
 
 from rest_framework import status, generics, response, views
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from .models import *
 from .serializers import *
 from django.core import serializers
 from django.forms.models import model_to_dict
 from django.core.exceptions import *
+import copy
 
 
 class CommunicationLogs:
@@ -23,7 +25,6 @@ class CommunicationLogs:
                 'status': True,
                 'data': response.data
             }, status=status.HTTP_201_CREATED)
-
 
     class CommunicationLogUpdateDeleteRetrieve(generics.RetrieveUpdateDestroyAPIView):
         """
@@ -58,7 +59,7 @@ class VisitorLogs:
 
 class PersonalInformationViews:
     @staticmethod
-    def add_home_safety(request, personal_id, home_safety_assessment):
+    def add_home_safety(personal_id, home_safety_assessment):
         # Add Home Safety Assessment data
         for assessment_item in home_safety_assessment:
             assessment_item['answer'] = assessment_item['answer'].replace("&$#", " ")
@@ -102,7 +103,7 @@ class PersonalInformationViews:
         queryset = PersonalInformation.objects.all()
         serializer_class = PersonalInformationSerializer
 
-    class PersonalInformationUpdateDeleteRetrieve(generics.RetrieveUpdateDestroyAPIView):
+    class PersonalInformationRetrieve(generics.RetrieveAPIView):
         queryset = PersonalInformation.objects.all()
         serializer_class = PersonalInformationSerializer
 
@@ -113,160 +114,108 @@ class PersonalInformationViews:
                 'data': retrieve_response.data
             })
 
-        def update(self, request, *args, **kwargs):
-            existing_client = str(super().get_object().client.client_id)
-
-            if request.data['client'] == existing_client:
-                request.data['revision_date'] = datetime.date.today().strftime('%Y-%m-%d')
-                response_personal = super().update(request, *args, **kwargs)
-                personal_id = kwargs.get('pk')
-
-                # Remove existing Home safety assessment objects before updating with new data
-                HomeSafetyAssessment.objects.filter(personal_information=personal_id).delete()
-                PersonalInformation.add_home_safety(request, personal_id, request.data["home_safety_assessment"])
-
-                return Response({
-                    'status': 200,
-                    'data': response_personal.data
-                })
-            else:
-                return Response({
-                    'status': 400,
-                    'data': 'Failed to update the personal information. Incorrect Client value provided.'
-                })
-
-    class PersonalInformationCreate(generics.CreateAPIView):
+    class PersonalInformationCreate(APIView):
         """
-        Add a Client Personal Information record.
+        Add or Update a Client Personal Information record.
         """
-        queryset = PersonalInformation.objects.all()
-        serializer_class = PersonalInformationSerializer
 
-        def create(self, request, *args, **kwargs):
-            response_personal = super().create(request, *args, **kwargs)
+        def post(self, request):
+            try:
+                data_without_homesafety = copy.deepcopy(request.data)
+                data_without_client = copy.deepcopy(data_without_homesafety)
+                client_id = data_without_homesafety['client']
+                del data_without_client['client']  # To avoid Unique constraint error while updating in the Try Block
+                data_without_homesafety.pop('home_safety_assessment', None)
 
-            if "home_safety_assessment" in request.data:
-                personal_id = response_personal.data["personal_id"]
-                PersonalInformationViews.add_home_safety(request, personal_id, request.data["home_safety_assessment"])
+                try:
+                    pi_get = PersonalInformation.objects.get(client__client_id=client_id)
+                    personal_id = pi_get.personal_id
 
-            return Response({
-                'status': 200,
-                'data': response_personal.data
-            })
+                    # Add revision_date to the data
+                    data_without_client['revision_date'] = datetime.date.today().strftime('%Y-%m-%d')
+
+                    for key, value in data_without_client.items():
+                        setattr(pi_get, key, value)
+                    pi_get.save()
+
+                    return Response({
+                        'status': 200,
+                        'data': PersonalInformationSerializer(pi_get).data
+                    }, status=status.HTTP_200_OK)
+                except PersonalInformation.DoesNotExist:
+                    pi_serializer = PersonalInformationSerializer(data=request.data)
+                    if pi_serializer.is_valid():
+                        response_personal = PersonalInformation.objects.create(**pi_serializer.validated_data)
+                        return Response({
+                            'status': 201,
+                            'data': PersonalInformationSerializer(response_personal).data
+                        }, status=status.HTTP_201_CREATED)
+                    else:
+                        print(pi_serializer.errors)
+                        return Response({
+                            'status': 400,
+                            'message': 'Please provide valid data for personal information.'
+                        }, status=status.HTTP_400_BAD_REQUEST)
+                except Exception:
+                    return Response({
+                        'status': 400,
+                        'message': 'Please provide valid data for personal information.'
+                    }, status=status.HTTP_400_BAD_REQUEST)
+            except Exception:
+                return Response({
+                    'status': 500,
+                    'message': 'Failed to process your request. '
+                }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class ClinicalInformationViews:
-    class ClinicalInformationCreate(generics.CreateAPIView):
+    class ClinicalInformationCreateUpdate(APIView):
         """
-        Add Clinical Information.
+        Add/Update Clinical Information.
         """
-        queryset = ClinicalInformation.objects.all()
-        serializer_class = ClinicalInformationSerializer
 
-        def create(self, request, *args, **kwargs):
-            # Create Nested Model fields and append to request data
-            nested_process = {
-                'result': True,
-                'message': ''
-            }
-            self.add_medical_diagnosis(nested_process, request)
-            self.add_home_support(nested_process, request)
-            self.add_previous_hospitalization(nested_process, request)
-            self.add_emergency_room_visits(nested_process, request)
-            self.add_ambulance_use(nested_process, request)
+        def post(self, request):
+            try:
+                client_id = request.data['client']
 
-            if not nested_process['result']:
-                return Response({
-                    'status': 400,
-                    'data': nested_process['message']
-                })
-            else:
-                response = super().create(request, *args, **kwargs)
-                self.add_current_medication(nested_process, request, response.data['clinical_id'])
+                try:
+                    data_without_client = copy.deepcopy(request.data)
+                    del data_without_client['client']
+                    data_without_client['revision_date'] = datetime.date.today().strftime('%Y-%m-%d')
 
-                if not nested_process['result']:
-                    ClinicalInformation.objects.get(clinical_id=response.data['clinical_id']).delete()
-                    return Response({
-                        'status': 400,
-                        'data': nested_process['message']
-                    })
-                else:
+                    ci_get = ClinicalInformation.objects.get(client__client_id=client_id)
+
+                    for key, value in data_without_client.items():
+                        setattr(ci_get, key, value)
+                    ci_get.save()
+
                     return Response({
                         'status': 200,
-                        'data': response.data
-                    })
+                        'data': PersonalInformationSerializer(ci_get).data
+                    }, status=status.HTTP_200_OK)
 
-        @staticmethod
-        def add_ambulance_use(nested_process, request):
-            ambulance_use_serializer = AmbulanceUseSerializer(data=request.data['ambulance_use'])
-            if ambulance_use_serializer.is_valid():
-                ambulance_use = ambulance_use_serializer.save()
-                request.data['ambulance_use'] = ambulance_use.ambulance_use_id
-            else:
-                nested_process['result'] = False
-                nested_process['message'] = "Invalid ambulance use  values provided."
+                except ClinicalInformation.DoesNotExist:
+                    print(1)
+                    ci_serializer = ClinicalInformationSerializer(data=request.data)
 
-        @staticmethod
-        def add_emergency_room_visits(nested_process, request):
-            emergency_room_visits_serializer = EmergencyRoomVisitsSerializer(data=request.data['emergency_room_visits'])
-            if emergency_room_visits_serializer.is_valid():
-                emergency_room_visits = emergency_room_visits_serializer.save()
-                request.data['emergency_room_visits'] = emergency_room_visits.emergency_room_visit_id
-            else:
-                nested_process['result'] = False
-                nested_process['message'] = "Invalid emergency room visits values provided."
-
-        @staticmethod
-        def add_previous_hospitalization(nested_process, request):
-            last_hospitalization_serializer = PreviousHospitalizationSerializer(
-                data=request.data['last_hospitalization'])
-            if last_hospitalization_serializer.is_valid():
-                last_hospitalization = last_hospitalization_serializer.save()
-                request.data['last_hospitalization'] = last_hospitalization.previous_hospitalization_id
-            else:
-                nested_process['result'] = False
-                nested_process['message'] = "Invalid last hospitalization values provided."
-
-        @staticmethod
-        def add_home_support(nested_process, request):
-            for home_support_key in request.data['home_support_services'].keys():
-                request.data['home_support_services'][home_support_key] = request.data['home_support_services'][
-                    home_support_key].replace("&$#", " ")
-
-            home_support_services_serializer = HomeSupportServicesSerializer(data=request.data['home_support_services'])
-            if home_support_services_serializer.is_valid():
-                home_support_services = home_support_services_serializer.save()
-                request.data['home_support_services'] = home_support_services.home_support_services_id
-            else:
-                nested_process['result'] = False
-                nested_process['message'] = "Invalid home support services values provided."
-
-        @staticmethod
-        def add_medical_diagnosis(nested_process, request):
-            for medical_data_key in request.data['medical_diagnosis'].keys():
-                request.data['medical_diagnosis'][medical_data_key] = request.data['medical_diagnosis'][
-                    medical_data_key].replace("&$#", " ")
-
-            medical_diagnosis_serializer = MedicalDiagnosisSerializer(data=request.data['medical_diagnosis'])
-            if medical_diagnosis_serializer.is_valid():
-                medical_diagnosis = medical_diagnosis_serializer.save()
-                request.data['medical_diagnosis'] = medical_diagnosis.medical_id
-            else:
-                nested_process['result'] = False
-                nested_process['message'] = "Invalid medical diagnosis values provided."
-
-        @staticmethod
-        def add_current_medication(nested_process, request, clinical_id):
-            if "current_medication" in request.data:
-                current_medication_data = request.data['current_medication']
-                for medication_item in current_medication_data:
-                    medication_item['clinical_id'] = clinical_id
-                current_medication_serializer = CurrentMedicationSerializer(data=current_medication_data, many=True)
-                if current_medication_serializer.is_valid():
-                    current_medication_serializer.save()
-                else:
-                    nested_process['result'] = False
-                    nested_process['message'] = "Invalid current medication values provided."
+                    if ci_serializer.is_valid():
+                        response_clinical = ClinicalInformation.objects.create(**ci_serializer.validated_data)
+                        return Response({
+                            'status': 200,
+                            'data': ClinicalInformationSerializer(response_clinical).data,
+                        }, status=status.HTTP_201_CREATED)
+                    else:
+                        print(ci_serializer.errors)
+                        return Response({
+                            'status': 400,
+                            'message': 'Please provide valid data for Clinical Information.'
+                        }, status=status.HTTP_400_BAD_REQUEST)
+            except Exception as e:
+                print(str(e))
+                return Response({
+                    'status': 500,
+                    'message': str(e)
+                }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     class ClinicalInformationList(generics.ListAPIView):
         """
@@ -275,116 +224,16 @@ class ClinicalInformationViews:
         queryset = ClinicalInformation.objects.all()
         serializer_class = ClinicalInformationSerializer
 
-    class ClinicalInformationUpdateDeleteRetrieve(generics.RetrieveUpdateDestroyAPIView):
+    class ClinicalInformationRetrieve(generics.RetrieveAPIView):
         queryset = ClinicalInformation.objects.all()
         serializer_class = ClinicalInformationSerializer
 
         def retrieve(self, request, *args, **kwargs):
             retrieve_response = super().retrieve(request, *args, **kwargs)
-
-            # Retrieve Current Medication Data
-            retrieve_response.data['current_medication'] = CurrentMedication.objects.values().filter(
-                clinical_id=kwargs.get('pk'))
-
             return Response({
                 'status': 200,
                 'data': retrieve_response.data
             })
-
-        def update(self, request, *args, **kwargs):
-            nested_process = {'result': True, 'message': ''}
-            existing_client = str(super().get_object().client.client_id)
-
-            try:
-                if request.data['client'] == existing_client:
-                    request.data['revision_date'] = datetime.date.today().strftime('%Y-%m-%d')
-                    self.update_medical_diagnosis(request)
-                    self.update_home_support_services(request)
-                    self.update_last_hospitalization(request)
-                    self.update_emergency_room_visits(request)
-                    self.update_ambulance_use(request)
-                    response_clinical = super().update(request, *args, **kwargs)
-
-                    if "current_medication" in request.data:
-                        clinical_id = kwargs.get('pk')
-                        CurrentMedication.objects.filter(clinical_id=clinical_id).delete()
-                        ClinicalInformationViews.ClinicalInformationCreate.add_current_medication(nested_process,
-                                                                                                  request,
-                                                                                                  clinical_id)
-                    return Response({
-                        'status': 200,
-                        'data': response_clinical.data
-                    })
-                else:
-                    return Response({
-                        'status': 400,
-                        'data': 'Failed to update the clinical information. Incorrect Client value provided.'
-                    })
-            except Exception as e:
-                return Response({
-                    'status': 400,
-                    'data': str(e)
-                })
-
-        def update_home_support_services(self, request):
-            if "home_support_services" in request.data:
-                home_support_services_id = request.data['home_support_services']['home_support_services_id']
-                home_support_services_object = HomeSupportServices.objects.get(
-                    home_support_services_id=home_support_services_id)
-                home_support_services_serializer = HomeSupportServicesSerializer(home_support_services_object,
-                                                                                 data=request.data[
-                                                                                     'home_support_services'])
-
-                if home_support_services_serializer.is_valid():
-                    home_support_services_serializer.save()
-                    request.data['home_support_services'] = home_support_services_id
-
-        def update_medical_diagnosis(self, request):
-            if "medical_diagnosis" in request.data:
-                medical_diagnosis_id = request.data['medical_diagnosis']['medical_id']
-                medical_diagnosis_object = MedicalDiagnosis.objects.get(medical_id=medical_diagnosis_id)
-                medical_diagnosis_serializer = MedicalDiagnosisSerializer(medical_diagnosis_object,
-                                                                          data=request.data['medical_diagnosis'])
-
-                if medical_diagnosis_serializer.is_valid():
-                    medical_diagnosis_serializer.save()
-                    request.data['medical_diagnosis'] = medical_diagnosis_id
-
-        def update_last_hospitalization(self, request):
-            if "last_hospitalization" in request.data:
-                previous_hospitalization_id = request.data['last_hospitalization']['previous_hospitalization_id']
-                previous_hospitalization_object = PreviousHospitalization.objects.get(
-                    previous_hospitalization_id=previous_hospitalization_id)
-                previous_hospitalization_serializer = PreviousHospitalizationSerializer(previous_hospitalization_object,
-                                                                                        data=request.data[
-                                                                                            'last_hospitalization'])
-
-                if previous_hospitalization_serializer.is_valid():
-                    previous_hospitalization_serializer.save()
-                    request.data['last_hospitalization'] = previous_hospitalization_id
-
-        def update_emergency_room_visits(self, request):
-            if "emergency_room_visits" in request.data:
-                emergency_room_visit_id = request.data['emergency_room_visits']['emergency_room_visit_id']
-                emergency_room_visit_object = EmergencyRoomVisits.objects.get(
-                    emergency_room_visit_id=emergency_room_visit_id)
-                emergency_room_visit_serializer = EmergencyRoomVisitsSerializer(emergency_room_visit_object,
-                                                                                data=request.data[
-                                                                                    'emergency_room_visits'])
-
-                if emergency_room_visit_serializer.is_valid():
-                    emergency_room_visit_serializer.save()
-                    request.data['emergency_room_visits'] = emergency_room_visit_id
-
-        def update_ambulance_use(self, request):
-            if "ambulance_use" in request.data:
-                ambulance_use_id = request.data['ambulance_use']['ambulance_use_id']
-                ambulance_use_object = AmbulanceUse.objects.get(ambulance_use_id=ambulance_use_id)
-                ambulance_use_serializer = AmbulanceUseSerializer(ambulance_use_object, data=request.data[
-                    'ambulance_use'])
-
-                if ambulance_use_serializer.is_valid():
-                    ambulance_use_serializer.save()
 
 
 class ClientViews:
@@ -437,10 +286,10 @@ class ClientViews:
                 ci_object = ClinicalInformation.objects.get(client=client)
                 ci_data = ClinicalInformationSerializer(ci_object).data
 
-                if CurrentMedication.objects.filter(clinical_id=ci_data['clinical_id']).exists():
-                    ci_medication_object = CurrentMedication.objects.filter(clinical_id=ci_data['clinical_id'])
-                    ci_data['current_medication'] = CurrentMedicationSerializer(ci_medication_object,
-                                                                                many=True).data
+                # if CurrentMedication.objects.filter(clinical_id=ci_data['clinical_id']).exists():
+                #     ci_medication_object = CurrentMedication.objects.filter(clinical_id=ci_data['clinical_id'])
+                #     ci_data['current_medication'] = CurrentMedicationSerializer(ci_medication_object,
+                #                                                                 many=True).data
             return ci_data
 
         def fetch_personal(self, client):

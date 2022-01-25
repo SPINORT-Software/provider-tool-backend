@@ -5,18 +5,38 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="cb744dec-d346-4c8e-b110-6b6349e6b94b" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/messaging/serializers.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/providertool/JWTMiddleware.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/Dockerfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/casemanager/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/casemanager/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/casemanager/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/casemanager/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/clinician/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/clinician/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/communityparamedic/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/communityparamedic/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/core/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/authentication/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/authentication/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/casemanager/migrations/0001_initial.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/casemanager/migrations/0002_casemanagerusers_provider_type.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/clientpatient/migrations/0001_initial.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/clientpatient/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/clientpatient/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/clientpatient/serializers.py" beforeDir="false" afterPath="$PROJECT_DIR$/clientpatient/serializers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/clientpatient/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/clientpatient/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/clientpatient/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/clientpatient/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/clinician/migrations/0001_initial.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/communityparamedic/migrations/0001_initial.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/communityparamedic/migrations/0002_communityparamedicuser_provider_type.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/documents/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/documents/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/documents/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/documents/views.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/Dockerfile" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/messaging/consumers.py" beforeDir="false" afterPath="$PROJECT_DIR$/messaging/consumers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/messaging/migrations/0001_initial.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/messaging/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/messaging/models.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/messaging/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/messaging/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/messaging/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/messaging/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/providertool/asgi.py" beforeDir="false" afterPath="$PROJECT_DIR$/providertool/asgi.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/providertool/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/providertool/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/providertool/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/providertool/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/reviewboard/migrations/0001_initial.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/reviewboard/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/reviewboard/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -55,6 +75,9 @@
       <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
     </file-type-list>
   </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/venv/lib/python3.9/site-packages/rest_framework/exceptions.py" root0="SKIP_INSPECTION" />
+  </component>
   <component name="ProjectId" id="1zhGe7d6g801yrYwzp9YBNM7cc4" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
@@ -62,12 +85,12 @@
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
-    <property name="DatabaseDriversLRU" value="mysql" />
+    <property name="DatabaseDriversLRU" value="mysql&#10;postgresql" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File" value="GitIgnore" />
+    <property name="com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File" value="JSON&#10;GitIgnore" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
@@ -103,6 +126,7 @@
       <workItem from="1639422004459" duration="11097000" />
       <workItem from="1640186759352" duration="41325000" />
       <workItem from="1640888246794" duration="1243000" />
+      <workItem from="1642283458664" duration="28150000" />
     </task>
     <servers />
   </component>

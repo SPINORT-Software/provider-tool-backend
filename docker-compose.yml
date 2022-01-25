@@ -12,17 +12,21 @@ services:
       - ./.env.dev
     depends_on:
       - db
+    links:
+      - db:db
+      - redis:redis
     networks:
-      - db-net
-
+      - backend
 
   redis:
-    image: redis:4-alpine
+    image: redis:latest
     restart: always
     ports:
-      - "6379:6379"
+      - 6379:6379
+    command:
+      - redis-server
     networks:
-      - db-net
+      - backend
 
   db:
     image: postgres:13.0-alpine
@@ -35,27 +39,32 @@ services:
       - POSTGRES_USER=providertool-admin
       - POSTGRES_PASSWORD=provider-tool
     networks:
-      - db-net
+      - backend
 
-  frontend:
-    restart: always
-    command: nodemon
-    build:
-      context: ./frontend/
-      dockerfile: Dockerfile
-    ports:
-      - "3000:3000"
-    stdin_open: true
-    depends_on:
-      - web
-    networks:
-      - db-net
-    environment:
-      - CHOKIDAR_USEPOLLING=true
+
+#  frontend:
+#    restart: always
+#    command: nodemon
+#    build:
+#      context: ./frontend/
+#      dockerfile: Dockerfile
+#    volumes:
+#      - /app/frontend/node_modules
+#      - .:/app/frontend
+#    ports:
+#      - "3000:3000"
+#    stdin_open: true
+#    depends_on:
+#      - web
+#    networks:
+#      - backend
+#    environment:
+#      - CHOKIDAR_USEPOLLING=true
 
 volumes:
   postgres_data:
 
 networks:
-  db-net:
+  backend:
+    name: backend
     driver: bridge

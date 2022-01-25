@@ -50,4 +50,7 @@ class UserView(RetrieveAPIView):
     serializer_class = UserSerializer
 
     def get(self, request):
+        """
+        Get all the user profile details required to be displayed and used on the frontend on LOGIN.
+        """
         return Response(UserSerializer(request.user).data, status.HTTP_200_OK)

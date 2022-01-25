@@ -17,14 +17,15 @@ urlpatterns = [
 
     # Personal Information
     path('personal', PersonalInformationViews.PersonalInformationList.as_view()),
-    path('personal-create', PersonalInformationViews.PersonalInformationCreate.as_view()),
-    path('personal/<str:pk>/', PersonalInformationViews.PersonalInformationUpdateDeleteRetrieve.as_view()),
+    path('personal-create-update', PersonalInformationViews.PersonalInformationCreate.as_view()),
+    path('personal/<str:pk>/', PersonalInformationViews.PersonalInformationRetrieve.as_view()),
     path('<str:client>/personal', PersonalInformationViews.ClientPersonalInformationRetrieve.as_view()),
 
     # Clinical Information
-    path('clinical-create', ClinicalInformationViews.ClinicalInformationCreate.as_view()),
     path('clinical', ClinicalInformationViews.ClinicalInformationList.as_view()),
-    path('clinical/<str:pk>/', ClinicalInformationViews.ClinicalInformationUpdateDeleteRetrieve.as_view()),
+    path('clinical-create-update', ClinicalInformationViews.ClinicalInformationCreateUpdate.as_view()),
+    path('clinical/<str:pk>/', ClinicalInformationViews.ClinicalInformationRetrieve.as_view()),
+    path('<str:client>/clinical', PersonalInformationViews.ClientPersonalInformationRetrieve.as_view()),
 
     path('<str:client_id>/profile', ClientViews.ClientProfileRetrieve.as_view()),
     path('<str:client_id>/data', ClientViews.ClientDataRetrieve.as_view())

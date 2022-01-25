@@ -14,6 +14,6 @@ zipp==3.5.0
 djangorestframework-jwt
 channels
 redis
-channels_redis
+channels-redis
 psycopg2-binary==2.9.1
 django-xmpp
