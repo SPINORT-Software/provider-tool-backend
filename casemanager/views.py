@@ -11,7 +11,6 @@ from rest_framework.status import *
 import json
 from core.views import ClientAssessmentFactory
 from core.constants import USER_TYPE_CASE_MANAGER
-from .serializers import CaseManagerClientAssessmentSerializer
 from django.core.exceptions import *
 
 
@@ -239,3 +238,27 @@ class ClientInterventionCreate(APIView):
             return False
 
         return interventionFormsCreate
+
+
+class ClientInterventionListFilterByCaseManager(generics.ListAPIView):
+    """
+    List all client intervention for a Case Manager.
+    """
+    pagination_class = None
+    queryset = ClientIntervention.objects.all()
+    serializer_class = ClientInterventionListSerializer
+
+    def get_queryset(self):
+        try:
+            casemanager = self.kwargs.get('casemanager')
+            return super().get_queryset().filter(casemanager=casemanager)
+        except ValidationError as e:
+            return []
+
+    def list(self, request, *args, **kwargs):
+        list_response = super().list(request, args, kwargs)
+        return Response({
+            'result': True,
+            'data': list_response.data
+        })
+

@@ -10,6 +10,7 @@ import uuid
 from authentication.models import Types as UserTypes
 from core.models import *
 from clientpatient.models import Client
+from core.models import ProviderTypes
 
 class ClinicanUsers(models.Model):
     """
@@ -22,6 +23,13 @@ class ClinicanUsers(models.Model):
         verbose_name="User - Clinican",
         db_column="user_id",
         related_name="clinicianuser"
+    )
+    provider_type = models.CharField(
+        max_length=100,
+        choices=ProviderTypes.choices,
+        default=ProviderTypes.PROVIDER_TYPE_DEFAULT,
+        null=True,
+        blank=True
     )
 
     created_at = models.DateTimeField(auto_now_add=True)

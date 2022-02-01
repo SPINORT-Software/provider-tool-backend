@@ -29,6 +29,7 @@ urlpatterns = [
 
     path('client-intervention-create', ClientInterventionCreate.as_view()),
 
+    path('<str:casemanager>/client-intervention', ClientInterventionListFilterByCaseManager.as_view()),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

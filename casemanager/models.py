@@ -149,10 +149,10 @@ class ClientIntervention(models.Model):
         verbose_name="Case Manager",
         db_column="casemanager"
     )
-    date = models.DateField(null=True, blank=True)
-    total_time = models.TimeField(auto_now=False, auto_now_add=False)
-    mode_of_clinical_intervention = models.TextField(null=True, blank=True)
-    clinical_type = models.TextField(null=True, blank=True)
+    date = models.TextField(null=True, blank=True)
+    total_time = models.TextField(null=True, blank=True)
+    mode_of_clinical_intervention = models.JSONField(null=True, blank=True)
+    clinical_type = models.JSONField(null=True, blank=True)
     clinical_type_detail = models.TextField(null=True, blank=True)
-    therapeutic_type = models.TextField(null=True, blank=True)
+    therapeutic_type = models.JSONField(null=True, blank=True)
     therapeutic_type_detail = models.TextField(null=True, blank=True)

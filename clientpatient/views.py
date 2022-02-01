@@ -77,8 +77,8 @@ class PersonalInformationViews:
             return False, None
 
     class ClientPersonalInformationRetrieve(generics.RetrieveAPIView):
-        queryset = PersonalInformation.objects.all()
-        serializer_class = PersonalInformationSerializer
+        queryset = ClinicalInformation.objects.all()
+        serializer_class = ClinicalInformationSerializer
         lookup_field = 'client'
 
         def get_queryset(self):

@@ -150,6 +150,15 @@ class User(AbstractBaseUser, PermissionsMixin):
         """
         return self._get_user_type_instance()
 
+    @property
+    def provider_type(self):
+        """
+        If the user type = [CASE MANAGER, COMMUNITY PARAMEDIC, CLINICIAN, EXTERNAL CM]
+        this field should return the provider_type value from the User Type's Model
+        :return:
+        """
+        return self._get_provider_type()
+
     def get_full_name(self):
         """
         This method is required by Django for things like handling emails.
@@ -203,5 +212,25 @@ class User(AbstractBaseUser, PermissionsMixin):
                 return getattr(user_type_instance, user_type_model_pk)
             return False
         except Exception as e:
-            print(e)
+            return False
+
+    def _get_provider_type(self):
+        """
+        Get the provider type value if the User Type Model has it. (Not applicable for Client, Review Board)
+        :return:
+        """
+        try:
+            if self.user_type in (Types.TYPE_CASE_MANAGER, Types.TYPE_COMMUNITY_PARAMEDIC, Types.TYPE_CLINICIAN):
+                user_type_models = {
+                    'TYPE_CLINICIAN': 'clinicianuser',
+                    'TYPE_COMMUNITY_PARAMEDIC': 'communityparamedicuser',
+                    'TYPE_CASE_MANAGER': 'casemanager'
+                }
+                user_type_data = user_type_models.get(self.user_type, None)
+                if user_type_data:
+                    user_type_instance = getattr(self, user_type_data)
+                    return getattr(user_type_instance, 'provider_type')
+                return False
+        except Exception as e:
+            print(str(e))
             return False

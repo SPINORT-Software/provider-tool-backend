@@ -7,13 +7,13 @@ from django.contrib.auth import authenticate
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['token', 'user_type', 'user_type_pk', 'username', 'fullname']
+        fields = ['token', 'user_type', 'user_type_pk', 'provider_type', 'username', 'fullname']
 
 
 class UserSearchSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['user_type', 'user_type_pk', 'username', 'first_name', 'last_name', 'fullname']
+        fields = ['user_type', 'user_type_pk', 'provider_type', 'username', 'first_name', 'last_name', 'fullname']
 
 
 class RegistrationSerializer(serializers.ModelSerializer):
@@ -49,6 +49,7 @@ class LoginSerializer(serializers.Serializer):
     user_type = serializers.CharField(max_length=128, read_only=True)
     token = serializers.CharField(max_length=255, read_only=True)
     user_type_pk = serializers.CharField(max_length=255, read_only=True)
+    provider_type = serializers.CharField(max_length=255, read_only=True)
     fullname = serializers.CharField(max_length=255, read_only=True)
 
     def validate(self, data):
@@ -104,6 +105,7 @@ class LoginSerializer(serializers.Serializer):
             'username': user.username,
             'token': user.token,
             'user_type': user.user_type,
+            'provider_type': user.provider_type,
             'user_type_pk': user.user_type_pk,
             'fullname': user.fullname
         }
