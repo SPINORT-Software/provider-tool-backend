@@ -16,42 +16,10 @@ from documents.serializers import *
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from providertool.errors import default_error_response
 from rest_framework import filters
-from authentication.models import User as CustomAuthUser
+from authentication.models import User as CustomAuthUser, Types as ApplicationUserTypes
 from clientpatient.models import Client, ClientStatus
 from clientpatient.serializers import ClientSerializer
 from django.core.exceptions import ValidationError
-
-
-# @api_view(['GET'])
-# @authentication_classes((JSONWebTokenAuthentication,))
-# def current_user(request):
-#     """
-#     Determine the current user by their token, and return their data
-#     """
-#     serializer = UserSerializer(request.user)
-#     return Response(serializer.data)
-
-
-# def my_jwt_response_handler(token, user=None, request=None):
-#     return {
-#         'token': token,
-#         'user': UserSerializer(user, context={'request': request}).data
-#     }
-
-
-# class UserList(APIView):
-#     """
-#     Create a new user. It's called 'UserList' because normally we'd have a get
-#     method here too, for retrieving a list of all User objects.
-#     """
-#     permission_classes = (permissions.AllowAny,)
-#
-#     def post(self, request, format=None):
-#         serializer = UserSerializerWithToken(data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data, status=status.HTTP_201_CREATED)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserSearch(ListAPIView):
@@ -63,17 +31,18 @@ class UserSearch(ListAPIView):
 
 
 class ClientSearch(ListAPIView):
-    def get_queryset(self):
-        try:
-            return super().get_queryset().filter(clientuser__client_status=ClientStatus.ACTIVE_CLIENT)
-        except ValidationError as e:
-            return []
-
     queryset = CustomAuthUser.objects.all()
     serializer_class = UserSearchSerializer
     filter_backends = (filters.SearchFilter,)
     pagination_class = None
     search_fields = ('first_name', 'last_name', 'email')
+
+    def get_queryset(self):
+        try:
+            return super().get_queryset().filter(user_type=ApplicationUserTypes.TYPE_CLIENT,
+                                                 application_user__client_status=ClientStatus.ACTIVE_CLIENT)
+        except ValidationError as e:
+            return []
 
 
 class ClientSearchByEmail(ListAPIView):
@@ -279,3 +248,34 @@ class ClientAssessmentFactory:
                 'result': False,
                 'message': 'Failed to process your request. '
             }, status=HTTP_500_INTERNAL_SERVER_ERROR)
+
+# @api_view(['GET'])
+# @authentication_classes((JSONWebTokenAuthentication,))
+# def current_user(request):
+#     """
+#     Determine the current user by their token, and return their data
+#     """
+#     serializer = UserSerializer(request.user)
+#     return Response(serializer.data)
+
+
+# def my_jwt_response_handler(token, user=None, request=None):
+#     return {
+#         'token': token,
+#         'user': UserSerializer(user, context={'request': request}).data
+#     }
+
+
+# class UserList(APIView):
+#     """
+#     Create a new user. It's called 'UserList' because normally we'd have a get
+#     method here too, for retrieving a list of all User objects.
+#     """
+#     permission_classes = (permissions.AllowAny,)
+#
+#     def post(self, request, format=None):
+#         serializer = UserSerializerWithToken(data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data, status=status.HTTP_201_CREATED)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

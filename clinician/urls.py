@@ -18,7 +18,7 @@ urlpatterns = [
     # # LIST for Client Assessment
     path('assessment', AssessmentViews.AssessmentList.as_view()),
 
-    path('assessment-create', AssessmentViews.AssessmentCreate.as_view()),
+    path('client-assessment-create', AssessmentViews.AssessmentCreate.as_view()),
 
     path('assessment/<str:pk>', AssessmentViews.AssessmentRetrieveView.as_view()),
 
