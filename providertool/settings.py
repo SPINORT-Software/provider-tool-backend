@@ -187,9 +187,9 @@ CORS_ORIGIN_WHITELIST = (
     'http://localhost:3000',
 )
 
-JWT_AUTH = {
-    'JWT_RESPONSE_PAYLOAD_HANDLER': 'core.views.my_jwt_response_handler'
-}
+# JWT_AUTH = {
+#     'JWT_RESPONSE_PAYLOAD_HANDLER': 'core.views.my_jwt_response_handler'
+# }
 
 # Tell Django about the custom `User` model we created. The string
 # `authentication.User` tells Django we are referring to the `User` model in

@@ -8,7 +8,7 @@ from rest_framework.generics import ListAPIView
 
 import casemanager.serializers
 import clinician.serializers
-from .serializers.auth import UserSerializer, UserSerializerWithToken
+# from .serializers.auth import UserSerializer, UserSerializerWithToken
 from authentication.serializers import UserSearchSerializer
 from .constants import *
 from rest_framework.status import *
@@ -22,36 +22,36 @@ from clientpatient.serializers import ClientSerializer
 from django.core.exceptions import ValidationError
 
 
-@api_view(['GET'])
-@authentication_classes((JSONWebTokenAuthentication,))
-def current_user(request):
-    """
-    Determine the current user by their token, and return their data
-    """
-    serializer = UserSerializer(request.user)
-    return Response(serializer.data)
+# @api_view(['GET'])
+# @authentication_classes((JSONWebTokenAuthentication,))
+# def current_user(request):
+#     """
+#     Determine the current user by their token, and return their data
+#     """
+#     serializer = UserSerializer(request.user)
+#     return Response(serializer.data)
 
 
-def my_jwt_response_handler(token, user=None, request=None):
-    return {
-        'token': token,
-        'user': UserSerializer(user, context={'request': request}).data
-    }
+# def my_jwt_response_handler(token, user=None, request=None):
+#     return {
+#         'token': token,
+#         'user': UserSerializer(user, context={'request': request}).data
+#     }
 
 
-class UserList(APIView):
-    """
-    Create a new user. It's called 'UserList' because normally we'd have a get
-    method here too, for retrieving a list of all User objects.
-    """
-    permission_classes = (permissions.AllowAny,)
-
-    def post(self, request, format=None):
-        serializer = UserSerializerWithToken(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+# class UserList(APIView):
+#     """
+#     Create a new user. It's called 'UserList' because normally we'd have a get
+#     method here too, for retrieving a list of all User objects.
+#     """
+#     permission_classes = (permissions.AllowAny,)
+#
+#     def post(self, request, format=None):
+#         serializer = UserSerializerWithToken(data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data, status=status.HTTP_201_CREATED)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserSearch(ListAPIView):
@@ -112,6 +112,9 @@ class ClientAssessmentFactory:
             assessment_data_serializer = self.ClientAssessmentSerializer(data=self.request_data['assessment'])
             if assessment_data_serializer.is_valid():
                 client_assessment = assessment_data_serializer.save()
+
+                print(assessment_data_serializer.validated_data)
+
                 request_assessment_type = assessment_data_serializer.validated_data['assessment_status']
 
                 if request_assessment_type == NEW_CASE_CLIENT_EXISTING_EMC_REASSESS:
@@ -189,6 +192,7 @@ class ClientAssessmentFactory:
         if assessment_type_record:
             if 'assessment_type_forms' in self.request_data:
                 forms_request_data = self.request_data['assessment_type_forms']
+
                 assessment_forms_create_result = self.create_assessment_forms(client_assessment, forms_request_data,
                                                                               client_assessment_model_field)
                 if assessment_forms_create_result:
@@ -202,6 +206,12 @@ class ClientAssessmentFactory:
                         'result': True,
                         'message': 'Failed to create Client Assessment forms.'
                     }, status=HTTP_500_INTERNAL_SERVER_ERROR)
+            else:
+                return Response({
+                    'result': True,
+                    'message': 'Client Assessment record created.',
+                    'data': self.ClientAssessmentSerializer(client_assessment).data
+                }, status=HTTP_201_CREATED)
         else:
             return Response({
                 'result': True,
@@ -211,8 +221,7 @@ class ClientAssessmentFactory:
     def create_assessment_forms(self, client_assessment, forms_request_data, assessment_type):
         assessment_forms_create = True
 
-        if any(key in forms_request_data for key in ("provider_specific_forms", "assessment_forms")) and isinstance(
-                forms_request_data, dict):
+        if any(key in forms_request_data for key in ("provider_specific_forms", "assessment_forms")):
             for form in forms_request_data:
                 if isinstance(forms_request_data[form], list):
                     for form_document in forms_request_data[form]:

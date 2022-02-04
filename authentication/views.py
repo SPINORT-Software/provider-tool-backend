@@ -8,7 +8,6 @@ from .serializers import RegistrationSerializer, LoginSerializer, UserSerializer
 from .renderers import UserJSONRenderer
 from .backends import JWTAuthentication
 from .models import User
-from reviewboard.models import ReviewBoardUser
 from django.contrib.auth import authenticate
 
 

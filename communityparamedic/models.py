@@ -6,53 +6,19 @@ from django.utils.translation import gettext_lazy as _
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.conf import settings
-from authentication.models import Types as UserTypes
+from authentication.models import Types as UserTypes, ApplicationUser
 from core.models import ProviderTypes
-
-class CommunityParamedicUser(models.Model):
-    community_paramedic_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
-    user = models.OneToOneField(
-        settings.AUTH_USER_MODEL,
-        related_name='communityparamedicuser',
-        on_delete=models.PROTECT,
-        verbose_name="User - Community Paramedic",
-        db_column="user_id"
-    )
-    provider_type = models.CharField(
-        max_length=100,
-        choices=ProviderTypes.choices,
-        default=ProviderTypes.PROVIDER_TYPE_DEFAULT,
-        null=True,
-        blank=True
-    )
-
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(null=True, blank=True)
-
-    class Meta:
-        verbose_name = "Community Paramedic"
-        verbose_name_plural = "Community Paramedics"
-
-    def __str__(self):
-        return f"{self.user_id.first_name} {self.user_id.last_name}"
-
-
-@receiver(post_save, sender=settings.AUTH_USER_MODEL)
-def create_user_communityparamedicuser(sender, instance, created, **kwargs):
-    if created:
-        if hasattr(instance, 'user_type') and instance.user_type == UserTypes.TYPE_COMMUNITY_PARAMEDIC:
-            CommunityParamedicUser.objects.create(user=instance)
-
 
 class DailyWorkLoad(models.Model):
     daily_workload_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
     community_paramedic = models.ForeignKey(
-        CommunityParamedicUser,
+        ApplicationUser,
         on_delete=models.PROTECT,
         verbose_name="Community Paramedic",
         db_column="community_paramedic",
         null=True,
-        blank=True
+        blank=True,
+        related_name="paramedic_dailyworkload"
     )
     daily_workload_date = models.DateField(null=True, blank=True)
     client_caseload_casemanagement_number_clients = models.IntegerField(null=True)
@@ -181,16 +147,18 @@ class CommunityClientAssessment(models.Model):
     """
     client_assessment_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
     community_paramedic = models.ForeignKey(
-        CommunityParamedicUser,
+        ApplicationUser,
         on_delete=models.PROTECT,
         verbose_name="Community Paramedic",
-        db_column="community_paramedic"
+        db_column="community_paramedic",
+        related_name="paramedic_clientassessment"
     )
     client = models.ForeignKey(
-        Client,
+        ApplicationUser,
         on_delete=models.PROTECT,
         verbose_name="Assessment Client",
-        db_column="client"
+        db_column="client",
+        related_name="paramedic_clientassessment_client"
     )
     client_status = models.CharField(
         max_length=100,
@@ -228,3 +196,41 @@ class HomeSafetyAssessment(models.Model):
     question = models.TextField()
     answer = models.IntegerField(default=False)
     answer_detail = models.TextField(null=True, blank=True)
+
+
+
+
+# class CommunityParamedicUser(models.Model):
+#     community_paramedic_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
+#     user = models.OneToOneField(
+#         settings.AUTH_USER_MODEL,
+#         related_name='communityparamedicuser',
+#         on_delete=models.PROTECT,
+#         verbose_name="User - Community Paramedic",
+#         db_column="user_id"
+#     )
+#     provider_type = models.CharField(
+#         max_length=100,
+#         choices=ProviderTypes.choices,
+#         default=ProviderTypes.PROVIDER_TYPE_DEFAULT,
+#         null=True,
+#         blank=True
+#     )
+#
+#     created_at = models.DateTimeField(auto_now_add=True)
+#     updated_at = models.DateTimeField(null=True, blank=True)
+#
+#     class Meta:
+#         verbose_name = "Community Paramedic"
+#         verbose_name_plural = "Community Paramedics"
+#
+#     def __str__(self):
+#         return f"{self.user_id.first_name} {self.user_id.last_name}"
+
+
+# @receiver(post_save, sender=settings.AUTH_USER_MODEL)
+# def create_user_communityparamedicuser(sender, instance, created, **kwargs):
+#     if created:
+#         if hasattr(instance, 'user_type') and instance.user_type == UserTypes.TYPE_COMMUNITY_PARAMEDIC:
+#             CommunityParamedicUser.objects.create(user=instance)
+#

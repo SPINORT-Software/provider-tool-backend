@@ -8,28 +8,30 @@ urlpatterns = [
     # ====================================================
 
     # LIST for daily workload
-    path('workload', WorkloadList.as_view()),
+    path('workload', WorkloadViews.WorkloadList.as_view()),
 
-    path('<str:casemanager>/workload', WorkloadListFilterByCaseManager.as_view()),
+    path('<str:casemanager>/workload', WorkloadViews.WorkloadListFilterByCaseManager.as_view()),
 
     # ADD - EDIT - DELETE for daily workload
-    path('workload/<str:pk>', WorkloadDetail.as_view()),
+    path('workload/<str:pk>', WorkloadViews.WorkloadDetail.as_view()),
 
-    path('client-assessment-create', ClientAssessmentCreate.as_view()),
+    path('client-assessment-create', ClientAssessmentViews.ClientAssessmentCreate.as_view()),
 
     # LIST for Client Assessment
-    path('client-assessment', ClientAssessmentList.as_view()),
+    path('client-assessment', ClientAssessmentViews.ClientAssessmentList.as_view()),
 
-    path('<str:casemanager>/client-assessment', ClientAssessmentListFilterByCaseManager.as_view()),
+    path('<str:casemanager>/client-assessment',
+         ClientAssessmentViews.ClientAssessmentListFilterByCaseManager.as_view()),
 
     # ADD - EDIT - DELETE for Client Assessment
-    path('client-assessment/<str:pk>', ClientAssessmentDetail.as_view()),
+    path('client-assessment/<str:pk>', ClientAssessmentViews.ClientAssessmentDetail.as_view()),
 
-    path('client-intervention', ClientInterventionList.as_view()),
+    path('client-intervention', ClientInterventionViews.ClientInterventionList.as_view()),
 
-    path('client-intervention-create', ClientInterventionCreate.as_view()),
+    path('client-intervention-create', ClientInterventionViews.ClientInterventionCreate.as_view()),
 
-    path('<str:casemanager>/client-intervention', ClientInterventionListFilterByCaseManager.as_view()),
+    path('<str:casemanager>/client-intervention',
+         ClientInterventionViews.ClientInterventionListFilterByCaseManager.as_view()),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

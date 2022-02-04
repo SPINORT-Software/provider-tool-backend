@@ -8,6 +8,8 @@ from django.contrib.auth.models import (
 )
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+import uuid
+from core.models import *
 
 
 class UserManager(BaseUserManager):
@@ -60,6 +62,12 @@ class Types(models.TextChoices):
     TYPE_CASE_MANAGER = 'TYPE_CASE_MANAGER', _('CASE MANAGER')
     TYPE_ADMIN = 'TYPE_ADMIN', _('ADMIN')
     TYPE_NORMAL_USER = 'TYPE_NORMAL_USER', _('NORMAL USER')
+
+
+class ClientStatus(models.TextChoices):
+    ACTIVE_CLIENT = 'ACTIVE_CLIENT', _('Active Client')
+    DISCHARGED_CLIENT = 'DISCHARGED_CLIENT', _('Discharged Client')
+    POTENTIAL_CLIENT = 'POTENTIAL_CLIENT', _('Potential Client')
 
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -197,19 +205,9 @@ class User(AbstractBaseUser, PermissionsMixin):
         :return:
         """
         try:
-            user_type_models = {
-                'TYPE_REVIEW_BOARD': ('reviewboarduser', 'reviewboard_user_id'),
-                'TYPE_CLINICIAN': ('clinicianuser', 'clinician_id'),
-                'TYPE_CLIENT': ('clientuser', 'client_id'),
-                'TYPE_COMMUNITY_PARAMEDIC': ('communityparamedicuser', 'community_paramedic_id'),
-                'TYPE_CASE_MANAGER': ('casemanager', 'casemanager_id'),
-            }
-            user_type_data = user_type_models.get(self.user_type, None)
-            if user_type_data:
-                user_type_model_field = user_type_data[0]
-                user_type_model_pk = user_type_data[1]
-                user_type_instance = getattr(self, user_type_model_field)
-                return getattr(user_type_instance, user_type_model_pk)
+            application_user = getattr(self, "application_user")
+            if application_user:
+                return application_user.app_user_id
             return False
         except Exception as e:
             return False
@@ -234,3 +232,53 @@ class User(AbstractBaseUser, PermissionsMixin):
         except Exception as e:
             print(str(e))
             return False
+
+
+class ApplicationUser(models.Model):
+    app_user_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        verbose_name="Application User - Auth User",
+        db_column="user_id",
+        related_name="application_user"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(null=True, blank=True)
+    provider_type = models.CharField(
+        max_length=100,
+        choices=ProviderTypes.choices,
+        default=ProviderTypes.PROVIDER_TYPE_DEFAULT,
+        null=True,
+        blank=True
+    )
+    client_status = models.CharField(
+        max_length=100,
+        choices=ClientStatus.choices,
+        default=ClientStatus.POTENTIAL_CLIENT,
+        blank=True,
+        null=True
+    )
+
+    class Meta:
+        verbose_name = "Application User"
+        verbose_name_plural = "Application Users"
+
+    def __str__(self):
+        return f"{self.user.first_name} {self.user.last_name}"
+
+
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def create_user_applicationuser(sender, instance, created, **kwargs):
+    if created:
+        application_user = ApplicationUser.objects.create(user=instance)
+
+        # Set the right values based on the user type
+        if hasattr(instance, 'user_type'):
+            # provider_type is not for Client Users // client_status is only for patients
+            if instance.user_type == Types.TYPE_CLIENT:
+                application_user.provider_type = None
+            if instance.user_type == Types.TYPE_CASE_MANAGER:
+                application_user.client_status = None
+
+        application_user.save()

@@ -9,13 +9,27 @@
       <change beforePath="$PROJECT_DIR$/.idea/dataSources/89106e84-5047-46a9-8258-ccd6dcf7e353/storage_v2/_src_/database/providertool.CQ8U5w/schema/public.abK9xQ.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/89106e84-5047-46a9-8258-ccd6dcf7e353/storage_v2/_src_/database/providertool.CQ8U5w/schema/public.abK9xQ.meta" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/authentication/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/authentication/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/authentication/serializers.py" beforeDir="false" afterPath="$PROJECT_DIR$/authentication/serializers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/authentication/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/authentication/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/casemanager/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/casemanager/admin.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/casemanager/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/casemanager/models.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/casemanager/serializers.py" beforeDir="false" afterPath="$PROJECT_DIR$/casemanager/serializers.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/casemanager/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/casemanager/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/casemanager/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/casemanager/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/clientpatient/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/clientpatient/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/clinician/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/clinician/admin.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/clinician/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/clinician/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/clinician/serializers.py" beforeDir="false" afterPath="$PROJECT_DIR$/clinician/serializers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/clinician/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/clinician/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/clinician/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/clinician/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/communityparamedic/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/communityparamedic/admin.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/communityparamedic/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/communityparamedic/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/core/serializers/auth.py" beforeDir="false" afterPath="$PROJECT_DIR$/core/serializers/auth.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/core/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/core/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/core/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/core/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/providertool/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/providertool/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/providertool/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/providertool/utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/reviewboard/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/reviewboard/admin.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/reviewboard/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/reviewboard/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/reviewboard/serializers.py" beforeDir="false" afterPath="$PROJECT_DIR$/reviewboard/serializers.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -105,7 +119,8 @@
       <workItem from="1639422004459" duration="11097000" />
       <workItem from="1640186759352" duration="41325000" />
       <workItem from="1640888246794" duration="1243000" />
-      <workItem from="1642283458664" duration="46419000" />
+      <workItem from="1642283458664" duration="60478000" />
+      <workItem from="1643937241838" duration="1465000" />
     </task>
     <servers />
   </component>

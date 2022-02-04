@@ -2,11 +2,12 @@ from rest_framework.serializers import ModelSerializer
 from .models import *
 from documents.models import ReviewBoardReferralFormsDocuments
 from documents.serializers import ReviewBoardReferralFormsDocumentsSerializer
+from authentication.models import ApplicationUser
 
 
 class ReviewBoardUserSerializer(ModelSerializer):
     class Meta:
-        model = ReviewBoardUser
+        model = ApplicationUser
         fields = '__all__'
 
 

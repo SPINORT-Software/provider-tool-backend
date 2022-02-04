@@ -8,45 +8,14 @@ import json
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.conf import settings
-from authentication.models import Types as UserTypes
-
-
-class ReviewBoardUser(models.Model):
-    reviewboard_user_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
-    user = models.OneToOneField(
-        settings.AUTH_USER_MODEL,
-        related_name='reviewboarduser',
-        on_delete=models.CASCADE,
-        verbose_name="User",
-        db_column="user_id"
-    )
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(null=True, blank=True)
-
-    class Meta:
-        verbose_name = "Review Board User"
-        verbose_name_plural = "Review Board Users"
-
-    def __str__(self):
-        return f"{self.user.first_name} {self.user.last_name}"
-
-
-@receiver(post_save, sender=settings.AUTH_USER_MODEL)
-def create_user_reviewboarduser(sender, instance, created, **kwargs):
-    if created:
-        if hasattr(instance, 'user_type') and instance.user_type == UserTypes.TYPE_REVIEW_BOARD:
-            ReviewBoardUser.objects.create(user=instance)
-
-# @receiver(post_save, sender=User)
-# def save_user_(sender, instance, **kwargs):
-#     instance.reviewboarduser.save()
+from authentication.models import Types as UserTypes, ApplicationUser
 
 
 class ClientReferral(models.Model):
     referral_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
     referral_date = models.DateField(null=True, blank=True)
     review_board_user = models.ForeignKey(
-        ReviewBoardUser,
+        ApplicationUser,
         on_delete=models.PROTECT,
         verbose_name="Review Board User",
         db_column="review_board_user"
@@ -69,3 +38,36 @@ class ClientReferral(models.Model):
         default=ClientStatus.POTENTIAL_CLIENT,
     )
     decision_detail = models.TextField(null=True, blank=True)
+
+
+
+# class ReviewBoardUser(models.Model):
+#     reviewboard_user_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
+#     user = models.OneToOneField(
+#         settings.AUTH_USER_MODEL,
+#         related_name='reviewboarduser',
+#         on_delete=models.CASCADE,
+#         verbose_name="User",
+#         db_column="user_id"
+#     )
+#     created_at = models.DateTimeField(auto_now_add=True)
+#     updated_at = models.DateTimeField(null=True, blank=True)
+#
+#     class Meta:
+#         verbose_name = "Review Board User"
+#         verbose_name_plural = "Review Board Users"
+#
+#     def __str__(self):
+#         return f"{self.user.first_name} {self.user.last_name}"
+
+
+# @receiver(post_save, sender=settings.AUTH_USER_MODEL)
+# def create_user_reviewboarduser(sender, instance, created, **kwargs):
+#     if created:
+#         if hasattr(instance, 'user_type') and instance.user_type == UserTypes.TYPE_REVIEW_BOARD:
+#             ReviewBoardUser.objects.create(user=instance)
+
+# @receiver(post_save, sender=User)
+# def save_user_(sender, instance, **kwargs):
+#     instance.reviewboarduser.save()
+

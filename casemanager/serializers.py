@@ -16,6 +16,7 @@ class ClientInterventionSerializer(ModelSerializer):
         model = ClientIntervention
         fields = '__all__'
 
+
 class ClientInterventionListSerializer(ModelSerializer):
     def to_representation(self, instance):
         response = super().to_representation(instance)
@@ -45,6 +46,3 @@ class CaseManagerClientAssessmentSerializer(ModelSerializer):
     class Meta:
         model = CaseManagerClientAssessment
         fields = '__all__'
-
-
-

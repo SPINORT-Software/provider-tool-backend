@@ -24,12 +24,13 @@ urlpatterns = [
 
     path('<str:clinician>/assessment', AssessmentViews.ClinicianAssessmentList.as_view({'get': 'list'})),
 
-    # # ADD - EDIT - DELETE for Client Assessment
-    # path('client-assessment/<str:pk>', ClientAssessmentDetail.as_view()),
-    #
-    # path('client-intervention', ClientInterventionList.as_view()),
-    #
-    # path('client-intervention-create', ClientInterventionCreate.as_view()),
+    # # ADD - EDIT - DELETE for Client Intervention
+    path('client-intervention', ClientInterventionViews.ClientInterventionList.as_view()),
+
+    path('client-intervention-create', ClientInterventionViews.ClientInterventionCreate.as_view()),
+
+    path('<str:clinician>/client-intervention',
+         ClientInterventionViews.ClientInterventionListFilterByCaseManager.as_view()),
 
 ]
 
