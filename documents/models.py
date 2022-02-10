@@ -4,6 +4,7 @@ from casemanager.models import CaseManagerClientAssessment, ClientIntervention
 from clinician.models import ClinicianClientAssessment
 from reviewboard.models import ClientReferral
 from communityparamedic.models import NewCaseClientAssessment, ExistingCaseClientAssessment
+from externalcasemanager.models import ExternalCMClientIntervention
 from django.conf import settings
 
 
@@ -140,4 +141,20 @@ class ExistingClientCommunityParamedicFormsDocuments(models.Model):
         on_delete=models.PROTECT,
         verbose_name="Existing Client Assessment",
         db_column="client_assessment"
+    )
+
+
+class ExternalCMInterventionFormsDocuments(models.Model):
+    form_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
+    document = models.ForeignKey(
+        Documents,
+        on_delete=models.PROTECT,
+        verbose_name="Document",
+        db_column="document"
+    )
+    client_intervention = models.ForeignKey(
+        ExternalCMClientIntervention,
+        on_delete=models.PROTECT,
+        verbose_name="External CM Intervention",
+        db_column="client_intervention"
     )

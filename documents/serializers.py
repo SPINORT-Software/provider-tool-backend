@@ -68,3 +68,9 @@ class ReviewBoardReferralFormsDocumentsSerializer(serializers.ModelSerializer):
     class Meta:
         model = ReviewBoardReferralFormsDocuments
         fields = '__all__'
+
+
+class ExternalCMInterventionFormsDocumentsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ExternalCMInterventionFormsDocuments
+        fields = '__all__'

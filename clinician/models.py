@@ -40,6 +40,8 @@ class DailyWorkLoad(models.Model):
 
 class ClinicianClientAssessment(models.Model):
     client_assessment_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
+    assessment_date = models.DateField(auto_now_add=True, null=True, blank=True)
+    assessment_time = models.TimeField(auto_now_add=True, null=True, blank=True)
     clinician = models.ForeignKey(
         ApplicationUser,
         on_delete=models.PROTECT,
@@ -90,7 +92,7 @@ class ClinicianClientAssessment(models.Model):
         verbose_name_plural = "Client Assessments"
 
     def __str__(self):
-        return self.client_status + " [" + str(self.client_assessment_id) + "]"
+        return self.assessment_status + " [" + str(self.client_assessment_id) + "]"
 
 
 class ClinicianClientInterventions(models.Model):
@@ -109,7 +111,7 @@ class ClinicianClientInterventions(models.Model):
         db_column="clinician",
         related_name="clinician_intervention_clinician"
     )
-    date = models.DateField(null=True, blank=True)
+    date = models.TextField(null=True, blank=True)
     total_time = models.TimeField(auto_now=False, auto_now_add=False)
     mode_of_clinical_intervention = models.JSONField(null=True, blank=True)
     clinical_type = models.JSONField(null=True, blank=True)

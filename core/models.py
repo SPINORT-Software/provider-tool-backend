@@ -77,3 +77,8 @@ class ClientStatusChoices(models.TextChoices):
     NEW_CASE_CLIENT_NEW_EXTRA_MURAL_CLIENT = 'NEW_CASE_CLIENT_NEW_EXTRA_MURAL_CLIENT', _(
         'New Extra-Mural Client Assessment')
     EXISTING_CASE_CLIENT_REASSESS = 'EXISTING_CASE_CLIENT_REASSESS', _('Existing Case Management Client Reassessment')
+
+class ExternalPartnerClientStatusChoices(models.TextChoices):
+    NEW_CASE_MANAGEMENT_CLIENT = 'NEW_CASE_MANAGEMENT_CLIENT', _(
+        'New Case Management Client')
+    EXISTING_CASE_MANAGEMENT_CLIENT = 'EXISTING_CASE_MANAGEMENT_CLIENT', _('Existing Case Management Client')

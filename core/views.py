@@ -81,9 +81,6 @@ class ClientAssessmentFactory:
             assessment_data_serializer = self.ClientAssessmentSerializer(data=self.request_data['assessment'])
             if assessment_data_serializer.is_valid():
                 client_assessment = assessment_data_serializer.save()
-
-                print(assessment_data_serializer.validated_data)
-
                 request_assessment_type = assessment_data_serializer.validated_data['assessment_status']
 
                 if request_assessment_type == NEW_CASE_CLIENT_EXISTING_EMC_REASSESS:
@@ -98,54 +95,72 @@ class ClientAssessmentFactory:
                     'message': assessment_data_serializer.errors
                 }, status=HTTP_400_BAD_REQUEST)
         except Exception as e:
-            print(str(e))
             return Response({
                 'result': False,
                 'message': 'Failed to process your request. ',
             }, status=HTTP_500_INTERNAL_SERVER_ERROR)
 
     def multiple_assessment_type_process(self, client_assessment, request_assessment_type):
-        assessment_type_request_fields = CLIENT_ASSESSMENT_TYPE_FIELD.get('NEW_CASE_CLIENT_EXISTING_EMC_REASSESS', None)
-        assessment_type_record_create = True
+        try:
+            assessment_type_record_create = True
+            assessments_created = []
 
-        if assessment_type_request_fields:
-            assessment_type_data = self.request_data['assessment_type_data']
+            assessment_type_request_fields = CLIENT_ASSESSMENT_TYPE_FIELD.get('NEW_CASE_CLIENT_EXISTING_EMC_REASSESS',
+                                                                              None)
 
-            for assessment_type_key in assessment_type_request_fields:
-                type_data = assessment_type_data[assessment_type_key]['data']
+            if assessment_type_request_fields:
+                assessment_type_data = self.request_data['assessment_type_data']
 
-                AssessmentTypeSerializer = CLIENT_ASSESSMENT_FIELD_SERIALIZER.get(assessment_type_key)
-                client_assessment_model_field = assessment_type_key
+                for assessment_type_key in assessment_type_request_fields:
+                    type_data = assessment_type_data[assessment_type_key]['data']
 
-                assessment_type_record = self.create_assessment_type_object(AssessmentTypeSerializer,
-                                                                            client_assessment_model_field,
-                                                                            client_assessment,
-                                                                            type_data)
+                    AssessmentTypeSerializer = CLIENT_ASSESSMENT_FIELD_SERIALIZER.get(assessment_type_key)
+                    client_assessment_model_field = assessment_type_key
 
-                if assessment_type_record:
-                    """
-                    If assessment_type_forms exists in request body. 
-                    """
-                    if "assessment_type_forms" in assessment_type_data[assessment_type_key]:
-                        type_forms = assessment_type_data[assessment_type_key]['assessment_type_forms']
-                        assessment_forms_create_result = self.create_assessment_forms(client_assessment, type_forms,
-                                                                                      assessment_type_key)
-                        if not assessment_forms_create_result:
-                            assessment_type_record_create = False
-                else:
-                    assessment_type_record_create = False
+                    assessment_type_record = self.create_assessment_type_object(AssessmentTypeSerializer,
+                                                                                client_assessment_model_field,
+                                                                                client_assessment,
+                                                                                type_data)
 
-        if assessment_type_record_create:
+                    if assessment_type_record:
+                        assessments_created.append(assessment_type_record)
+
+                    if assessment_type_record:
+                        """
+                        If assessment_type_forms exists in request body. 
+                        """
+                        if "assessment_type_forms" in assessment_type_data[assessment_type_key]:
+                            type_forms = assessment_type_data[assessment_type_key]['assessment_type_forms']
+                            assessment_forms_create_result = self.create_assessment_forms(client_assessment, type_forms,
+                                                                                          assessment_type_key)
+                            if not assessment_forms_create_result:
+                                assessment_type_record_create = False
+                    else:
+                        assessment_type_record_create = False
+
+            if assessment_type_record_create:
+                return Response({
+                    'result': True,
+                    'message': 'Client Assessment record created.',
+                    'data': self.ClientAssessmentSerializer(client_assessment).data
+                }, status=HTTP_201_CREATED)
+
+            client_assessment.delete()
+            for single_assessment_record in assessments_created:
+                single_assessment_record.delete() if single_assessment_record is not None else None
+
             return Response({
-                'result': True,
-                'message': 'Client Assessment record created.',
-                'data': self.ClientAssessmentSerializer(client_assessment).data
-            }, status=HTTP_201_CREATED)
-
-        return Response({
-            'result': False,
-            'message': 'Failed to create Client Assessment record.'
-        }, status=HTTP_500_INTERNAL_SERVER_ERROR)
+                'result': False,
+                'message': 'Failed to create Client Assessment record.'
+            }, status=HTTP_500_INTERNAL_SERVER_ERROR)
+        except Exception as e:
+            client_assessment.delete()
+            for single_assessment_record in assessments_created:
+                single_assessment_record.delete() if single_assessment_record is not None else None
+            return Response({
+                'result': False,
+                'message': 'Failed to create Client Assessment record.'
+            }, status=HTTP_500_INTERNAL_SERVER_ERROR)
 
     def single_assessment_type_process(self, client_assessment, request_assessment_type):
         assessment_type_request_data = self.request_data['assessment_type_data']

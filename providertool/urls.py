@@ -24,6 +24,7 @@ urlpatterns = [
     path('client/', include('clientpatient.urls')),
     path('clinician/', include('clinician.urls')),
     path('casemanager/', include('casemanager.urls')),
+    path('externalpartner/', include('externalcasemanager.urls')),
     path('review-board/', include('reviewboard.urls')),
     path('communityparamedic/', include('communityparamedic.urls')),
     path('auth/', include('authentication.urls')),

@@ -128,7 +128,7 @@ class AssessmentViews:
     class ClinicianAssessmentList(ModelViewSet):
         queryset = ClinicianClientAssessment.objects.all()
         serializer_class = ClientAssessmentSerializer
-        pagination_class = PageNumberPagination
+        pagination_class = None
 
         def get_queryset(self):
             try:
