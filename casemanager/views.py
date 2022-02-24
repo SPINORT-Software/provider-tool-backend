@@ -184,19 +184,13 @@ class ClientInterventionViews:
                 if serializer.is_valid():
                     client_intervention = serializer.save()
                     if client_intervention:
-                        forms_request_data = request.data["forms"]
-                        forms_create_result = self.create_intervention_forms(client_intervention, forms_request_data)
+                        if "forms" in request.data:
+                            self.create_intervention_forms(client_intervention, request.data["forms"])
 
-                        if forms_create_result:
-                            return Response({
-                                'result': True,
-                                'message': 'Client Intervention record created.'
-                            }, status=HTTP_201_CREATED)
-                        else:
-                            return Response({
-                                'result': True,
-                                'message': 'Failed to create Client Intervention record.'
-                            }, status=HTTP_500_INTERNAL_SERVER_ERROR)
+                        return Response({
+                            'result': True,
+                            'message': 'Client Intervention record created.'
+                        }, status=HTTP_201_CREATED)
                     else:
                         return Response({
                             'result': False,

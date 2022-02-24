@@ -32,4 +32,5 @@ urlpatterns = [
     path('core/', include('core.urls')),
     path('documents/', include('documents.urls')),
     path('messaging/', include("messaging.urls")),
+    path('share/', include("sharer.urls")),
 ]

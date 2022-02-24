@@ -50,6 +50,17 @@ class ClientAssessmentDetailSerializer(ModelSerializer):
         model = ClinicianClientAssessment
         fields = '__all__'
 
+class ClientAssessmentBasicDataSerializer(ModelSerializer):
+    def to_representation(self, instance):
+        response = super().to_representation(instance)
+        response['client'] = ClientSerializer(instance.client).data
+        response['clinician'] = ClientSerializer(instance.client).data
+        return response
+
+    class Meta:
+        model = ClinicianClientAssessment
+        fields = '__all__'
+
 
 class ClientInterventionSerializer(ModelSerializer):
     class Meta:
@@ -57,6 +68,16 @@ class ClientInterventionSerializer(ModelSerializer):
         fields = '__all__'
 
 class ClientInterventionListSerializer(ModelSerializer):
+    def to_representation(self, instance):
+        response = super().to_representation(instance)
+        response['client'] = ClientSerializer(instance.client).data
+        return response
+
+    class Meta:
+        model = ClinicianClientInterventions
+        fields = '__all__'
+
+class ClientInterventionBasicDataSerializer(ModelSerializer):
     def to_representation(self, instance):
         response = super().to_representation(instance)
         response['client'] = ClientSerializer(instance.client).data

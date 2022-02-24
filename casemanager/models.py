@@ -96,7 +96,7 @@ class CaseManagerClientAssessment(models.Model):
         verbose_name_plural = "Client Assessments"
 
     def __str__(self):
-        return self.client_status + " [" + str(self.client_assessment_id) + "]"
+        return self.assessment_status + " [" + str(self.client_assessment_id) + "]"
 
 
 class ClientIntervention(models.Model):

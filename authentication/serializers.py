@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import User
+from .models import User, ApplicationUser, OrganizationChoices, Types
 from django.contrib.auth import authenticate
 
 
@@ -14,6 +14,35 @@ class UserSearchSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['user_type', 'user_type_pk', 'provider_type', 'username', 'first_name', 'last_name', 'fullname']
+
+
+class UserDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['user_type', 'user_type_pk', 'first_name', 'last_name', 'fullname']
+
+
+class UserBasicDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['user_type', 'first_name', 'last_name', 'fullname']
+
+
+class ApplicationUserSearchRequestDataSerializer(serializers.Serializer):
+    user__user_type = serializers.ChoiceField(choices=Types.choices, required=False)
+    organization = serializers.ChoiceField(choices=OrganizationChoices.choices, required=False)
+
+
+class ApplicationUserListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ApplicationUser
+        fields = '__all__'
+
+    def to_representation(self, instance):
+        response = super().to_representation(instance)
+        response['user'] = UserBasicDetailSerializer(instance.user).data
+
+        return response
 
 
 class RegistrationSerializer(serializers.ModelSerializer):
@@ -50,6 +79,7 @@ class LoginSerializer(serializers.Serializer):
     token = serializers.CharField(max_length=255, read_only=True)
     user_type_pk = serializers.CharField(max_length=255, read_only=True)
     provider_type = serializers.CharField(max_length=255, read_only=True)
+    organization = serializers.CharField(max_length=255, read_only=True)
     fullname = serializers.CharField(max_length=255, read_only=True)
 
     def validate(self, data):
@@ -106,6 +136,7 @@ class LoginSerializer(serializers.Serializer):
             'token': user.token,
             'user_type': user.user_type,
             'provider_type': user.provider_type,
+            'organization': user.organization,
             'user_type_pk': user.user_type_pk,
             'fullname': user.fullname
         }

@@ -18,7 +18,7 @@
     </content>
     <orderEntry type="jdk" jdkName="Remote Python 3.9.6 Docker Compose (web at [/Users/sharanchitta/PycharmProjects/provider-tool-backend/docker-compose.yml])" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="source_code" />
+    <orderEntry type="module" module-name="pdsbengine" />
   </component>
   <component name="TemplatesService">
     <option name="TEMPLATE_CONFIGURATION" value="Django" />

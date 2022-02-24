@@ -2,13 +2,14 @@ from rest_framework import status
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.generics import RetrieveAPIView
+from rest_framework.generics import RetrieveAPIView, ListAPIView
 
-from .serializers import RegistrationSerializer, LoginSerializer, UserSerializer
+from .serializers import RegistrationSerializer, LoginSerializer, UserSerializer, ApplicationUserListSerializer
 from .renderers import UserJSONRenderer
 from .backends import JWTAuthentication
-from .models import User
+from .models import User, ApplicationUser
 from django.contrib.auth import authenticate
+from rest_framework.permissions import IsAuthenticated
 
 
 class RegistrationAPIView(APIView):
@@ -53,3 +54,4 @@ class UserView(RetrieveAPIView):
         Get all the user profile details required to be displayed and used on the frontend on LOGIN.
         """
         return Response(UserSerializer(request.user).data, status.HTTP_200_OK)
+

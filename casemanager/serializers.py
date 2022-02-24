@@ -46,3 +46,26 @@ class CaseManagerClientAssessmentSerializer(ModelSerializer):
     class Meta:
         model = CaseManagerClientAssessment
         fields = '__all__'
+
+
+class CaseManagerClientAssessmentBasicDataSerializer(ModelSerializer):
+    class Meta:
+        model = CaseManagerClientAssessment
+        fields = [
+            'client_assessment_id',
+            'assessment_date',
+            'assessment_time',
+            'casemanager',
+            'client',
+            'assessment_status'
+        ]
+
+
+class ClientInterventionBasicDataSerializer(ModelSerializer):
+    class Meta:
+        model = ClientIntervention
+        fields = [
+            'intervention_id',
+            'client',
+            'casemanager'
+        ]

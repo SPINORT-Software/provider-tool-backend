@@ -20,6 +20,9 @@ from authentication.models import User as CustomAuthUser, Types as ApplicationUs
 from clientpatient.models import Client, ClientStatus
 from clientpatient.serializers import ClientSerializer
 from django.core.exceptions import ValidationError
+from rest_framework.permissions import IsAuthenticated
+from authentication.models import ApplicationUser
+from authentication.serializers import ApplicationUserListSerializer, ApplicationUserSearchRequestDataSerializer
 
 
 class UserSearch(ListAPIView):
@@ -264,33 +267,21 @@ class ClientAssessmentFactory:
                 'message': 'Failed to process your request. '
             }, status=HTTP_500_INTERNAL_SERVER_ERROR)
 
-# @api_view(['GET'])
-# @authentication_classes((JSONWebTokenAuthentication,))
-# def current_user(request):
-#     """
-#     Determine the current user by their token, and return their data
-#     """
-#     serializer = UserSerializer(request.user)
-#     return Response(serializer.data)
 
+class ApplicationUserView(ListAPIView):
+    permission_classes = [IsAuthenticated]
+    pagination_class = None
 
-# def my_jwt_response_handler(token, user=None, request=None):
-#     return {
-#         'token': token,
-#         'user': UserSerializer(user, context={'request': request}).data
-#     }
+    model = ApplicationUser
+    queryset = ApplicationUser.objects.all()
+    serializer_class = ApplicationUserListSerializer
 
+    def filter_queryset(self, queryset):
+        request_data = ApplicationUserSearchRequestDataSerializer(data=self.request.data)
+        if request_data.is_valid():
+            queryset = queryset.filter(**request_data.validated_data)
+        return queryset
 
-# class UserList(APIView):
-#     """
-#     Create a new user. It's called 'UserList' because normally we'd have a get
-#     method here too, for retrieving a list of all User objects.
-#     """
-#     permission_classes = (permissions.AllowAny,)
-#
-#     def post(self, request, format=None):
-#         serializer = UserSerializerWithToken(data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data, status=status.HTTP_201_CREATED)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def get_queryset(self):
+        queryset = super(ApplicationUserView, self).get_queryset()
+        return queryset

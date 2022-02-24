@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'clinician',
     'authentication',
     'messaging',
+    'sharer',
 
     'channels',
 ]

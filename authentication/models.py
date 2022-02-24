@@ -168,6 +168,15 @@ class User(AbstractBaseUser, PermissionsMixin):
         """
         return self._get_provider_type()
 
+    @property
+    def organization(self):
+        """
+        If the user type = [CASE MANAGER, COMMUNITY PARAMEDIC, CLINICIAN, EXTERNAL CM]
+        this field should return the organization value from the User Type's Model
+        :return:
+        """
+        return self._get_organization()
+
     def get_full_name(self):
         """
         This method is required by Django for things like handling emails.
@@ -219,20 +228,24 @@ class User(AbstractBaseUser, PermissionsMixin):
         :return:
         """
         try:
-            if self.user_type in (Types.TYPE_CASE_MANAGER, Types.TYPE_COMMUNITY_PARAMEDIC, Types.TYPE_CLINICIAN):
-                user_type_models = {
-                    'TYPE_CLINICIAN': 'clinicianuser',
-                    'TYPE_COMMUNITY_PARAMEDIC': 'communityparamedicuser',
-                    'TYPE_CASE_MANAGER': 'casemanager'
-                }
-                user_type_data = user_type_models.get(self.user_type, None)
-                if user_type_data:
-                    user_type_instance = getattr(self, user_type_data)
-                    return getattr(user_type_instance, 'provider_type')
+            if self.user_type in (Types.TYPE_CASE_MANAGER, Types.TYPE_COMMUNITY_PARAMEDIC, Types.TYPE_CLINICIAN, Types.TYPE_EXTERNAL_PARTNER):
+                application_user = getattr(self, "application_user")
+                if application_user:
+                    return application_user.provider_type
                 return False
         except Exception as e:
-            print(str(e))
             return False
+
+    def _get_organization(self):
+        try:
+            if self.user_type in (Types.TYPE_CASE_MANAGER, Types.TYPE_COMMUNITY_PARAMEDIC, Types.TYPE_CLINICIAN, Types.TYPE_EXTERNAL_PARTNER):
+                application_user = getattr(self, "application_user")
+                if application_user:
+                    return application_user.organization
+                return False
+        except Exception as e:
+            return False
+
 
 
 class ApplicationUser(models.Model):
@@ -240,7 +253,7 @@ class ApplicationUser(models.Model):
     user = models.OneToOneField(
         User,
         on_delete=models.CASCADE,
-        verbose_name="Application User - Auth User",
+        verbose_name="Account User",
         db_column="user_id",
         related_name="application_user"
     )
@@ -250,6 +263,13 @@ class ApplicationUser(models.Model):
         max_length=100,
         choices=ProviderTypes.choices,
         default=ProviderTypes.PROVIDER_TYPE_DEFAULT,
+        null=True,
+        blank=True
+    )
+    organization = models.CharField(
+        max_length=100,
+        choices=OrganizationChoices.choices,
+        default=OrganizationChoices.ORGANIZATION_OTHER,
         null=True,
         blank=True
     )
