@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import User, ApplicationUser, OrganizationChoices, Types
+from .models import User, ApplicationUser, OrganizationChoices, Types, ProviderTypes
 from django.contrib.auth import authenticate
 
 
@@ -31,6 +31,7 @@ class UserBasicDetailSerializer(serializers.ModelSerializer):
 class ApplicationUserSearchRequestDataSerializer(serializers.Serializer):
     user__user_type = serializers.ChoiceField(choices=Types.choices, required=False)
     organization = serializers.ChoiceField(choices=OrganizationChoices.choices, required=False)
+    provider_type = serializers.ChoiceField(choices=ProviderTypes.choices, required=False)
 
 
 class ApplicationUserListSerializer(serializers.ModelSerializer):

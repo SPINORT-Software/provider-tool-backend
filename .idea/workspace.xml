@@ -5,31 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="cb744dec-d346-4c8e-b110-6b6349e6b94b" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/sharer/serializers.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sharer/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/7fcd4e23-8603-4e7b-98c9-cd3349282915.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/7fcd4e23-8603-4e7b-98c9-cd3349282915.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/89106e84-5047-46a9-8258-ccd6dcf7e353.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/89106e84-5047-46a9-8258-ccd6dcf7e353.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/89106e84-5047-46a9-8258-ccd6dcf7e353/storage_v2/_src_/database/providertool.CQ8U5w/schema/public.abK9xQ.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/89106e84-5047-46a9-8258-ccd6dcf7e353/storage_v2/_src_/database/providertool.CQ8U5w/schema/public.abK9xQ.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/providertool.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/providertool.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/authentication/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/authentication/admin.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/authentication/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/authentication/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/authentication/serializers.py" beforeDir="false" afterPath="$PROJECT_DIR$/authentication/serializers.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/authentication/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/authentication/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/authentication/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/authentication/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/casemanager/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/casemanager/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/casemanager/serializers.py" beforeDir="false" afterPath="$PROJECT_DIR$/casemanager/serializers.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/casemanager/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/casemanager/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/clinician/serializers.py" beforeDir="false" afterPath="$PROJECT_DIR$/clinician/serializers.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/core/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/core/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/core/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/externalcasemanager/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/externalcasemanager/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/providertool/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/providertool/settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/providertool/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/providertool/urls.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -183,7 +159,7 @@
       <workItem from="1644772505719" duration="2641000" />
       <workItem from="1644803041627" duration="8290000" />
       <workItem from="1645328171592" duration="35391000" />
-      <workItem from="1645477293114" duration="40525000" />
+      <workItem from="1645477293114" duration="40763000" />
     </task>
     <servers />
   </component>
