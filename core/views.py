@@ -59,33 +59,31 @@ class ClientSearchByEmail(ListAPIView):
     search_fields = ('email',)
 
 
-class ApplicationUserView(ListAPIView):
+class ApplicationUserView(APIView):
     permission_classes = [IsAuthenticated]
     pagination_class = None
-
-    model = ApplicationUser
     queryset = ApplicationUser.objects.all()
     serializer_class = ApplicationUserListSerializer
 
-    def filter_queryset(self, queryset):
-        request_data = ApplicationUserSearchRequestDataSerializer(data=self.request.data)
-        filtered_queryset = queryset
+    def post(self, request):
+        request_data = ApplicationUserSearchRequestDataSerializer(data=request.data)
+        filtered_queryset = self.queryset
+
         if request_data.is_valid():
             if "name" in dict(request_data.validated_data):
                 name_data = request_data.validated_data["name"]
                 del request_data.validated_data["name"]
 
-                filtered_queryset = filtered_queryset.annotate(
-                    full_name=Concat('user__first_name', V(' '), 'user__last_name')). \
+                filtered_queryset = filtered_queryset. \
+                    annotate(full_name=Concat('user__first_name', V(' '), 'user__last_name')). \
                     filter(full_name__icontains=name_data)
 
             filtered_queryset = filtered_queryset.filter(**request_data.validated_data)
 
-        return filtered_queryset
-
-    def get_queryset(self):
-        queryset = super(ApplicationUserView, self).get_queryset()
-        return queryset
+        return Response({
+            "result": True if filtered_queryset.count() > 0 else False,
+            "data": ApplicationUserListSerializer(filtered_queryset, many=True).data
+        })
 
 
 class ClientAssessmentFactory:
