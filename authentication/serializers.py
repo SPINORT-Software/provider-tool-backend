@@ -32,6 +32,7 @@ class ApplicationUserSearchRequestDataSerializer(serializers.Serializer):
     user__user_type = serializers.ChoiceField(choices=Types.choices, required=False)
     organization = serializers.ChoiceField(choices=OrganizationChoices.choices, required=False)
     provider_type = serializers.ChoiceField(choices=ProviderTypes.choices, required=False)
+    name = serializers.CharField(max_length=255, required=False)
 
 
 class ApplicationUserListSerializer(serializers.ModelSerializer):

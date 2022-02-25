@@ -77,9 +77,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     # database to improve lookup performance.
     username = models.CharField(db_index=True, max_length=255, unique=True)
 
-    first_name = models.TextField(null=True, blank=True)
+    first_name = models.CharField(max_length=255, null=True, blank=True)
 
-    last_name = models.TextField(null=True, blank=True)
+    last_name = models.CharField(max_length=255, null=True, blank=True)
 
     # We also need a way to contact the user and a way for the user to identify
     # themselves when logging in. Since we need an email address for contacting
@@ -228,7 +228,8 @@ class User(AbstractBaseUser, PermissionsMixin):
         :return:
         """
         try:
-            if self.user_type in (Types.TYPE_CASE_MANAGER, Types.TYPE_COMMUNITY_PARAMEDIC, Types.TYPE_CLINICIAN, Types.TYPE_EXTERNAL_PARTNER):
+            if self.user_type in (
+            Types.TYPE_CASE_MANAGER, Types.TYPE_COMMUNITY_PARAMEDIC, Types.TYPE_CLINICIAN, Types.TYPE_EXTERNAL_PARTNER):
                 application_user = getattr(self, "application_user")
                 if application_user:
                     return application_user.provider_type
@@ -238,14 +239,14 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def _get_organization(self):
         try:
-            if self.user_type in (Types.TYPE_CASE_MANAGER, Types.TYPE_COMMUNITY_PARAMEDIC, Types.TYPE_CLINICIAN, Types.TYPE_EXTERNAL_PARTNER):
+            if self.user_type in (
+            Types.TYPE_CASE_MANAGER, Types.TYPE_COMMUNITY_PARAMEDIC, Types.TYPE_CLINICIAN, Types.TYPE_EXTERNAL_PARTNER):
                 application_user = getattr(self, "application_user")
                 if application_user:
                     return application_user.organization
                 return False
         except Exception as e:
             return False
-
 
 
 class ApplicationUser(models.Model):

@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/../pdsb/pdsbengine/.idea/pdsbengine.iml" filepath="$PROJECT_DIR$/../pdsb/pdsbengine/.idea/pdsbengine.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/providertool.iml" filepath="$PROJECT_DIR$/.idea/providertool.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../pythonProject/.idea/pythonProject.iml" filepath="$PROJECT_DIR$/../pythonProject/.idea/pythonProject.iml" />
     </modules>
   </component>
 </project>

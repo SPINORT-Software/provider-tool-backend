@@ -23,6 +23,9 @@ from django.core.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
 from authentication.models import ApplicationUser
 from authentication.serializers import ApplicationUserListSerializer, ApplicationUserSearchRequestDataSerializer
+from django.contrib.postgres.search import SearchVector
+from django.db.models import Value as V
+from django.db.models.functions import Concat
 
 
 class UserSearch(ListAPIView):
@@ -54,6 +57,35 @@ class ClientSearchByEmail(ListAPIView):
     filter_backends = (filters.SearchFilter,)
     pagination_class = None
     search_fields = ('email',)
+
+
+class ApplicationUserView(ListAPIView):
+    permission_classes = [IsAuthenticated]
+    pagination_class = None
+
+    model = ApplicationUser
+    queryset = ApplicationUser.objects.all()
+    serializer_class = ApplicationUserListSerializer
+
+    def filter_queryset(self, queryset):
+        request_data = ApplicationUserSearchRequestDataSerializer(data=self.request.data)
+        filtered_queryset = queryset
+        if request_data.is_valid():
+            if "name" in dict(request_data.validated_data):
+                name_data = request_data.validated_data["name"]
+                del request_data.validated_data["name"]
+
+                filtered_queryset = filtered_queryset.annotate(
+                    full_name=Concat('user__first_name', V(' '), 'user__last_name')). \
+                    filter(full_name__icontains=name_data)
+
+            filtered_queryset = filtered_queryset.filter(**request_data.validated_data)
+
+        return filtered_queryset
+
+    def get_queryset(self):
+        queryset = super(ApplicationUserView, self).get_queryset()
+        return queryset
 
 
 class ClientAssessmentFactory:
@@ -266,22 +298,3 @@ class ClientAssessmentFactory:
                 'result': False,
                 'message': 'Failed to process your request. '
             }, status=HTTP_500_INTERNAL_SERVER_ERROR)
-
-
-class ApplicationUserView(ListAPIView):
-    permission_classes = [IsAuthenticated]
-    pagination_class = None
-
-    model = ApplicationUser
-    queryset = ApplicationUser.objects.all()
-    serializer_class = ApplicationUserListSerializer
-
-    def filter_queryset(self, queryset):
-        request_data = ApplicationUserSearchRequestDataSerializer(data=self.request.data)
-        if request_data.is_valid():
-            queryset = queryset.filter(**request_data.validated_data)
-        return queryset
-
-    def get_queryset(self):
-        queryset = super(ApplicationUserView, self).get_queryset()
-        return queryset

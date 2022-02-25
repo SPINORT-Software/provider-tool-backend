@@ -8,5 +8,5 @@ urlpatterns = [
 
     path('search-client-email', ClientSearchByEmail.as_view()),
 
-    path('search-app-users', ApplicationUserView.as_view()),
+    path('appusers/search', ApplicationUserView.as_view()),
 ]
