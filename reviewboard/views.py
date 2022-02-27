@@ -156,7 +156,8 @@ class ClientReferralCreate(APIView):
 
                         if client_creation_serializer.is_valid():
                             client_creation_serializer.save()
-                            client_user = User.objects.get(email=client_email).clientuser
+                            client_user = User.objects.get(email=client_email).application_user
+
                             client_user.client_status = client_referral_decision
                             client_user.save()
 

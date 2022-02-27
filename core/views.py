@@ -1,3 +1,5 @@
+import collections
+
 from django.http import HttpResponseRedirect
 from django.contrib.auth.models import User
 from rest_framework import permissions, status
@@ -62,12 +64,11 @@ class ClientSearchByEmail(ListAPIView):
 class ApplicationUserView(APIView):
     permission_classes = [IsAuthenticated]
     pagination_class = None
-    queryset = ApplicationUser.objects.all()
     serializer_class = ApplicationUserListSerializer
 
     def post(self, request):
         request_data = ApplicationUserSearchRequestDataSerializer(data=request.data)
-        filtered_queryset = self.queryset
+        filtered_queryset = ApplicationUser.objects.all()
 
         if request_data.is_valid():
             if "name" in dict(request_data.validated_data):
@@ -78,7 +79,9 @@ class ApplicationUserView(APIView):
                     annotate(full_name=Concat('user__first_name', V(' '), 'user__last_name')). \
                     filter(full_name__icontains=name_data)
 
-            filtered_queryset = filtered_queryset.filter(**request_data.validated_data)
+            validated_data_dict = collections.OrderedDict(
+                {(k, v) for k, v in request_data.validated_data.items() if len(v) > 0})
+            filtered_queryset = filtered_queryset.filter(**validated_data_dict)
 
         return Response({
             "result": True if filtered_queryset.count() > 0 else False,

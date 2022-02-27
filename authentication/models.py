@@ -299,6 +299,8 @@ def create_user_applicationuser(sender, instance, created, **kwargs):
         if hasattr(instance, 'user_type'):
             # provider_type is not for Client Users // client_status is only for patients
             if instance.user_type == Types.TYPE_CLIENT:
+                print("Line 302 ")
+                print(instance)
                 application_user.provider_type = None
             if instance.user_type == Types.TYPE_CASE_MANAGER:
                 application_user.client_status = None

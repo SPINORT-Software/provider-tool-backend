@@ -25,14 +25,14 @@ class UserDetailSerializer(serializers.ModelSerializer):
 class UserBasicDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['user_type', 'first_name', 'last_name', 'fullname']
+        fields = ['user_type', 'first_name', 'last_name', 'fullname', 'email']
 
 
 class ApplicationUserSearchRequestDataSerializer(serializers.Serializer):
-    user__user_type = serializers.ChoiceField(choices=Types.choices, required=False)
-    organization = serializers.ChoiceField(choices=OrganizationChoices.choices, required=False)
-    provider_type = serializers.ChoiceField(choices=ProviderTypes.choices, required=False)
-    name = serializers.CharField(max_length=255, required=False)
+    user__user_type = serializers.ChoiceField(choices=Types.choices, required=False, allow_blank=True)
+    organization = serializers.ChoiceField(choices=OrganizationChoices.choices, required=False, allow_blank=True)
+    provider_type = serializers.ChoiceField(choices=ProviderTypes.choices, required=False, allow_blank=True)
+    name = serializers.CharField(max_length=255, required=False, allow_blank=True)
 
 
 class ApplicationUserListSerializer(serializers.ModelSerializer):
