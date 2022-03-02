@@ -6,6 +6,10 @@ import uuid
 # from django.conf import settings
 from authentication.models import Types as UserTypes, ApplicationUser
 from core.models import *
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 class DailyWorkLoad(models.Model):
     daily_workload_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
@@ -155,11 +159,4 @@ class ClientIntervention(models.Model):
 #     def __str__(self):
 #         return f"{self.user.first_name} {self.user.last_name}"
 
-
-# @receiver(post_save, sender=settings.AUTH_USER_MODEL)
-# def create_user_casemanagerusers(sender, instance, created, **kwargs):
-#     if created:
-#         print("User created")
-#         if hasattr(instance, 'user_type') and instance.user_type == UserTypes.TYPE_CASE_MANAGER:
-#             CaseManagerUsers.objects.create(user=instance)
 

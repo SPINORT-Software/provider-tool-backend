@@ -12,6 +12,9 @@ urlpatterns = [
     path('followups/<str:type>', SharerViews.FollowUpListViewFilterByType.as_view()),
 
     path('notifications', SharerViews.NotificationsListView.as_view()),
+    path('notifications/all', SharerViews.NotificationsListAllView.as_view()),
+
+    path('notifications/<str:pk>/read', SharerViews.NotificationsRead.as_view()),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

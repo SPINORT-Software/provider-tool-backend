@@ -1,13 +1,13 @@
 from rest_framework import serializers
-from .models import *
+
 from authentication.serializers import UserDetailSerializer
-
-from casemanager.models import CaseManagerClientAssessment, ClientIntervention
-from clinician.models import ClinicianClientAssessment, ClinicianClientInterventions
-
 from casemanager.serializers import CaseManagerClientAssessmentBasicDataSerializer, \
     ClientInterventionBasicDataSerializer
 from clinician.serializers import ClientAssessmentBasicDataSerializer, ClientInterventionSerializer
+
+from .models import SharerCommunication, ActivityNotifications, ActivityNotificationsRead
+from casemanager.models import CaseManagerClientAssessment, ClientIntervention
+from clinician.models import ClinicianClientAssessment, ClinicianClientInterventions
 
 CommunicationContentTypeClassSerializers = {
     CaseManagerClientAssessment: CaseManagerClientAssessmentBasicDataSerializer,
@@ -62,3 +62,20 @@ class SharerCommunicationRequestDataSerializer(serializers.Serializer):
 
     class Meta:
         optional_fields = ['discussion_details', 'mode']
+
+
+class ActivityNotificationsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ActivityNotifications
+        fields = '__all__'
+
+    def to_representation(self, instance):
+        response = super().to_representation(instance)
+        response['timesince'] = instance.timesince
+        return response
+
+
+class ActivityNotificationsReadSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ActivityNotificationsRead
+        fields = '__all__'

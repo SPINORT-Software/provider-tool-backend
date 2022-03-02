@@ -1,22 +1,24 @@
 from rest_framework.views import APIView
 from rest_framework.status import *
-from .models import *
-from .serializers import SharerCommunicationSerializer, SharerCommunicationRequestDataSerializer, \
-    ReferralsAndFollowUpsListSerializer
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.generics import ListAPIView
 from django.core.exceptions import ValidationError
+from django.db.utils import IntegrityError
 
+from .models import *
+from .serializers import *
 from clinician.models import ClinicianClientAssessment, ClinicianClientInterventions
 from casemanager.models import CaseManagerClientAssessment, ClientIntervention
 
-from rest_framework.permissions import IsAuthenticated
+import core.constants as constants
 
 
 class SharerViews:
     class ShareListCreateView(APIView):
         def _get_communication_object(self, object_id, object_type):
             try:
-                instance_type_model = COMMUNICATION_OBJECT_INSTANCE_TYPES.get(object_type)
+                instance_type_model = constants.COMMUNICATION_OBJECT_INSTANCE_TYPES.get(object_type)
                 return instance_type_model.objects.get(pk=object_id)
             except (ValueError, ValidationError, ClinicianClientAssessment.DoesNotExist,
                     CaseManagerClientAssessment.DoesNotExist):
@@ -163,5 +165,33 @@ class SharerViews:
             })
 
     class NotificationsListView(APIView):
-        def get(self, request):
-            return Response(1)
+        pass
+
+    class NotificationsListAllView(ListAPIView):
+        serializer_class = ActivityNotificationsSerializer
+        queryset = ActivityNotifications.objects.all()
+
+    class NotificationsRead(APIView):
+        def post(self, request, pk):
+            try:
+                notification_read_user = request.user.application_user
+                notification = ActivityNotifications.objects.get(pk=pk)
+                notification_read = ActivityNotificationsRead.objects.create(
+                    notification_id=notification,
+                    application_user=notification_read_user
+                )
+                return Response({
+                    "result": True,
+                    "data": ActivityNotificationsReadSerializer(notification_read).data
+                })
+
+            except ActivityNotifications.DoesNotExist:
+                return Response({
+                    "result": False
+                }, status=HTTP_400_BAD_REQUEST)
+
+            except IntegrityError:
+                return Response({
+                    "result": False,
+                    "message": "Invalid request - Notification already read by the user"
+                }, status=HTTP_400_BAD_REQUEST)

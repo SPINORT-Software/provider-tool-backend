@@ -131,6 +131,7 @@ class ClientAssessmentFactory:
                     'message': assessment_data_serializer.errors
                 }, status=HTTP_400_BAD_REQUEST)
         except Exception as e:
+            print(str(e))
             return Response({
                 'result': False,
                 'message': 'Failed to process your request. ',

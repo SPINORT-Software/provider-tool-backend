@@ -4,13 +4,15 @@ from authentication.models import User
 from channels.db import database_sync_to_async
 from .models import Message
 import logging
+from core.constants import WS_CONSUMER_GROUPS
 
 logger = logging.getLogger(__name__)
+
 
 @database_sync_to_async
 def save_message(message_data):
     try:
-        logger.info(f"Saving Message received {message_data}")
+        logger.info(f"MESSAGING: Saving Message received {message_data}")
         message = Message(
             body=message_data['message'],
             sender=User.objects.filter(username=message_data['sender']).first(),
@@ -18,18 +20,19 @@ def save_message(message_data):
         )
         message.save()
     except Exception as e:
-        logger.error(f"Exception occured while saving message: {str(e)}")
+        logger.error(f"MESSAGING: Exception occurred while saving message: {str(e)}")
 
 
 class MessageConsumer(AsyncWebsocketConsumer):
     def __init__(self):
-        self.room_group_name = "MESSAGING"
+        self.room_group_name = WS_CONSUMER_GROUPS.get("MESSAGING")
         super(MessageConsumer, self).__init__()
 
     async def connect(self):
         if self.scope['user']:
             connected_user = self.scope['user']
-            logger.info(f"============================= Connected user: {connected_user.username}")
+            logger.info(f"MESSAGING: SocketConnect - Connected user: {connected_user.username}")
+            logger.info(f"{self.channel_name}")
             await self.channel_layer.group_add(
                 self.room_group_name,
                 self.channel_name
@@ -44,7 +47,7 @@ class MessageConsumer(AsyncWebsocketConsumer):
 
     async def disconnect(self, close_code):
         if self.scope['user']:
-            logger.info("Disconnected")
+            logger.info("MESSAGING: Disconnected")
             await self.channel_layer.group_discard(
                 self.room_group_name,
                 self.channel_name
@@ -65,7 +68,7 @@ class MessageConsumer(AsyncWebsocketConsumer):
             recipient = data['recipient']
             sent_at = data['sent_at']
 
-            event_data =   {
+            event_data = {
                 'type': 'chat_message',
                 'message': message,
                 'sender': sender,
@@ -75,7 +78,7 @@ class MessageConsumer(AsyncWebsocketConsumer):
             }
 
             # Send message to room group
-            logger.info("Received message")
+            logger.info("MESSAGING: Received message from client")
             await self.channel_layer.group_send(
                 self.room_group_name,
                 event_data
@@ -89,10 +92,44 @@ class MessageConsumer(AsyncWebsocketConsumer):
 
 
 class NotificationConsumer(AsyncWebsocketConsumer):
+    def __init__(self):
+        self.room_group_name = WS_CONSUMER_GROUPS.get("NOTIFICATIONS")
+        super(NotificationConsumer, self).__init__()
+
     async def connect(self):
-        print("Notification consumer")
-        await self.accept()
+        if self.scope['user']:
+            connected_user = self.scope['user']
+            logger.info(f"NOTIFICATIONS: SocketConnect - Connected user: {connected_user.username}")
+            logger.info(f"{self.channel_name}")
+            await self.channel_layer.group_add(
+                self.room_group_name,
+                self.channel_name
+            )
+
+            await self.accept()
+        else:
+            # Reject the connection
+            await self.close()
+            return
 
     async def receive(self, text_data):
-        data = json.loads(text_data)
-        print(data)
+        try:
+            data = json.loads(text_data)
+            print(data)
+        except  json.decoder.JSONDecodeError:
+            print("error")
+
+
+    async def disconnect(self, close_code):
+        # Channel instance leaves the Notifications Group
+        if self.scope['user']:
+            logger.info("NOTIFICATIONS: Disconnected")
+            await self.channel_layer.group_discard(
+                self.room_group_name,
+                self.channel_name
+            )
+        else:
+            await self.close(close_code)
+
+    async def send_notification(self, data):
+        await self.send(text_data=json.dumps(data))
